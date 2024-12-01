@@ -51,17 +51,22 @@ export const NavGauge: React.FC = () => {
                         {controlsPositions.map((el) => <option key={el} value={el} label={el}>{el}</option>)}
                     </select>
                 </div>
-                {placements.map((el) => (
-                    <div key={el}>
-                        <label htmlFor={`controls-${el}`}>Offset {el} (px)</label>
-                        <input
-                            type='number'
-                            name={`controls-${el}`}
-                            value={controlPlacement[el]}
-                            onChange={(event) => setControlPlacement((prev) => !isNaN(Number(event.target.value)) ? { ...prev, [el]: Number(event.target.value) } : prev)}
-                        />
-                    </div>
-                ))}
+                {placements.map((el) => {
+                    const reverseFactor = el === 'top' || el === 'right' ? -1 : 1;
+                    return (
+                        <div key={el}>
+                            <label htmlFor={`controls-${el}`}>Offset {el} (px)</label>
+                            <input
+                                type='number'
+                                name={`controls-${el}`}
+                                value={reverseFactor * controlPlacement[el]}
+                                onChange={(event) => setControlPlacement((prev) => !isNaN(Number(event.target.value)) 
+                                    ? { ...prev, [el]: reverseFactor * Number(event.target.value) } 
+                                    : prev)}
+                            />
+                        </div>
+                    );
+                })}
             </div>
             <Map
                 showZoom={showZoom}

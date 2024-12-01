@@ -15,7 +15,7 @@
 
 .nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-left {
     top: var(--ctrl-top);
-    right: var(--ctrl-left);
+    left: var(--ctrl-left);
 }
 
 .nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-right {
