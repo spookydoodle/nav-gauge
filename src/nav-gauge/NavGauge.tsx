@@ -28,7 +28,7 @@ export const NavGauge: React.FC = () => {
     const [showCompass, setShowCompass] = React.useState(true);
     const [controlPosition, setControlPosition] = React.useState<maplibregl.ControlPosition>('top-right');
     const [controlPlacement, setControlPlacement] = React.useState<ControlPlacement>({ top: 0, bottom: 0, left: 0, right: 0 });
-    const [mapLayout, setMapLayout] = React.useState<MapLayout>({ width: 200, height: 200, borderColor: 'red', borderRadius: '50%', borderWidth: 5, boxShadow: '0px 0px 16px #ff0000, 0px 0px 16px #ff0000' })
+    const [mapLayout, setMapLayout] = React.useState<MapLayout>({ width: 200, height: 200, borderColor: '#ff0000', borderRadius: '50%', borderWidth: 5, boxShadow: '0px 0px 16px #ff0000, 0px 0px 16px #ff0000' })
 
     const placements = React.useMemo(
         (): (keyof ControlPlacement)[] => {
@@ -88,7 +88,7 @@ export const NavGauge: React.FC = () => {
                     <input type='number' name="map-width" value={mapLayout.borderWidth} onChange={(event) => !isNaN(Number(event.target.value)) ? setMapLayout((prev) => ({ ...prev, borderWidth: Number(event.target.value) })) : null} />
                 </div>
                 <div>
-                    <label htmlFor="map-border-color">Border color (rgb, hex, hsl, name)</label>
+                    <label htmlFor="map-border-color">Border color</label>
                     <input type='color' name="map-border-color" value={mapLayout.borderColor} onChange={(event) => {
                         console.log(event.target.value)
                         setMapLayout((prev) => ({ ...prev, borderColor: event.target.value }));
