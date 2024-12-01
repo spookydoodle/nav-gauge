@@ -67,6 +67,22 @@ export const NavGauge: React.FC = () => {
                         </div>
                     );
                 })}
+                <div className="checkbox" onClick={() => setShowZoom((prev) => !prev)}>
+                    <input
+                        type='checkbox'
+                        name="controls-zoom"
+                        checked={showZoom}
+                    />
+                    <label htmlFor="controls-zoom">Show zoom buttons</label>
+                </div>
+                <div className="checkbox" onClick={() => setShowCompass((prev) => !prev)}>
+                    <input
+                        type='checkbox'
+                        name="controls-compass"
+                        checked={showCompass}
+                    />
+                    <label htmlFor="controls-compass">Show compass button</label>
+                </div>
             </div>
             <Map
                 showZoom={showZoom}

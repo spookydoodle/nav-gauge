@@ -44,3 +44,9 @@
 .side-panel select {
     width: 100%;
 }
+
+.checkbox {
+    display: grid;
+    grid-template-columns: max-content auto;
+    column-gap: 5px;
+}

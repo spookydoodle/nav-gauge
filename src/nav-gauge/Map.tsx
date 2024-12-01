@@ -54,7 +54,8 @@ export const Map: React.FC<Props> = ({
     }, [containerRef, cssLoaded]);
 
     React.useEffect(() => {
-        if (!isInitialized) {
+        const showControls = showZoom || showCompass;
+        if (!isInitialized || !showControls) {
             return;
         }
         const control = new maplibregl.NavigationControl({ showZoom, showCompass, visualizePitch: true });
