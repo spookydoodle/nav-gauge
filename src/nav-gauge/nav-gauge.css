@@ -14,8 +14,8 @@
 
 .side-panel {
     display: grid;
-    column-gap: 5px;
-    row-gap: 5px;
+    column-gap: 10px;
+    row-gap: 10px;
     grid-template-columns: 1fr;
     align-content: start;
     box-sizing: border-box;
@@ -23,10 +23,24 @@
     transition: transform 250ms ease-in;
     overflow-x: hidden;
     overflow-y: auto;
+    position: relative;
     height: 100%;
-    background-color: aqua;
 
     @starting-style {
         transform: translateX(-100%);
     }
+}
+
+.side-panel label {
+    font-size: 12px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.side-panel input {
+    width: calc(100% - 7px);
+}
+
+.side-panel select {
+    width: 100%;
 }

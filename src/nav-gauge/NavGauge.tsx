@@ -1,6 +1,9 @@
 import React from "react";
+import maplibregl from "maplibre-gl";
 import { Map } from "./Map";
 import './nav-gauge.css';
+
+const controlsPositions: maplibregl.ControlPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
 
 interface ControlPlacement {
     top: number;
@@ -20,11 +23,11 @@ export const NavGauge: React.FC = () => {
             switch (controlPosition) {
                 case 'top-left': return ['top', 'left']
                 case 'top-right': return ['top', 'right']
-                case 'bottom-left': return ['bottom', 'right']
-                case 'bottom-right': return ['bottom', 'left']
+                case 'bottom-left': return ['bottom', 'left']
+                case 'bottom-right': return ['bottom', 'right']
             }
         },
-        [controlPosition, controlPlacement]
+        [controlPosition]
     );
 
     const controlsCssStyle = React.useMemo(
@@ -42,16 +45,22 @@ export const NavGauge: React.FC = () => {
     return (
         <div className="layout" style={controlsCssStyle as React.CSSProperties}>
             <div className="side-panel">
+                <div>
+                    <label htmlFor="controls-position">Controls position</label>
+                    <select name="controls-position" value={controlPosition} onChange={(event) => setControlPosition(event.target.value as maplibregl.ControlPosition)}>
+                        {controlsPositions.map((el) => <option key={el} value={el} label={el}>{el}</option>)}
+                    </select>
+                </div>
                 {placements.map((el) => (
-                    <>
-                        <label htmlFor={`controls-${el}`}>{el}</label>
+                    <div key={el}>
+                        <label htmlFor={`controls-${el}`}>Offset {el} (px)</label>
                         <input
                             type='number'
                             name={`controls-${el}`}
                             value={controlPlacement[el]}
                             onChange={(event) => setControlPlacement((prev) => !isNaN(Number(event.target.value)) ? { ...prev, [el]: Number(event.target.value) } : prev)}
                         />
-                    </>
+                    </div>
                 ))}
             </div>
             <Map

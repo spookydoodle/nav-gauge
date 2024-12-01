@@ -4,7 +4,7 @@
     height: 50px;
     display: flex;
     align-items: center;
-    background-color: beige;
+    background-color: #66666E;
     color: black;
     transition: transform 250ms ease-in;
     
@@ -22,10 +22,15 @@
     justify-content: flex-end;
     align-items: center;
     font-size: 12px;
-    background-color: beige;
+    background-color: #66666E;
     transition: transform 250ms ease-in;
 
     @starting-style {
         transform: translateY(100%);
     }
+}
+
+.footer a {
+    text-decoration: none;
+    color: black;
 }

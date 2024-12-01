@@ -4,6 +4,7 @@
     border: 10px solid green;
     position: relative;
     margin: 0 auto;
+    align-self: center;
 }
 
 .nav-gauge-map .maplibregl-map {
@@ -23,11 +24,11 @@
 }
 
 .nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-left {
-    top: var(--ctrl-bottom);
-    right: var(--ctrl-left);
+    bottom: var(--ctrl-bottom);
+    left: var(--ctrl-left);
 }
 
 .nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-right {
-    top: var(--ctrl-bottom);
-    right: var(--ctrl-right);
+    bottom: var(--ctrl-bottom);
+    left: var(--ctrl-right);
 }
