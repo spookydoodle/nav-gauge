@@ -1,0 +1,29 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Century Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: black;
+  color: #F5F5F5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+a,
+a:-webkit-any-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+#app {
+    box-sizing: border-box;
+    min-height: 100vh;
+    width: 100vw;
+    position: relative;
+    display: grid;
+    grid-template-rows: auto max-content;
+    overflow: hidden;
+}

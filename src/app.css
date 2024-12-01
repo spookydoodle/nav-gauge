@@ -1,0 +1,31 @@
+.navbar {
+    padding: 10px 20px;
+    box-sizing: border-box;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    background-color: beige;
+    color: black;
+    transition: transform 250ms ease-in;
+    
+    @starting-style {
+        transform: translateY(-100%);
+    }
+}
+
+.footer {
+    margin-top: auto;
+    padding: 10px 20px;
+    height: 40px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 12px;
+    background-color: beige;
+    transition: transform 250ms ease-in;
+
+    @starting-style {
+        transform: translateY(100%);
+    }
+}

@@ -1,0 +1,33 @@
+.nav-gauge-map {
+    width: 400px;
+    height: 400px;
+    border: 10px solid green;
+    position: relative;
+    margin: 0 auto;
+}
+
+.nav-gauge-map .maplibregl-map {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-left {
+    top: var(--ctrl-top);
+    right: var(--ctrl-left);
+}
+
+.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-right {
+    top: var(--ctrl-top);
+    right: var(--ctrl-right);
+}
+
+.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-left {
+    top: var(--ctrl-bottom);
+    right: var(--ctrl-left);
+}
+
+.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-right {
+    top: var(--ctrl-bottom);
+    right: var(--ctrl-right);
+}
