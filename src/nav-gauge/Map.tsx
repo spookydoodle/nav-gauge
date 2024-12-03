@@ -2,6 +2,7 @@ import React from "react";
 import maplibregl from "maplibre-gl";
 import { osmStyle } from "../map-style/osm";
 import './map.css';
+import classNames from "classnames";
 
 const maplibreMap: maplibregl.Map = new maplibregl.Map({
     container: document.createElement('div'),
@@ -13,12 +14,14 @@ interface Props {
     controlPosition: maplibregl.ControlPosition;
     showZoom: boolean;
     showCompass: boolean;
+    showGreenScreen: boolean;
 }
 
 export const Map: React.FC<Props> = ({
     controlPosition,
     showZoom,
     showCompass,
+    showGreenScreen
 }) => {
     const [containerRef, setContainerRef] = React.useState<HTMLElement | null>(null);
     const [cssLoaded, setCssLoaded] = React.useState(false);
@@ -68,7 +71,9 @@ export const Map: React.FC<Props> = ({
 
     return (
         <>
-            <div ref={setContainerRef} className="nav-gauge-map" />
+            <div ref={setContainerRef} className={classNames("nav-gauge-map", {
+                "with-green-screen": showGreenScreen
+            })} />
         </>
     );
 };
