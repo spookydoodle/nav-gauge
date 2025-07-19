@@ -21,20 +21,12 @@
     position: relative;
 }
 
-.nav-gauge-map .maplibregl-map .maplibregl-canvas-container {
-    width: var(--map-width);
-    height: var(--map-height);
-    position: relative;
-}
-
-.nav-gauge-map canvas.maplibregl-canvas {
+.nav-gauge-map .maplibregl-canvas {
     box-sizing: border-box;
     position: relative;
     border-radius: var(--map-radius);
     border: var(--map-inner-border-width) solid var(--map-inner-border-color);
     box-shadow: var(--map-inner-box-shadow);
-    width: var(--map-width) !important;
-    height: var(--map-height) !important;
 }
 
 .nav-gauge-map .maplibregl-map::before {

@@ -63,6 +63,7 @@ export const Map: React.FC<Props> = ({
         }
         const control = new maplibregl.NavigationControl({ showZoom, showCompass, visualizePitch: true });
         maplibreMap.addControl(control, controlPosition);
+        maplibreMap.resize();
 
         return () => {
             maplibreMap.removeControl(control);
