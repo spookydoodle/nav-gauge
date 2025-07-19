@@ -32,8 +32,8 @@ export const NavGauge: React.FC = () => {
     const [controlPosition, setControlPosition] = React.useState<maplibregl.ControlPosition>('top-right');
     const [controlPlacement, setControlPlacement] = React.useState<ControlPlacement>({ top: 0, bottom: 0, left: 0, right: 0 });
     const [mapLayout, setMapLayout] = React.useState<MapLayout>({ 
-        width: 200, 
-        height: 200, 
+        width: 200,
+        height: 200,
         borderWidth: 5, 
         borderColor: '#ff0000', 
         borderRadius: '50%',
