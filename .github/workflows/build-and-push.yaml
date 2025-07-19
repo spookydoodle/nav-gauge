@@ -8,7 +8,7 @@ on:
       - v*
   pull_request:
 env:
-  IMAGE_NAME: nutshell
+  IMAGE_NAME: nav-gauge
 jobs:
   push:
     runs-on: ubuntu-latest
