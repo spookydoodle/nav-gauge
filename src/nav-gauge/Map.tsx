@@ -1,33 +1,31 @@
-import React from "react";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { osmStyle } from "../map-style/osm";
-import './map.css';
 import classNames from "classnames";
-
-const maplibreMap: maplibregl.Map = new maplibregl.Map({
-    container: document.createElement('div'),
-    style: osmStyle,
-    attributionControl: false
-});
+import { createMaplibreMap, MapContext } from "../map/map-context";
+import './map.css';
 
 interface Props {
     controlPosition: maplibregl.ControlPosition;
     showZoom: boolean;
     showCompass: boolean;
     showGreenScreen: boolean;
+    children?: ReactNode;
 }
 
-export const Map: React.FC<Props> = ({
+export const Map: FC<Props> = ({
     controlPosition,
     showZoom,
     showCompass,
-    showGreenScreen
+    showGreenScreen,
+    children,
 }) => {
-    const [containerRef, setContainerRef] = React.useState<HTMLElement | null>(null);
-    const [cssLoaded, setCssLoaded] = React.useState(false);
-    const [isInitialized, setIsInitialized] = React.useState(false);
+    const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
+    const [cssLoaded, setCssLoaded] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
+    const map = useMemo(() => createMaplibreMap(), []);
+    const [mapZoom, setMapZoom] = useState(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const abortController = new AbortController();
         const head = document.getElementsByTagName('head')?.[0];
         const link = document.createElement('link');
@@ -43,11 +41,11 @@ export const Map: React.FC<Props> = ({
         };
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!containerRef || !cssLoaded) {
             return;
         }
-        const mapContainer = maplibreMap.getContainer();
+        const mapContainer = map.getContainer();
         containerRef.appendChild(mapContainer);
         setIsInitialized(true);
 
@@ -56,25 +54,37 @@ export const Map: React.FC<Props> = ({
         };
     }, [containerRef, cssLoaded]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const showControls = showZoom || showCompass;
         if (!isInitialized || !showControls) {
             return;
         }
         const control = new maplibregl.NavigationControl({ showZoom, showCompass, visualizePitch: true });
-        maplibreMap.addControl(control, controlPosition);
-        maplibreMap.resize();
+        map.addControl(control, controlPosition);
+        map.resize();
 
         return () => {
-            maplibreMap.removeControl(control);
+            map.removeControl(control);
         };
     }, [isInitialized, showZoom, showCompass, controlPosition]);
 
+    useEffect(() => {
+        const zoomHandler = () => {
+            setMapZoom(map.getZoom());
+        }
+        map.on("zoomend", zoomHandler);
+
+        return () => {
+            map.off("zoomend", zoomHandler);
+        };
+    }, []);
+
     return (
-        <>
+        <MapContext.Provider value={{ map, mapZoom }}>
             <div ref={setContainerRef} className={classNames("nav-gauge-map", {
                 "with-green-screen": showGreenScreen
             })} />
-        </>
+            {children}
+        </MapContext.Provider>
     );
 };

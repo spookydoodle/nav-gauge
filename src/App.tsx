@@ -1,10 +1,10 @@
-import React from "react";
+import { FC, StrictMode } from "react";
 import { NavGauge } from "./nav-gauge/NavGauge";
 import './app.css';
 
-const App: React.FC = () => {
+const App: FC = () => {
     return (
-        <React.StrictMode>
+        <StrictMode>
             <nav className="navbar">
                 <span>nav gauge</span>
             </nav>
@@ -14,7 +14,7 @@ const App: React.FC = () => {
                     © OpenStreetMap
                 </a>
             </footer>
-        </React.StrictMode>
+        </StrictMode>
     );
 }
 

@@ -1,61 +1,22 @@
-import React from "react";
-import maplibregl from "maplibre-gl";
+import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
+import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutControls";
+import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { Map } from "./Map";
+import { RouteLayer } from "./RouteLayer";
+import { GpxParser } from "../gpx/gpx-parser";
 import './nav-gauge.css';
 
-const controlsPositions: maplibregl.ControlPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
-interface MapLayout {
-    width: number;
-    height: number;
-    borderWidth: number;
-    borderColor: string;
-    innerBorderWidth: number;
-    innerBorderColor: string;
-    borderRadius: string;
-    boxShadow: string;
-    innerBoxShadow: string;
-};
-
 // TODO: Add saving in local storage
+const parser = new GpxParser();
 
-interface ControlPlacement {
-    top: number;
-    bottom: number;
-    left: number;
-    right: number;
-}
+export const NavGauge: FC = () => {
+    const [geojson, setGeoJson] = useState<[GeoJSON.FeatureCollection, string | undefined]>();
+    const [gaugeControls, setGaugeControls] = useState<GaugeControls>(defaultGaugeControls);
+    const [mapLayout, setMapLayout] = useState<MapLayout>(defaultMapLayout);
 
-export const NavGauge: React.FC = () => {
-    const [showZoom, setShowZoom] = React.useState(false);
-    const [showCompass, setShowCompass] = React.useState(true);
-    const [showGreenScreen, setShowGreenScreen] = React.useState(false);
-    const [controlPosition, setControlPosition] = React.useState<maplibregl.ControlPosition>('top-right');
-    const [controlPlacement, setControlPlacement] = React.useState<ControlPlacement>({ top: 0, bottom: 0, left: 0, right: 0 });
-    const [mapLayout, setMapLayout] = React.useState<MapLayout>({ 
-        width: 200,
-        height: 200,
-        borderWidth: 5, 
-        borderColor: '#ff0000', 
-        borderRadius: '50%',
-        innerBorderWidth: 0,
-        innerBorderColor: '#000000', 
-        boxShadow: '0px 0px 16px #ff0000, 0px 0px 16px #ff0000',
-        innerBoxShadow: '',
-    })
+    const { controlPosition, controlPlacement, showZoom, showCompass, showGreenScreen } = gaugeControls;
 
-    const placements = React.useMemo(
-        (): (keyof ControlPlacement)[] => {
-            switch (controlPosition) {
-                case 'top-left': return ['top', 'left']
-                case 'top-right': return ['top', 'right']
-                case 'bottom-left': return ['bottom', 'left']
-                case 'bottom-right': return ['bottom', 'right']
-            }
-        },
-        [controlPosition]
-    );
-
-    const controlsCssStyle = React.useMemo(
+    const controlsCssStyle = useMemo(
         () => {
             switch (controlPosition) {
                 case 'top-left': return { '--ctrl-top': controlPlacement.top + 'px', '--ctrl-left': controlPlacement.left + 'px' }
@@ -67,7 +28,7 @@ export const NavGauge: React.FC = () => {
         [controlPosition, controlPlacement]
     );
 
-    const mapLayoutCssStyle = React.useMemo(
+    const mapLayoutCssStyle = useMemo(
         () => {
             return {
                 '--map-width': mapLayout.width + 'px',
@@ -84,105 +45,39 @@ export const NavGauge: React.FC = () => {
         [mapLayout]
     );
 
+    useEffect(() => {
+        fetch('/example.gpx')
+            .then((file) => file.text())
+            .then((text) => parser.parseTextToGeoJson(text))
+            .then((result) => setGeoJson(result));
+    }, []);
+
+    const handleInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.item(0);
+        if (!file) {
+            return;
+        }
+        setGeoJson(await parser.parseGpxFile(file))
+    };
+
     return (
-        <div className="layout" style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as React.CSSProperties}>
+        <div className="layout" style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
             <div className="side-panel">
-                <div className="section">
-                    <div>
-                        <label htmlFor="map-width">Width (px)</label>
-                        <input type='number' name="map-width" min={0} value={mapLayout.width} onChange={(event) => !isNaN(Number(event.target.value)) ? setMapLayout((prev) => ({ ...prev, width: Number(event.target.value) })) : null} />
-                    </div>
-                    <div>
-                        <label htmlFor="map-height">Height (px)</label>
-                        <input type='number' name="map-height" min={0} value={mapLayout.height} onChange={(event) => !isNaN(Number(event.target.value)) ? setMapLayout((prev) => ({ ...prev, height: Number(event.target.value) })) : null} />
-                    </div>
-                    <div>
-                        <label htmlFor="map-border-width">Border width (px)</label>
-                        <input type='number' name="map-border-width" min={0} value={mapLayout.borderWidth} onChange={(event) => !isNaN(Number(event.target.value)) ? setMapLayout((prev) => ({ ...prev, borderWidth: Number(event.target.value) })) : null} />
-                    </div>
-                    <div>
-                        <label htmlFor="map-inner-border-width">Inner border width (px)</label>
-                        <input type='number' name="map-inner-border-width" value={mapLayout.innerBorderWidth} onChange={(event) => !isNaN(Number(event.target.value)) ? setMapLayout((prev) => ({ ...prev, innerBorderWidth: Number(event.target.value) })) : null} />
-                    </div>
-                    <div>
-                        <label htmlFor="map-border-color">Border color</label>
-                        <input type='color' name="map-border-color" value={mapLayout.borderColor} onChange={(event) => setMapLayout((prev) => ({ ...prev, borderColor: event.target.value }))} className="color" />
-                    </div>
-                    <div>
-                        <label htmlFor="map-inner-border-color">Inner border color</label>
-                        <input type='color' name="map-inner-border-color" value={mapLayout.innerBorderColor} onChange={(event) => setMapLayout((prev) => ({ ...prev, innerBorderColor: event.target.value }))} className="color" />
-                    </div>
-                    <div>
-                        <label htmlFor="map-border-box-shadow">Box shadow</label>
-                        <input type='text' name="map-border-box-shadow" value={mapLayout.boxShadow} onChange={(event) => setMapLayout((prev) => ({ ...prev, boxShadow: event.target.value }))} />
-                    </div>
-                    <div>
-                        <label htmlFor="map-border-inner-box-shadow">Inner box shadow</label>
-                        <input type='text' name="map-border-inner-box-shadow" value={mapLayout.innerBoxShadow} onChange={(event) => setMapLayout((prev) => ({ ...prev, innerBoxShadow: event.target.value }))} />
-                    </div>
-                    <div>
-                        <label htmlFor="map-border-radius">Radius (px, %)</label>
-                        <input type='text' name="map-border-radius" value={mapLayout.borderRadius} onChange={(event) => setMapLayout((prev) => ({ ...prev, borderRadius: event.target.value }))} />
-                    </div>
-                </div>
-
-                <hr className="hr" />
-
                 <div>
-                    <label htmlFor="controls-position">Controls position</label>
-                    <select name="controls-position" value={controlPosition} onChange={(event) => setControlPosition(event.target.value as maplibregl.ControlPosition)}>
-                        {controlsPositions.map((el) => <option key={el} value={el} label={el}>{el}</option>)}
-                    </select>
+                    <input type="file" onChange={handleInput} />
                 </div>
-                <div className="section">
-                    {placements.map((el) => {
-                        const reverseFactor = el === 'top' || el === 'right' ? -1 : 1;
-                        return (
-                            <div key={el}>
-                                <label htmlFor={`controls-${el}`}>Offset {el} (px)</label>
-                                <input
-                                    type='number'
-                                    name={`controls-${el}`}
-                                    value={reverseFactor * controlPlacement[el]}
-                                    onChange={(event) => setControlPlacement((prev) => !isNaN(Number(event.target.value))
-                                        ? { ...prev, [el]: reverseFactor * Number(event.target.value) }
-                                        : prev)}
-                                />
-                            </div>
-                        );
-                    })}
-                </div>
-                <div className="checkbox" onClick={() => setShowZoom((prev) => !prev)}>
-                    <input
-                        type='checkbox'
-                        name="controls-zoom"
-                        checked={showZoom}
-                    />
-                    <label htmlFor="controls-zoom">Show zoom buttons</label>
-                </div>
-                <div className="checkbox" onClick={() => setShowCompass((prev) => !prev)}>
-                    <input
-                        type='checkbox'
-                        name="controls-compass"
-                        checked={showCompass}
-                    />
-                    <label htmlFor="controls-compass">Show compass button</label>
-                </div>
-                <div className="checkbox" onClick={() => setShowGreenScreen((prev) => !prev)}>
-                    <input
-                        type='checkbox'
-                        name="green-screen"
-                        checked={showGreenScreen}
-                    />
-                    <label htmlFor="green-screen">Show green screen</label>
-                </div>
+                <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
+                <hr className="divider" />
+                <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
             </div>
             <Map
                 showZoom={showZoom}
                 showCompass={showCompass}
                 controlPosition={controlPosition}
                 showGreenScreen={showGreenScreen}
-            />
+            >
+                {geojson ? <RouteLayer geojson={geojson[0]} name={geojson[1]} /> : null}
+            </Map>
         </div>
     );
 };
