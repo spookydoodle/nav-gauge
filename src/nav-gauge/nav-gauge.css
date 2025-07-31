@@ -73,8 +73,13 @@
     display: grid;
     grid-template-columns: max-content auto;
     column-gap: 5px;
+    cursor: pointer;
 }
 
-.hr {
+.checkbox * {
+    cursor: pointer;
+}
+
+.divider {
     width: 100%;
 }
