@@ -31,6 +31,7 @@
     "@tmcw/togeojson": "^7.1.2",
     "@turf/bbox": "^7.2.0",
     "@turf/helpers": "^7.2.0",
+    "@xmldom/xmldom": "^0.9.8",
     "classnames": "^2.5.1",
     "luxon": "3.7.1",
     "maplibre-gl": "5.6.1",
