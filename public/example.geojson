@@ -24,8 +24,8 @@
         }
       },
       "geometry": {
-        "type": "LineString",
-        "coordinates": [
+        "type": "Polygon",
+        "coordinates": [[
           [
             6.0301,
             45.0512,
@@ -81,7 +81,7 @@
             45.0512,
             720
           ]
-        ]
+        ]]
       }
     }
   ]

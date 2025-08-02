@@ -37,8 +37,8 @@ export abstract class FileToGeoJSONParser {
     public parse = async (file: File): Promise<ParsingResultWithError> => {
         try {
             const text = await this.rawText(file);
-            const result = await this.parseTextToGeoJson(text);
-            const boundingBox = bbox(result.geojson);
+            const { geojson, routeName } = await this.parseTextToGeoJson(text);
+            const boundingBox = bbox(geojson);
 
             if (Array.from(boundingBox).some((n) => n === Infinity || n === -Infinity)) {
                 throw {
@@ -54,9 +54,41 @@ export abstract class FileToGeoJSONParser {
                 };
             }
 
+            const getUnsupportedGeometryError = (unsupportedGeometry: string) => ({
+                cause: KnownErrorCauses.UnsupportedGeometry,
+                message: `${unsupportedGeometry} geometry is not supported. Upload a file with a LineString geometry or Point features.`
+            })
+
+            switch (geojson.type) {
+                case 'GeometryCollection': {
+                    const unsupportedType = geojson.geometries.find((geometry) => geometry.type !== 'Point' && geometry.type !== 'LineString')?.type;
+                    if (unsupportedType) {
+                        throw getUnsupportedGeometryError(unsupportedType);
+                    }
+                    break;
+                }
+                case 'FeatureCollection': {
+                    const unsupportedType = geojson.features.find((feature) => feature.geometry.type !== 'Point' && feature.geometry.type !== 'LineString')?.geometry.type
+                    if (unsupportedType) {
+                        throw getUnsupportedGeometryError(unsupportedType);
+                    }
+                    break;
+                }
+                case 'Feature': {
+                    if (geojson.geometry.type !== 'LineString') {
+                        throw getUnsupportedGeometryError(geojson.geometry.type);
+                    }
+                    break;
+                }
+                case 'LineString':
+                    break;
+                default:
+                    throw getUnsupportedGeometryError(geojson.type);
+            }
+
             return {
-                routeName: result.routeName,
-                geojson: result.geojson,
+                routeName,
+                geojson,
                 boundingBox,
             };
         } catch (err) {

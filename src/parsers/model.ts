@@ -12,4 +12,5 @@ export interface ParsingResultWithError {
 
 export enum KnownErrorCauses {
     InvalidGeometry = "Invalid Geometry",
+    UnsupportedGeometry = "Unsupported Geometry",
 }
