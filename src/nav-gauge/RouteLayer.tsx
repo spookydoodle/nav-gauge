@@ -9,12 +9,12 @@ const layerIds = {
 }
 
 interface Props {
-    name?: string;
+    routeName?: string;
     geojson: GeoJSON.FeatureCollection;
 }
 
 export const RouteLayer: FC<Props> = ({
-    name,
+    routeName,
     geojson
 }) => {
     const { map } = useMap();

@@ -3,14 +3,15 @@ import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutContr
 import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { Map } from "./Map";
 import { RouteLayer } from "./RouteLayer";
-import { GpxParser } from "../gpx/gpx-parser";
+import { parsers } from "../parsers";
+import { FileToGeoJSONParser } from "../parsers/file-parser";
+import { ParsingResult } from "../parsers/model";
 import './nav-gauge.css';
 
 // TODO: Add saving in local storage
-const parser = new GpxParser();
 
 export const NavGauge: FC = () => {
-    const [geojson, setGeoJson] = useState<[GeoJSON.FeatureCollection, string | undefined]>();
+    const [{ geojson, routeName, error }, setGeoJson] = useState<ParsingResult>({});
     const [gaugeControls, setGaugeControls] = useState<GaugeControls>(defaultGaugeControls);
     const [mapLayout, setMapLayout] = useState<MapLayout>(defaultMapLayout);
 
@@ -48,8 +49,8 @@ export const NavGauge: FC = () => {
     useEffect(() => {
         fetch('/example.gpx')
             .then((file) => file.text())
-            .then((text) => parser.parseTextToGeoJson(text))
-            .then((result) => setGeoJson(result));
+            .then((text) => parsers.get('.gpx')?.parseTextToGeoJson(text))
+            .then((result) => setGeoJson(result ?? {}));
     }, []);
 
     const handleInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,14 +58,16 @@ export const NavGauge: FC = () => {
         if (!file) {
             return;
         }
-        setGeoJson(await parser.parseGpxFile(file))
+        const fileExtension = FileToGeoJSONParser.getFileExtension(file);
+        const result = await parsers.get(fileExtension)?.parseFile(file);
+        setGeoJson(result ?? { error: new Error('No parser found for file.')});
     };
 
     return (
         <div className="layout" style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
             <div className="side-panel">
                 <div>
-                    <input type="file" onChange={handleInput} />
+                    <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
                 </div>
                 <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                 <hr className="divider" />
@@ -76,7 +79,7 @@ export const NavGauge: FC = () => {
                 controlPosition={controlPosition}
                 showGreenScreen={showGreenScreen}
             >
-                {geojson ? <RouteLayer geojson={geojson[0]} name={geojson[1]} /> : null}
+                {geojson ? <RouteLayer geojson={geojson} routeName={routeName} /> : null}
             </Map>
         </div>
     );
