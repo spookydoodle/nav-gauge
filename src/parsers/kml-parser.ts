@@ -2,14 +2,9 @@ import { kml } from '@tmcw/togeojson';
 import { FileToGeoJSONParser } from './file-parser';
 import { ParsingResult } from './model';
 
-export class KmlParser implements FileToGeoJSONParser {
+export class KmlParser extends FileToGeoJSONParser {
     public acceptedFileExtensions = [".kml"];
     private nameMetadataSelector = "metadata > name";
-
-    public parseFile = async (file: File): Promise<ParsingResult> => {
-        const text = await this.rawText(file);
-        return this.parseTextToGeoJson(text);
-    };
 
     public rawText = async (file: File): Promise<string> => {
         return file.text();

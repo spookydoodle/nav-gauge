@@ -10,6 +10,8 @@ export const parsers = new Map<string, FileToGeoJSONParser>([
     new KmlParser(),
 ].flatMap((parser) => parser.acceptedFileExtensions.map((extension) => [extension, parser])));
 
+export { FileToGeoJSONParser } from './file-parser';
 export { GeoJsonParser } from './geojson-parser';
 export { GpxParser } from './gpx-parser';
 export { KmlParser } from './kml-parser';
+export * from './model';

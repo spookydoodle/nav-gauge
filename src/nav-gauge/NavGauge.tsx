@@ -1,17 +1,18 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
+import bbox from "@turf/bbox";
+import { FileInputStatus } from "../components";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutControls";
 import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { Map } from "./Map";
 import { RouteLayer } from "./RouteLayer";
 import { parsers } from "../parsers";
-import { FileToGeoJSONParser } from "../parsers/file-parser";
-import { ParsingResult } from "../parsers/model";
+import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
 import './nav-gauge.css';
 
 // TODO: Add saving in local storage
 
 export const NavGauge: FC = () => {
-    const [{ geojson, routeName, error }, setGeoJson] = useState<ParsingResult>({});
+    const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
     const [gaugeControls, setGaugeControls] = useState<GaugeControls>(defaultGaugeControls);
     const [mapLayout, setMapLayout] = useState<MapLayout>(defaultMapLayout);
 
@@ -47,20 +48,25 @@ export const NavGauge: FC = () => {
     );
 
     useEffect(() => {
-        fetch('/example.gpx')
+        fetch('/example.geojson')
             .then((file) => file.text())
-            .then((text) => parsers.get('.gpx')?.parseTextToGeoJson(text))
-            .then((result) => setGeoJson(result ?? {}));
+            .then((text) => parsers.get('.geojson')?.parseTextToGeoJson(text))
+            .then((result) => setGeoJson(result ? {
+                ...result,
+                boundingBox: bbox(result.geojson)
+            } : {}));
     }, []);
 
     const handleInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        setGeoJson({});
+
         const file = event.target.files?.item(0);
         if (!file) {
             return;
         }
         const fileExtension = FileToGeoJSONParser.getFileExtension(file);
-        const result = await parsers.get(fileExtension)?.parseFile(file);
-        setGeoJson(result ?? { error: new Error('No parser found for file.')});
+        const result = await parsers.get(fileExtension)?.parse(file);
+        setGeoJson(result ?? { error: new Error('No parser found for file.') });
     };
 
     return (
@@ -68,7 +74,9 @@ export const NavGauge: FC = () => {
             <div className="side-panel">
                 <div>
                     <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
+                    <FileInputStatus ok={!!geojson && !error} error={error} />
                 </div>
+                <hr className="divider" />
                 <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                 <hr className="divider" />
                 <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
@@ -79,7 +87,9 @@ export const NavGauge: FC = () => {
                 controlPosition={controlPosition}
                 showGreenScreen={showGreenScreen}
             >
-                {geojson ? <RouteLayer geojson={geojson} routeName={routeName} /> : null}
+                {geojson && boundingBox
+                    ? <RouteLayer routeName={routeName} geojson={geojson} boundingBox={boundingBox} />
+                    : null}
             </Map>
         </div>
     );

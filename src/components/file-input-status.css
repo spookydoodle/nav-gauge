@@ -1,0 +1,22 @@
+.status-container {
+    margin-top: 10px;
+}
+
+.status-container .error {
+    color: red;
+}
+
+.status-container .error p {
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.status-container h6,
+.status-container p {
+    font-size: 12px;
+    margin: 0;
+}
+
+.status-container .success {
+    color: green;
+}
