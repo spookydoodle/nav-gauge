@@ -48,9 +48,9 @@ export const NavGauge: FC = () => {
     );
 
     useEffect(() => {
-        fetch('/example.geojson')
+        fetch('/example.gpx')
             .then((file) => file.text())
-            .then((text) => parsers.get('.geojson')?.parseTextToGeoJson(text))
+            .then((text) => parsers.get('.gpx')?.parseTextToGeoJson(text))
             .then((result) => setGeoJson(result ? {
                 ...result,
                 boundingBox: bbox(result.geojson)
