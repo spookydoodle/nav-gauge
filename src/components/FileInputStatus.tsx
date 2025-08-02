@@ -14,11 +14,13 @@ const getCauseProp = (prop: string, error?: Error): string | undefined => {
 interface Props {
     error?: Error;
     ok: boolean;
+    routeName?: string;
 }
 
 export const FileInputStatus: FC<Props> = ({
     error,
-    ok
+    ok,
+    routeName,
 }) => {
     const stack = getCauseProp('stack', error);
     const cause = getCauseProp('cause', error);
@@ -31,7 +33,7 @@ export const FileInputStatus: FC<Props> = ({
                     <p>{error.message}</p>
                 </div>
             ) : ok
-                ? <p className="success">Let's go!</p>
+                ? <p title={routeName || "Let's go!"} className="success">{routeName || "Let's go!"}</p>
                 : <p>No file uploaded yet.</p>}
         </div>
     );

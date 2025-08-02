@@ -74,7 +74,7 @@ export const NavGauge: FC = () => {
             <div className="side-panel">
                 <div>
                     <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
-                    <FileInputStatus ok={!!geojson && !error} error={error} />
+                    <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
                 </div>
                 <hr className="divider" />
                 <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />

@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Input } from "../components";
+import { Input, TextArea } from "../components";
 import './nav-gauge.css';
 
 export interface MapLayout {
@@ -40,8 +40,8 @@ export const MapLayoutControls: FC<Props> = ({
             <Input
                 name="map-width"
                 label="Width (px)"
-                autoSelect
                 type='number'
+                autoSelect
                 min={0}
                 value={mapLayout.width}
                 onChange={(event) => {
@@ -57,6 +57,7 @@ export const MapLayoutControls: FC<Props> = ({
                 name="map-height"
                 label="Height (px)"
                 type='number'
+                autoSelect
                 min={0}
                 value={mapLayout.height}
                 onChange={(event) => {
@@ -69,6 +70,7 @@ export const MapLayoutControls: FC<Props> = ({
                 name="map-border-width"
                 label="Border width (px)"
                 type='number'
+                autoSelect
                 min={0}
                 value={mapLayout.borderWidth}
                 onChange={(event) => {
@@ -81,6 +83,7 @@ export const MapLayoutControls: FC<Props> = ({
                 name="map-inner-border-width"
                 label="Inner border width (px)"
                 type='number'
+                autoSelect
                 min={0}
                 value={mapLayout.innerBorderWidth}
                 onChange={(event) => {
@@ -109,30 +112,31 @@ export const MapLayoutControls: FC<Props> = ({
                 }}
                 className="color"
             />
-            <Input
+            <TextArea
                 name="map-border-box-shadow"
                 label="Box shadow"
-                type='text'
                 value={mapLayout.boxShadow}
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, boxShadow: event.target.value }));
                 }}
-                className="color"
+                autoSelect
+                className="textarea"
             />
-            <Input
+            <TextArea
                 name="map-border-inner-box-shadow"
                 label="Inner box shadow"
-                type='text'
                 value={mapLayout.innerBoxShadow}
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, innerBoxShadow: event.target.value }));
                 }}
-                className="color"
+                autoSelect
+                className="textarea"
             />
             <Input
                 name="map-border-radius"
                 label="Radius (px, %)"
                 type='text'
+                autoSelect
                 value={mapLayout.borderRadius}
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, borderRadius: event.target.value }));

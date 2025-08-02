@@ -1,3 +1,7 @@
+:root {
+    --side-panel-width: 400px;
+}
+
 .layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -29,7 +33,7 @@
 
 @media screen and (min-width: 800px) {
     .layout {
-        grid-template-columns: 350px auto;
+        grid-template-columns: var(--side-panel-width) auto;
         grid-template-rows: 1fr;
     }
 
@@ -63,6 +67,11 @@
 
 .side-panel input.color {
     height: 22px;
+}
+
+.side-panel .textarea {
+    resize: vertical;
+    width: calc(100% - 8px);
 }
 
 .side-panel select {

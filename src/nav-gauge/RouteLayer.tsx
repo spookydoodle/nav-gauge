@@ -23,7 +23,7 @@ export const RouteLayer: FC<Props> = ({
     useEffect(() => {
         map.fitBounds(
             [boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3]],
-            { animate: true, padding: 20 }
+            { animate: true, padding: 50 }
         );
 
         map.addSource(sourceId, {
