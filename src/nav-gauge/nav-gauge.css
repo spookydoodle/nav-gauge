@@ -1,3 +1,7 @@
+:root {
+    --side-panel-width: 400px;
+}
+
 .layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -13,7 +17,7 @@
     grid-template-columns: 1fr;
     align-content: start;
     box-sizing: border-box;
-    padding: 10px;
+    padding: 10px 15px;
     transition: transform 250ms ease-in;
     overflow-x: hidden;
     overflow-y: auto;
@@ -29,7 +33,7 @@
 
 @media screen and (min-width: 800px) {
     .layout {
-        grid-template-columns: 240px auto;
+        grid-template-columns: var(--side-panel-width) auto;
         grid-template-rows: 1fr;
     }
 
@@ -65,6 +69,11 @@
     height: 22px;
 }
 
+.side-panel .textarea {
+    resize: vertical;
+    width: calc(100% - 8px);
+}
+
 .side-panel select {
     width: 100%;
 }
@@ -82,4 +91,5 @@
 
 .divider {
     width: 100%;
+    margin: 0;
 }

@@ -1,6 +1,5 @@
 import { FC, useEffect } from "react";
 import { useMap } from "../map/useMap";
-import bbox from "@turf/bbox";
 
 const sourceId = 'route';
 const layerIds = {
@@ -9,21 +8,22 @@ const layerIds = {
 }
 
 interface Props {
-    name?: string;
-    geojson: GeoJSON.FeatureCollection;
+    routeName?: string;
+    geojson: GeoJSON.GeoJSON;
+    boundingBox: GeoJSON.BBox;
 }
 
 export const RouteLayer: FC<Props> = ({
-    name,
-    geojson
+    routeName,
+    geojson,
+    boundingBox,
 }) => {
     const { map } = useMap();
 
     useEffect(() => {
-        const boundingBox = bbox(geojson);
         map.fitBounds(
             [boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3]],
-            { animate: true, padding: 20 }
+            { animate: true, padding: 50 }
         );
 
         map.addSource(sourceId, {
