@@ -88,7 +88,7 @@ export const NavGauge: FC = () => {
                 showGreenScreen={showGreenScreen}
             >
                 {geojson && boundingBox
-                    ? <RouteLayer routeName={routeName} geojson={geojson} boundingBox={boundingBox} />
+                    ? <RouteLayer geojson={geojson} boundingBox={boundingBox} />
                     : null}
             </Map>
         </div>

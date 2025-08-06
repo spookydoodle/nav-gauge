@@ -8,13 +8,11 @@ const layerIds = {
 }
 
 interface Props {
-    routeName?: string;
     geojson: GeoJSON.GeoJSON;
     boundingBox: GeoJSON.BBox;
 }
 
 export const RouteLayer: FC<Props> = ({
-    routeName,
     geojson,
     boundingBox,
 }) => {
