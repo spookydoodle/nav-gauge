@@ -38,6 +38,14 @@ export abstract class FileToGeoJSONParser {
         try {
             const text = await this.rawText(file);
             const { geojson, routeName } = await this.parseTextToGeoJson(text);
+
+            if (geojson.features.length === 0) {
+                throw {
+                    cause: KnownErrorCauses.InvalidGeometry,
+                    message: "No points in geometry"
+                }
+            }
+
             const boundingBox = bbox(geojson);
 
             if (Array.from(boundingBox).some((n) => n === Infinity || n === -Infinity)) {
@@ -46,7 +54,7 @@ export abstract class FileToGeoJSONParser {
                     message: "Could not create a bounding box out of coordinates.",
                 };
             }
-            
+
             if (Array.from(boundingBox).some((n) => isNaN(n))) {
                 throw {
                     cause: KnownErrorCauses.InvalidGeometry,

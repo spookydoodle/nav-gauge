@@ -18,6 +18,8 @@ export interface GaugeControls {
     showGreenScreen: boolean;
     controlPosition: maplibregl.ControlPosition;
     controlPlacement: ControlPlacement;
+    showRouteLine: boolean;
+    showRoutePoints: boolean;
 }
 
 export const defaultGaugeControls: GaugeControls = {
@@ -26,6 +28,8 @@ export const defaultGaugeControls: GaugeControls = {
     showGreenScreen: false,
     controlPosition: 'top-right',
     controlPlacement: { top: 0, bottom: 0, left: 0, right: 0 },
+    showRouteLine: true,
+    showRoutePoints: true,
 }
 
 interface Props {
@@ -43,6 +47,8 @@ export const GaugeControls: FC<Props> = ({
         showGreenScreen,
         controlPosition,
         controlPlacement,
+        showRouteLine,
+        showRoutePoints,
     } = gaugeControls;
 
     const placements = useMemo(
@@ -121,6 +127,26 @@ export const GaugeControls: FC<Props> = ({
                 checked={showGreenScreen}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showGreenScreen: !prev.showGreenScreen }))}
+                containerClassName="checkbox"
+            />
+            <Input
+                name="route-line"
+                label="Show route line"
+                labelPlacement="after"
+                type='checkbox'
+                checked={showRouteLine}
+                onChange={() => {}}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRouteLine: !prev.showRouteLine }))}
+                containerClassName="checkbox"
+            />
+            <Input
+                name="route-points"
+                label="Show route points"
+                labelPlacement="after"
+                type='checkbox'
+                checked={showRoutePoints}
+                onChange={() => {}}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRoutePoints: !prev.showRoutePoints }))}
                 containerClassName="checkbox"
             />
         </>

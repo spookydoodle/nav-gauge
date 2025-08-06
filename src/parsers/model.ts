@@ -1,11 +1,13 @@
+export type GeoJson = GeoJSON.FeatureCollection<GeoJSON.Point, FeatureProperties>;
+
 export interface ParsingResult {
     routeName?: string;
-    geojson: GeoJSON.FeatureCollection<GeoJSON.Point, FeatureProperties>;
+    geojson: GeoJson;
 }
 
 export interface ParsingResultWithError {
     routeName?: string;
-    geojson?: GeoJSON.FeatureCollection<GeoJSON.Point, FeatureProperties>;
+    geojson?: GeoJson;
     boundingBox?: GeoJSON.BBox;
     error?: Error;
 }
