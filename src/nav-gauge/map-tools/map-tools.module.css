@@ -1,0 +1,58 @@
+.container {
+    --toolbox-size: 30px;
+
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--toolbox-size) auto var(--toolbox-size);
+    grid-template-rows: var(--toolbox-size) auto var(--toolbox-size);
+    grid-template-areas:
+        "toolbox-left toolbox-top toolbox-right"
+        "toolbox-left map toolbox-right"
+        "toolbox-left toolbox-bottom toolbox-right";
+    overflow: hidden;
+}
+
+.toolbox {
+    position: relative;
+}
+
+.toolbox.top {
+    grid-area: toolbox-top;
+}
+
+.toolbox.right {
+    grid-area: toolbox-right;
+}
+
+.toolbox.bottom {
+    grid-area: toolbox-bottom;
+}
+
+.toolbox.left {
+    grid-area: toolbox-left;
+}
+
+.map-area {
+    grid-area: map;
+    overflow: hidden;
+    display: grid;
+    overflow: hidden;
+    position: relative;
+}
+
+.nav-gauge-map {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--map-width);
+    height: var(--map-height);
+    padding: 50px;
+}
+
+.nav-gauge-map.with-green-screen {
+    background-color: #00ff00;
+}

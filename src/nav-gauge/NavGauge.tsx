@@ -1,22 +1,20 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components";
-import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutControls";
-import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
-import { Map } from "./Map";
-import { RouteLayer } from "./RouteLayer";
+import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLayoutControls";
+import { defaultGaugeControls, GaugeControls } from "./controls/GaugeControls";
+import { MapSection } from "./MapSection";
+import { GaugeContext } from "../gauge-settings/gauge-settings";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
-import './nav-gauge.css';
-
-// TODO: Add saving in local storage
+import styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
     const [gaugeControls, setGaugeControls] = useState<GaugeControls>(defaultGaugeControls);
     const [mapLayout, setMapLayout] = useState<MapLayout>(defaultMapLayout);
 
-    const { controlPosition, controlPlacement, showZoom, showCompass, showGreenScreen } = gaugeControls;
+    const { controlPosition, controlPlacement, globeProjection, showZoom, showCompass, showGreenScreen } = gaugeControls;
 
     const controlsCssStyle = useMemo(
         () => {
@@ -70,27 +68,20 @@ export const NavGauge: FC = () => {
     };
 
     return (
-        <div className="layout" style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
-            <div className="side-panel">
-                <div>
-                    <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
-                    <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
+        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout }}>
+            <div className={styles.layout} style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
+                <div className={styles["side-panel"]}>
+                    <div>
+                        <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
+                        <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
+                    </div>
+                    <hr className={styles.divider} />
+                    <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
+                    <hr className={styles.divider} />
+                    <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                 </div>
-                <hr className="divider" />
-                <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
-                <hr className="divider" />
-                <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
+                <MapSection geojson={geojson} boundingBox={boundingBox} />
             </div>
-            <Map
-                showZoom={showZoom}
-                showCompass={showCompass}
-                controlPosition={controlPosition}
-                showGreenScreen={showGreenScreen}
-            >
-                {geojson && boundingBox
-                    ? <RouteLayer routeName={routeName} geojson={geojson} boundingBox={boundingBox} />
-                    : null}
-            </Map>
-        </div>
+        </GaugeContext.Provider>
     );
 };

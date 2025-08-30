@@ -1,7 +1,7 @@
-import { Dispatch, FC, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import maplibregl from "maplibre-gl";
-import { Input } from "../components";
-import './nav-gauge.css';
+import { Input } from "../../components";
+import styles from './controls.module.css';
 
 const controlsPositions: maplibregl.ControlPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
 
@@ -13,19 +13,25 @@ interface ControlPlacement {
 }
 
 export interface GaugeControls {
+    globeProjection: boolean;
     showZoom: boolean;
     showCompass: boolean;
     showGreenScreen: boolean;
     controlPosition: maplibregl.ControlPosition;
     controlPlacement: ControlPlacement;
+    showRouteLine: boolean;
+    showRoutePoints: boolean;
 }
 
 export const defaultGaugeControls: GaugeControls = {
+    globeProjection: true,
     showZoom: false,
     showCompass: true,
     showGreenScreen: false,
     controlPosition: 'top-right',
     controlPlacement: { top: 0, bottom: 0, left: 0, right: 0 },
+    showRouteLine: true,
+    showRoutePoints: true,
 }
 
 interface Props {
@@ -38,11 +44,14 @@ export const GaugeControls: FC<Props> = ({
     onGaugeConrolsChange
 }) => {
     const {
+        globeProjection,
         showZoom,
         showCompass,
         showGreenScreen,
         controlPosition,
         controlPlacement,
+        showRouteLine,
+        showRoutePoints,
     } = gaugeControls;
 
     const placements = useMemo(
@@ -72,7 +81,7 @@ export const GaugeControls: FC<Props> = ({
                     {controlsPositions.map((el) => <option key={el} value={el} label={el}>{el}</option>)}
                 </select>
             </div>
-            <div className="section">
+            <div className={styles["section"]}>
                 {placements.map((el) => {
                     const reverseFactor = ['top', 'right'].includes(el) ? -1 : 1;
                     return (
@@ -95,13 +104,23 @@ export const GaugeControls: FC<Props> = ({
 
             <Input
                 name="controls-zoom"
+                label="Globe view"
+                labelPlacement="after"
+                type='checkbox'
+                checked={globeProjection}
+                onChange={() => {}}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, globeProjection: !prev.globeProjection }))}
+                containerClassName={styles["checkbox"]}
+            />
+            <Input
+                name="controls-zoom"
                 label="Show zoom buttons"
                 labelPlacement="after"
                 type='checkbox'
                 checked={showZoom}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showZoom: !prev.showZoom }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
             <Input
                 name="controls-compass"
@@ -111,7 +130,7 @@ export const GaugeControls: FC<Props> = ({
                 checked={showCompass}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showCompass: !prev.showCompass }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
             <Input
                 name="green-screen"
@@ -121,7 +140,27 @@ export const GaugeControls: FC<Props> = ({
                 checked={showGreenScreen}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showGreenScreen: !prev.showGreenScreen }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
+            />
+            <Input
+                name="route-line"
+                label="Show route line"
+                labelPlacement="after"
+                type='checkbox'
+                checked={showRouteLine}
+                onChange={() => {}}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRouteLine: !prev.showRouteLine }))}
+                containerClassName={styles["checkbox"]}
+            />
+            <Input
+                name="route-points"
+                label="Show route points"
+                labelPlacement="after"
+                type='checkbox'
+                checked={showRoutePoints}
+                onChange={() => {}}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRoutePoints: !prev.showRoutePoints }))}
+                containerClassName={styles["checkbox"]}
             />
         </>
     );

@@ -1,27 +1,11 @@
-.nav-gauge-map {
-    position: relative;
-    margin: 0 auto;
-    align-self: center;
-}
-
-.nav-gauge-map.with-green-screen::before {
-    content: "";
-    left: -50px;
-    right: -50px;
-    top: -50px;
-    bottom: -50px;
-    position: absolute;
-    background-color: #00ff00;
-}
-
-.nav-gauge-map .maplibregl-map {
+.maplibregl-map {
     width: var(--map-width);
     height: var(--map-height);
-    overflow: visible;
+    overflow: visible !important;
     position: relative;
 }
 
-.nav-gauge-map .maplibregl-canvas {
+.maplibregl-canvas {
     box-sizing: border-box;
     position: relative;
     border-radius: var(--map-radius);
@@ -29,7 +13,7 @@
     box-shadow: var(--map-inner-box-shadow);
 }
 
-.nav-gauge-map .maplibregl-map::before {
+.maplibregl-map::before {
     content: "";
     position: absolute;
     box-sizing: border-box;
@@ -42,22 +26,22 @@
     box-shadow: var(--map-box-shadow);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-left {
+.maplibregl-control-container .maplibregl-ctrl-top-left {
     top: var(--ctrl-top);
     left: var(--ctrl-left);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-right {
+.maplibregl-control-container .maplibregl-ctrl-top-right {
     top: var(--ctrl-top);
     right: var(--ctrl-right);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-left {
+.maplibregl-control-container .maplibregl-ctrl-bottom-left {
     bottom: var(--ctrl-bottom);
     left: var(--ctrl-left);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-right {
+.maplibregl-control-container .maplibregl-ctrl-bottom-right {
     bottom: var(--ctrl-bottom);
     left: var(--ctrl-right);
 }

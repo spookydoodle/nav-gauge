@@ -1,0 +1,14 @@
+.player {
+    margin: 0 auto;
+    width: max-content;
+    display: flex;
+    align-items: center;
+    height: var(--toolbox-size);
+    column-gap: 10px;
+}
+
+.text {
+    color: white !important;
+    padding: 0;
+    margin: 0;
+}

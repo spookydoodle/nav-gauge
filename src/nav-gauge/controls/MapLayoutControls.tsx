@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Input, TextArea } from "../components";
-import './nav-gauge.css';
+import { Input, TextArea } from "../../components";
+import styles from './controls.module.css';
 
 export interface MapLayout {
     width: number;
@@ -36,7 +36,7 @@ export const MapLayoutControls: FC<Props> = ({
     onMapLayoutChange,
 }) => {
     return (
-        <div className="section">
+        <div className={styles["section"]}>
             <Input
                 name="map-width"
                 label="Width (px)"
@@ -100,7 +100,7 @@ export const MapLayoutControls: FC<Props> = ({
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, borderColor: event.target.value }));
                 }}
-                className="color"
+                className={styles["color"]}
             />
             <Input
                 name="map-inner-border-color"
@@ -110,7 +110,7 @@ export const MapLayoutControls: FC<Props> = ({
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, innerBorderColor: event.target.value }));
                 }}
-                className="color"
+                className={styles["color"]}
             />
             <TextArea
                 name="map-border-box-shadow"
@@ -120,7 +120,7 @@ export const MapLayoutControls: FC<Props> = ({
                     onMapLayoutChange((prev) => ({ ...prev, boxShadow: event.target.value }));
                 }}
                 autoSelect
-                className="textarea"
+                className={styles["textarea"]}
             />
             <TextArea
                 name="map-border-inner-box-shadow"
@@ -130,7 +130,7 @@ export const MapLayoutControls: FC<Props> = ({
                     onMapLayoutChange((prev) => ({ ...prev, innerBoxShadow: event.target.value }));
                 }}
                 autoSelect
-                className="textarea"
+                className={styles["textarea"]}
             />
             <Input
                 name="map-border-radius"
@@ -141,7 +141,7 @@ export const MapLayoutControls: FC<Props> = ({
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, borderRadius: event.target.value }));
                 }}
-                className="color"
+                className={styles["color"]}
             />
         </div>
     );

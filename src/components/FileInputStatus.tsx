@@ -1,5 +1,5 @@
 import { FC } from "react";
-import './file-input-status.css';
+import styles from './file-input-status.module.css';
 
 const getCauseProp = (prop: string, error?: Error): string | undefined => {
     if (!error?.cause || typeof error.cause !== 'object' || !(prop in error.cause)) {
@@ -26,14 +26,14 @@ export const FileInputStatus: FC<Props> = ({
     const cause = getCauseProp('cause', error);
 
     return (
-        <div className="status-container">
+        <div className={styles["status-container"]}>
             {error ? (
-                <div title={stack} className="error">
+                <div title={stack} className={styles["error"]}>
                     {cause ? <h6>{cause}</h6> : null}
                     <p>{error.message}</p>
                 </div>
             ) : ok
-                ? <p title={routeName || "Let's go!"} className="success">{routeName || "Let's go!"}</p>
+                ? <p title={routeName || "Let's go!"} className={styles["success"]}>{routeName || "Let's go!"}</p>
                 : <p>No file uploaded yet.</p>}
         </div>
     );

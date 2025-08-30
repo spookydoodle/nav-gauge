@@ -38,6 +38,14 @@ export abstract class FileToGeoJSONParser {
         try {
             const text = await this.rawText(file);
             const { geojson, routeName } = await this.parseTextToGeoJson(text);
+
+            if (geojson.features.length === 0) {
+                throw {
+                    cause: KnownErrorCauses.InvalidGeometry,
+                    message: "No points in geometry"
+                }
+            }
+
             const boundingBox = bbox(geojson);
 
             if (Array.from(boundingBox).some((n) => n === Infinity || n === -Infinity)) {
@@ -46,44 +54,12 @@ export abstract class FileToGeoJSONParser {
                     message: "Could not create a bounding box out of coordinates.",
                 };
             }
-            
+
             if (Array.from(boundingBox).some((n) => isNaN(n))) {
                 throw {
                     cause: KnownErrorCauses.InvalidGeometry,
                     message: "Bounding box coordinates are not numbers.",
                 };
-            }
-
-            const getUnsupportedGeometryError = (unsupportedGeometry: string) => ({
-                cause: KnownErrorCauses.UnsupportedGeometry,
-                message: `${unsupportedGeometry} geometry is not supported. Upload a file with a LineString geometry or Point features.`
-            })
-
-            switch (geojson.type) {
-                case 'GeometryCollection': {
-                    const unsupportedType = geojson.geometries.find((geometry) => geometry.type !== 'Point' && geometry.type !== 'LineString')?.type;
-                    if (unsupportedType) {
-                        throw getUnsupportedGeometryError(unsupportedType);
-                    }
-                    break;
-                }
-                case 'FeatureCollection': {
-                    const unsupportedType = geojson.features.find((feature) => feature.geometry.type !== 'Point' && feature.geometry.type !== 'LineString')?.geometry.type
-                    if (unsupportedType) {
-                        throw getUnsupportedGeometryError(unsupportedType);
-                    }
-                    break;
-                }
-                case 'Feature': {
-                    if (geojson.geometry.type !== 'LineString') {
-                        throw getUnsupportedGeometryError(geojson.geometry.type);
-                    }
-                    break;
-                }
-                case 'LineString':
-                    break;
-                default:
-                    throw getUnsupportedGeometryError(geojson.type);
             }
 
             return {
