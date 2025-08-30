@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Map } from "./Map";
+import { MapTools } from "./MapTools";
 import { RouteLayer } from "./RouteLayer";
 import { RouteLayerFitBounds } from "./RouteLayerFitBounds";
 import { Player } from "./Player";
@@ -17,13 +17,13 @@ export const MapSection: React.FC<Props> = ({
     const [time, setTime] = useState<string | undefined>(geojson?.features[0].properties.time);
 
     return (
-        <Map
+        <MapTools
             toolsLeft={<RouteLayerFitBounds boundingBox={boundingBox} />}
             toolsBottom={<Player />}
         >
             {geojson && boundingBox
                 ? <RouteLayer geojson={geojson} boundingBox={boundingBox} time={time} />
                 : null}
-        </Map>
+        </MapTools>
     );
 };

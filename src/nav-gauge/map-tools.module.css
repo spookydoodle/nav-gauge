@@ -32,14 +32,22 @@
     grid-area: toolbox-left;
 }
 
-.nav-gauge-map {
+.map-area {
     grid-area: map;
+    overflow: hidden;
+    display: grid;
+}
+
+.nav-gauge-map {
     position: relative;
+    margin: 0 auto;
     align-self: center;
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: var(--map-width);
+    height: var(--map-height);
+    padding: 50px;
 }
 
 .nav-gauge-map.with-green-screen {

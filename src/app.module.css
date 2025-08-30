@@ -7,7 +7,7 @@
     border-bottom: 1px solid #66666E;
     box-shadow: 0px 0px 8px #66666E;
     transition: transform 250ms ease-in;
-    
+
     @starting-style {
         transform: translateY(-100%);
     }
@@ -15,8 +15,8 @@
 
 .footer {
     margin-top: auto;
-    padding: 10px 20px;
-    height: 40px;
+    padding: 0 20px;
+    height: 20px;
     box-sizing: border-box;
     display: flex;
     justify-content: flex-end;
@@ -34,4 +34,11 @@
 .footer a {
     text-decoration: none;
     color: #F5F5F5;
+}
+
+@media screen and (min-width: 800px) {
+    .footer {
+        height: 40px;
+        padding: 10px 20px;
+    }
 }

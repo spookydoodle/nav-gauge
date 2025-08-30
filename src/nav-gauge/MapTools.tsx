@@ -3,7 +3,7 @@ import maplibregl from "maplibre-gl";
 import classNames from "classnames";
 import { useGaugeSettings } from "../gauge-settings/use-gauge-settings";
 import { map, MapContext } from "../map/map-context";
-import styles from './map.module.css';
+import styles from './map-tools.module.css';
 import './map.css';
 
 interface Props {
@@ -37,7 +37,7 @@ interface Props {
     children?: ReactNode;
 }
 
-export const Map: FC<Props> = ({
+export const MapTools: FC<Props> = ({
     toolsTop,
     toolsRight,
     toolsBottom,
@@ -147,10 +147,12 @@ export const Map: FC<Props> = ({
                 <div className={classNames(styles["toolbox"], styles["left"])}>
                     {toolsLeft}
                 </div>
-                <div ref={setContainerRef} className={classNames(styles["nav-gauge-map"], {
-                    [styles["with-green-screen"]]: showGreenScreen
-                })}>
-                    {isStyleLoaded ? children : null}
+                <div className={styles["map-area"]}>
+                    <div ref={setContainerRef} className={classNames(styles["nav-gauge-map"], {
+                        [styles["with-green-screen"]]: showGreenScreen
+                    })}>
+                        {isStyleLoaded ? children : null}
+                    </div>
                 </div>
             </div>
         </MapContext.Provider>
