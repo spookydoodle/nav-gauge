@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
-import { useMap } from "../map/useMap";
-import findIcon from '../icons/find.svg';
+import { useMap } from "../../map/useMap";
+import findIcon from '../../icons/find.svg';
 import styles from './route-layer.module.css';
 
 interface Props {

@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Input, TextArea } from "../components";
-import styles from './nav-gauge.module.css';
+import { Input, TextArea } from "../../components";
+import styles from './controls.module.css';
 
 export interface MapLayout {
     width: number;

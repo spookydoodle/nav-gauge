@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { MapTools } from "./MapTools";
-import { RouteLayer } from "./RouteLayer";
-import { RouteLayerFitBounds } from "./RouteLayerFitBounds";
-import { Player } from "./Player";
+import { MapTools } from "./map-tools/MapTools";
+import { RouteLayer } from "./map-layers/RouteLayer";
+import { RouteLayerFitBounds } from "./map-layers/RouteLayerFitBounds";
+import { Player } from "./player/Player";
 import { GeoJson } from "../parsers";
 
 interface Props {

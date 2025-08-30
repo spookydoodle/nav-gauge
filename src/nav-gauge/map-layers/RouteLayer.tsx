@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
-import { useMap } from "../map/useMap";
-import { GeoJson } from "../parsers";
-import { useGaugeSettings } from "../gauge-settings/use-gauge-settings";
+import { useMap } from "../../map/useMap";
+import { GeoJson } from "../../parsers";
+import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
 
 const sourceId = 'route';
 

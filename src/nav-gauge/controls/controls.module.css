@@ -1,0 +1,42 @@
+
+.section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+label {
+    font-size: 12px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input.color {
+    height: 22px;
+}
+
+.textarea {
+    resize: vertical;
+    width: calc(100% - 8px);
+}
+
+select {
+    width: 100%;
+}
+
+.checkbox {
+    display: grid;
+    grid-template-columns: max-content auto;
+    column-gap: 5px;
+    cursor: pointer;
+}
+
+.checkbox * {
+    cursor: pointer;
+}

@@ -47,48 +47,6 @@
     }
 }
 
-.side-panel .section {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: 10px;
-    column-gap: 10px;
-}
-
-.side-panel label {
-    font-size: 12px;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.side-panel input {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.side-panel input.color {
-    height: 22px;
-}
-
-.side-panel .textarea {
-    resize: vertical;
-    width: calc(100% - 8px);
-}
-
-.side-panel select {
-    width: 100%;
-}
-
-.checkbox {
-    display: grid;
-    grid-template-columns: max-content auto;
-    column-gap: 5px;
-    cursor: pointer;
-}
-
-.checkbox * {
-    cursor: pointer;
-}
-
 .divider {
     width: 100%;
     margin: 0;

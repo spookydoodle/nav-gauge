@@ -1,6 +1,6 @@
 import { createContext, } from "react";
-import { defaultGaugeControls, GaugeControls } from "../nav-gauge/GaugeControls";
-import { defaultMapLayout, MapLayout } from "../nav-gauge/MapLayoutControls";
+import { defaultGaugeControls, GaugeControls } from "../nav-gauge/controls/GaugeControls";
+import { defaultMapLayout, MapLayout } from "../nav-gauge/controls/MapLayoutControls";
 
 export type GaugeContext = GaugeControls & MapLayout;
 

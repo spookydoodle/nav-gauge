@@ -1,8 +1,8 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components";
-import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutControls";
-import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
+import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLayoutControls";
+import { defaultGaugeControls, GaugeControls } from "./controls/GaugeControls";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../gauge-settings/gauge-settings";
 import { parsers } from "../parsers";

@@ -1,8 +1,8 @@
 import { FC, ReactNode, useState, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import classNames from "classnames";
-import { useGaugeSettings } from "../gauge-settings/use-gauge-settings";
-import { map, MapContext } from "../map/map-context";
+import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
+import { map, MapContext } from "../../map/map-context";
 import styles from './map-tools.module.css';
 import './map.css';
 
