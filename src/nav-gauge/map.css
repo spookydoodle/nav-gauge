@@ -1,16 +1,46 @@
-.nav-gauge-map {
+.container {
+    --toolbox-size: 30px;
+
     position: relative;
-    margin: 0 auto;
-    align-self: center;
+    display: grid;
+    grid-template-columns: var(--toolbox-size) auto var(--toolbox-size);
+    grid-template-rows: var(--toolbox-size) auto var(--toolbox-size);
+    grid-template-areas:
+        "toolbox-left toolbox-top toolbox-right"
+        "toolbox-left map toolbox-right"
+        "toolbox-left toolbox-bottom toolbox-right";
+    overflow: hidden;
 }
 
-.nav-gauge-map.with-green-screen::before {
-    content: "";
-    left: -50px;
-    right: -50px;
-    top: -50px;
-    bottom: -50px;
-    position: absolute;
+.toolbox.top {
+    grid-area: toolbox-top;
+}
+
+.toolbox.right {
+    grid-area: toolbox-right;
+}
+
+.toolbox.bottom {
+    grid-area: toolbox-bottom;
+}
+
+.toolbox.left {
+    grid-area: toolbox-left;
+}
+
+.nav-gauge-map {
+    grid-area: map;
+    position: relative;
+    align-self: center;
+    padding: 50px;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-gauge-map.with-green-screen {
     background-color: #00ff00;
 }
 

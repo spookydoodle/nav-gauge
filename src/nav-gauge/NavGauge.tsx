@@ -3,20 +3,19 @@ import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutControls";
 import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
-import { Map } from "./Map";
+import { MapSection } from "./MapSection";
 import { RouteLayer } from "./RouteLayer";
+import { RouteLayerFitBounds } from "./RouteLayerFitBounds";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
 import './nav-gauge.css';
-
-// TODO: Add saving in local storage
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
     const [gaugeControls, setGaugeControls] = useState<GaugeControls>(defaultGaugeControls);
     const [mapLayout, setMapLayout] = useState<MapLayout>(defaultMapLayout);
 
-    const { controlPosition, controlPlacement, showZoom, showCompass, showGreenScreen } = gaugeControls;
+    const { controlPosition, controlPlacement, globeProjection, showZoom, showCompass, showGreenScreen } = gaugeControls;
 
     const controlsCssStyle = useMemo(
         () => {
@@ -81,13 +80,13 @@ export const NavGauge: FC = () => {
                 <hr className="divider" />
                 <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
             </div>
-            <Map
+            <MapSection
+                globeProjection={globeProjection}
                 showZoom={showZoom}
                 showCompass={showCompass}
                 controlPosition={controlPosition}
                 showGreenScreen={showGreenScreen}
-            >
-                {geojson && boundingBox
+                layerData={geojson && boundingBox
                     ? <RouteLayer
                         geojson={geojson}
                         boundingBox={boundingBox}
@@ -95,7 +94,9 @@ export const NavGauge: FC = () => {
                         showRoutePoints={gaugeControls.showRoutePoints}
                     />
                     : null}
-            </Map>
+            >
+                <RouteLayerFitBounds boundingBox={boundingBox} />
+            </MapSection>
         </div>
     );
 };

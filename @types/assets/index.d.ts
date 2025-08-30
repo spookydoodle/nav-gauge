@@ -2,9 +2,14 @@ declare module '*.json' {
     const content: string;
     export default content;
 }
+declare module "*.svg?react" {
+  import { FunctionComponent, SVGAttributes } from "react";
+  const content: FunctionComponent<SVGAttributes<SVGElement>>;
+  export default content;
+}
 declare module '*.svg' {
-    const content: string;
-    export default content;
+  const src: string;
+  export default src;
 }
 declare module '*.css' {
     const content: string;

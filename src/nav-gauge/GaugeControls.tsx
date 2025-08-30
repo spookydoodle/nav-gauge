@@ -13,6 +13,7 @@ interface ControlPlacement {
 }
 
 export interface GaugeControls {
+    globeProjection: boolean;
     showZoom: boolean;
     showCompass: boolean;
     showGreenScreen: boolean;
@@ -23,6 +24,7 @@ export interface GaugeControls {
 }
 
 export const defaultGaugeControls: GaugeControls = {
+    globeProjection: true,
     showZoom: false,
     showCompass: true,
     showGreenScreen: false,
@@ -42,6 +44,7 @@ export const GaugeControls: FC<Props> = ({
     onGaugeConrolsChange
 }) => {
     const {
+        globeProjection,
         showZoom,
         showCompass,
         showGreenScreen,
@@ -99,6 +102,16 @@ export const GaugeControls: FC<Props> = ({
                 })}
             </div>
 
+            <Input
+                name="controls-zoom"
+                label="Globe view"
+                labelPlacement="after"
+                type='checkbox'
+                checked={globeProjection}
+                onChange={() => {}}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, globeProjection: !prev.globeProjection }))}
+                containerClassName="checkbox"
+            />
             <Input
                 name="controls-zoom"
                 label="Show zoom buttons"
