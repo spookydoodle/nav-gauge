@@ -36,12 +36,15 @@
     grid-area: map;
     overflow: hidden;
     display: grid;
+    overflow: hidden;
+    position: relative;
 }
 
 .nav-gauge-map {
-    position: relative;
-    margin: 0 auto;
-    align-self: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: center;

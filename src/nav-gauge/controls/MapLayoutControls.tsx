@@ -15,8 +15,8 @@ export interface MapLayout {
 };
 
 export const defaultMapLayout: MapLayout = {
-    width: 250,
-    height: 250,
+    width: 400,
+    height: 400,
     borderWidth: 5,
     borderColor: '#ff0000',
     borderRadius: '50%',

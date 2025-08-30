@@ -6,7 +6,7 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 2fr;
-    height: calc(100vh - 90px);
+    height: calc(100vh - 70px);
     box-sizing: border-box;
 }
 
@@ -38,7 +38,6 @@
     }
 
     .side-panel {
-        height: calc(100vh - 90px);
         border-right: 1px solid #66666E;
 
         @starting-style {

@@ -35,10 +35,3 @@
     text-decoration: none;
     color: #F5F5F5;
 }
-
-@media screen and (min-width: 800px) {
-    .footer {
-        height: 40px;
-        padding: 10px 20px;
-    }
-}
