@@ -1,9 +1,10 @@
 import { FC, ReactNode, useState, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import classNames from "classnames";
-import { map, MapContext } from "../map/map-context";
-import './map.css';
 import { useGaugeSettings } from "../gauge-settings/use-gauge-settings";
+import { map, MapContext } from "../map/map-context";
+import styles from './map.module.css';
+import './map.css';
 
 interface Props {
     /**
@@ -133,21 +134,21 @@ export const Map: FC<Props> = ({
 
     return (
         <MapContext.Provider value={{ map, mapZoom }}>
-            <div className="container">
-                <div className="toolbox top">
+            <div className={styles["container"]}>
+                <div className={classNames(styles["toolbox"], styles["top"])}>
                     {toolsTop}
                 </div>
-                <div className="toolbox right">
+                <div className={classNames(styles["toolbox"], styles["right"])}>
                     {toolsRight}
                 </div>
-                <div className="toolbox bottom">
+                <div className={classNames(styles["toolbox"], styles["bottom"])}>
                     {toolsBottom}
                 </div>
-                <div className="toolbox left">
+                <div className={classNames(styles["toolbox"], styles["left"])}>
                     {toolsLeft}
                 </div>
-                <div ref={setContainerRef} className={classNames("nav-gauge-map", {
-                    "with-green-screen": showGreenScreen
+                <div ref={setContainerRef} className={classNames(styles["nav-gauge-map"], {
+                    [styles["with-green-screen"]]: showGreenScreen
                 })}>
                     {isStyleLoaded ? children : null}
                 </div>

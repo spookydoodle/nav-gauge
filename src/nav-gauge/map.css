@@ -1,61 +1,11 @@
-.container {
-    --toolbox-size: 30px;
-
-    position: relative;
-    display: grid;
-    grid-template-columns: var(--toolbox-size) auto var(--toolbox-size);
-    grid-template-rows: var(--toolbox-size) auto var(--toolbox-size);
-    grid-template-areas:
-        "toolbox-left toolbox-top toolbox-right"
-        "toolbox-left map toolbox-right"
-        "toolbox-left toolbox-bottom toolbox-right";
-    overflow: hidden;
-}
-
-.toolbox {
-    position: relative;
-}
-
-.toolbox.top {
-    grid-area: toolbox-top;
-}
-
-.toolbox.right {
-    grid-area: toolbox-right;
-}
-
-.toolbox.bottom {
-    grid-area: toolbox-bottom;
-}
-
-.toolbox.left {
-    grid-area: toolbox-left;
-}
-
-.nav-gauge-map {
-    grid-area: map;
-    position: relative;
-    align-self: center;
-    padding: 50px;
-    box-sizing: border-box;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.nav-gauge-map.with-green-screen {
-    background-color: #00ff00;
-}
-
-.nav-gauge-map .maplibregl-map {
+.maplibregl-map {
     width: var(--map-width);
     height: var(--map-height);
-    overflow: visible;
+    overflow: visible !important;
     position: relative;
 }
 
-.nav-gauge-map .maplibregl-canvas {
+.maplibregl-canvas {
     box-sizing: border-box;
     position: relative;
     border-radius: var(--map-radius);
@@ -63,7 +13,7 @@
     box-shadow: var(--map-inner-box-shadow);
 }
 
-.nav-gauge-map .maplibregl-map::before {
+.maplibregl-map::before {
     content: "";
     position: absolute;
     box-sizing: border-box;
@@ -76,22 +26,22 @@
     box-shadow: var(--map-box-shadow);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-left {
+.maplibregl-control-container .maplibregl-ctrl-top-left {
     top: var(--ctrl-top);
     left: var(--ctrl-left);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-top-right {
+.maplibregl-control-container .maplibregl-ctrl-top-right {
     top: var(--ctrl-top);
     right: var(--ctrl-right);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-left {
+.maplibregl-control-container .maplibregl-ctrl-bottom-left {
     bottom: var(--ctrl-bottom);
     left: var(--ctrl-left);
 }
 
-.nav-gauge-map .maplibregl-control-container .maplibregl-ctrl-bottom-right {
+.maplibregl-control-container .maplibregl-ctrl-bottom-right {
     bottom: var(--ctrl-bottom);
     left: var(--ctrl-right);
 }

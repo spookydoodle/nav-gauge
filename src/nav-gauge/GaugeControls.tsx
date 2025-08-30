@@ -1,7 +1,7 @@
-import { Dispatch, FC, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import { Input } from "../components";
-import './nav-gauge.css';
+import styles from './nav-gauge.module.css';
 
 const controlsPositions: maplibregl.ControlPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
 
@@ -81,7 +81,7 @@ export const GaugeControls: FC<Props> = ({
                     {controlsPositions.map((el) => <option key={el} value={el} label={el}>{el}</option>)}
                 </select>
             </div>
-            <div className="section">
+            <div className={styles["section"]}>
                 {placements.map((el) => {
                     const reverseFactor = ['top', 'right'].includes(el) ? -1 : 1;
                     return (
@@ -110,7 +110,7 @@ export const GaugeControls: FC<Props> = ({
                 checked={globeProjection}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, globeProjection: !prev.globeProjection }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
             <Input
                 name="controls-zoom"
@@ -120,7 +120,7 @@ export const GaugeControls: FC<Props> = ({
                 checked={showZoom}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showZoom: !prev.showZoom }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
             <Input
                 name="controls-compass"
@@ -130,7 +130,7 @@ export const GaugeControls: FC<Props> = ({
                 checked={showCompass}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showCompass: !prev.showCompass }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
             <Input
                 name="green-screen"
@@ -140,7 +140,7 @@ export const GaugeControls: FC<Props> = ({
                 checked={showGreenScreen}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showGreenScreen: !prev.showGreenScreen }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
             <Input
                 name="route-line"
@@ -150,7 +150,7 @@ export const GaugeControls: FC<Props> = ({
                 checked={showRouteLine}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRouteLine: !prev.showRouteLine }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
             <Input
                 name="route-points"
@@ -160,7 +160,7 @@ export const GaugeControls: FC<Props> = ({
                 checked={showRoutePoints}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRoutePoints: !prev.showRoutePoints }))}
-                containerClassName="checkbox"
+                containerClassName={styles["checkbox"]}
             />
         </>
     );

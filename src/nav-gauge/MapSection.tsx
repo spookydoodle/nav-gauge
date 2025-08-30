@@ -4,7 +4,6 @@ import { RouteLayer } from "./RouteLayer";
 import { RouteLayerFitBounds } from "./RouteLayerFitBounds";
 import { Player } from "./Player";
 import { GeoJson } from "../parsers";
-import './nav-gauge.css';
 
 interface Props {
     geojson?: GeoJson;

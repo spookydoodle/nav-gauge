@@ -1,0 +1,47 @@
+.container {
+    --toolbox-size: 30px;
+
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--toolbox-size) auto var(--toolbox-size);
+    grid-template-rows: var(--toolbox-size) auto var(--toolbox-size);
+    grid-template-areas:
+        "toolbox-left toolbox-top toolbox-right"
+        "toolbox-left map toolbox-right"
+        "toolbox-left toolbox-bottom toolbox-right";
+    overflow: hidden;
+}
+
+.toolbox {
+    position: relative;
+}
+
+.toolbox.top {
+    grid-area: toolbox-top;
+}
+
+.toolbox.right {
+    grid-area: toolbox-right;
+}
+
+.toolbox.bottom {
+    grid-area: toolbox-bottom;
+}
+
+.toolbox.left {
+    grid-area: toolbox-left;
+}
+
+.nav-gauge-map {
+    grid-area: map;
+    position: relative;
+    align-self: center;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-gauge-map.with-green-screen {
+    background-color: #00ff00;
+}

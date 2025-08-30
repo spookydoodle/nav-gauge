@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import { useMap } from "../map/useMap";
 import findIcon from '../icons/find.svg';
-import './route-layer.css';
+import styles from './route-layer.module.css';
 
 interface Props {
     boundingBox?: GeoJSON.BBox;
@@ -43,7 +43,7 @@ export const RouteLayerFitBounds: FC<Props> = ({
             aria-label="Pan to route"
             title="Pan to route"
             onClick={handlePanTo}
-            className="zoom-button"
+            className={styles["zoom-button"]}
         >
             <img src={findIcon} width={20} />
         </button>

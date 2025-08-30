@@ -4,10 +4,10 @@ import { FileInputStatus } from "../components";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutControls";
 import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { MapSection } from "./MapSection";
+import { GaugeContext } from "../gauge-settings/gauge-settings";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
-import './nav-gauge.css';
-import { GaugeContext } from "../gauge-settings/gauge-settings";
+import styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
@@ -69,15 +69,15 @@ export const NavGauge: FC = () => {
 
     return (
         <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout }}>
-            <div className="layout" style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
-                <div className="side-panel">
+            <div className={styles.layout} style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
+                <div className={styles["side-panel"]}>
                     <div>
                         <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
                         <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
                     </div>
-                    <hr className="divider" />
+                    <hr className={styles.divider} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
-                    <hr className="divider" />
+                    <hr className={styles.divider} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                 </div>
                 <MapSection geojson={geojson} boundingBox={boundingBox} />
