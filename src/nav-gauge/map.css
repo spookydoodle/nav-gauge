@@ -12,6 +12,10 @@
     overflow: hidden;
 }
 
+.toolbox {
+    position: relative;
+}
+
 .toolbox.top {
     grid-area: toolbox-top;
 }

@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { useMap } from "../map/useMap";
 import { GeoJson } from "../parsers";
+import { useGaugeSettings } from "../gauge-settings/use-gauge-settings";
 
 const sourceId = 'route';
 
@@ -17,18 +18,16 @@ const layerIds = {
 interface Props {
     geojson: GeoJson;
     boundingBox: GeoJSON.BBox;
-    showRouteLine: boolean;
-    showRoutePoints: boolean;
+    time?: string;
 }
 
 export const RouteLayer: FC<Props> = ({
     geojson,
     boundingBox,
-    showRouteLine,
-    showRoutePoints,
+    time,
 }) => {
     const { map } = useMap();
-    const [time, setTime] = useState(geojson.features[0].properties.time)
+    const { showRouteLine, showRoutePoints } = useGaugeSettings();
 
     useEffect(() => {
         map.fitBounds(
@@ -37,7 +36,7 @@ export const RouteLayer: FC<Props> = ({
         );
 
         if (showRouteLine) {
-            const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(time).valueOf());
+            const splitIndex = !time ? 0 : geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(time).valueOf());
 
             map.addSource(sourceIds.line, {
                 type: 'geojson',

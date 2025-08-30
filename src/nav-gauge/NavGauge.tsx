@@ -4,11 +4,10 @@ import { FileInputStatus } from "../components";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./MapLayoutControls";
 import { defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { MapSection } from "./MapSection";
-import { RouteLayer } from "./RouteLayer";
-import { RouteLayerFitBounds } from "./RouteLayerFitBounds";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
 import './nav-gauge.css';
+import { GaugeContext } from "../gauge-settings/gauge-settings";
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
@@ -69,34 +68,20 @@ export const NavGauge: FC = () => {
     };
 
     return (
-        <div className="layout" style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
-            <div className="side-panel">
-                <div>
-                    <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
-                    <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
+        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout }}>
+            <div className="layout" style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
+                <div className="side-panel">
+                    <div>
+                        <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
+                        <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
+                    </div>
+                    <hr className="divider" />
+                    <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
+                    <hr className="divider" />
+                    <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                 </div>
-                <hr className="divider" />
-                <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
-                <hr className="divider" />
-                <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
+                <MapSection geojson={geojson} boundingBox={boundingBox} />
             </div>
-            <MapSection
-                globeProjection={globeProjection}
-                showZoom={showZoom}
-                showCompass={showCompass}
-                controlPosition={controlPosition}
-                showGreenScreen={showGreenScreen}
-                layerData={geojson && boundingBox
-                    ? <RouteLayer
-                        geojson={geojson}
-                        boundingBox={boundingBox}
-                        showRouteLine={gaugeControls.showRouteLine}
-                        showRoutePoints={gaugeControls.showRoutePoints}
-                    />
-                    : null}
-            >
-                <RouteLayerFitBounds boundingBox={boundingBox} />
-            </MapSection>
-        </div>
+        </GaugeContext.Provider>
     );
 };
