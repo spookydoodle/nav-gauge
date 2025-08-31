@@ -3,6 +3,14 @@ import { useMap } from "../../map/useMap";
 import { GeoJson } from "../../parsers";
 import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
 
+export interface RouteTimes {
+    startTime: string;
+    endTime: string;
+    startTimeEpoch: number;
+    endTimeEpoch: number;
+    duration: number;
+}
+
 const sourceId = 'route';
 
 const sourceIds = {
@@ -14,8 +22,12 @@ const layerIds = {
     line: 'route-line'
 }
 
-const getData = (geojson: GeoJson, time?: number): GeoJSON.GeoJSON => {
-    const splitIndex = !time ? 0 : geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(time).valueOf());
+const getData = (
+    geojson: GeoJson,
+    startTimeEpoch: number,
+    progressMs: number
+): GeoJSON.GeoJSON => {
+    const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(startTimeEpoch + progressMs).valueOf());
 
     return {
         ...geojson,
@@ -47,21 +59,17 @@ const getData = (geojson: GeoJson, time?: number): GeoJSON.GeoJSON => {
 interface Props {
     isPlaying: boolean;
     geojson: GeoJson;
-    duration?: number;
-    timeEpoch?: number;
-    startTimeEpoch?: number;
-    endTimeEpoch?: number;
-    onTimeEpochChange: React.Dispatch<React.SetStateAction<number | undefined>>;
+    routeTimes: RouteTimes;
+    progressMs: number;
+    onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const RouteLayer: FC<Props> = ({
     isPlaying,
     geojson,
-    duration,
-    timeEpoch,
-    startTimeEpoch,
-    endTimeEpoch,
-    onTimeEpochChange
+    routeTimes,
+    progressMs,
+    onProgressMsChange
 }) => {
     const { map } = useMap();
     const { showRouteLine, showRoutePoints } = useGaugeSettings();
@@ -71,7 +79,7 @@ export const RouteLayer: FC<Props> = ({
         if (showRouteLine || showRoutePoints) {
             map.addSource(sourceIds.line, {
                 type: 'geojson',
-                data: getData(geojson, timeEpoch),
+                data: getData(geojson, routeTimes.startTimeEpoch, progressMs),
             });
         }
 
@@ -128,23 +136,20 @@ export const RouteLayer: FC<Props> = ({
     }, [map, geojson, showRouteLine, showRoutePoints]);
 
     useEffect(() => {
-        // TODO: fix this long condition
-        if (!isPlaying || !isLayerAdded || timeEpoch === undefined || startTimeEpoch === undefined || duration === undefined || endTimeEpoch === undefined) {
+        if (!isPlaying || !isLayerAdded) {
             return;
         }
+        const { startTimeEpoch, endTimeEpoch } = routeTimes;
         let animation: number | undefined;
-        let current = timeEpoch - startTimeEpoch;
+        let current = progressMs;
+
         const animate = () => {
             current += 10000;
             if (startTimeEpoch + current > endTimeEpoch) {
-                console.log("AA")
                 current = 0;
             }
-            const time = startTimeEpoch + current;
-            const source = map.getSource(sourceIds.line) as maplibregl.GeoJSONSource;
-            const data = getData(geojson, time);
-            source.setData(data);
-            onTimeEpochChange(time);
+            map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(getData(geojson, startTimeEpoch, current));
+            onProgressMsChange(current);
             animation = requestAnimationFrame(animate);
         };
 
@@ -153,12 +158,15 @@ export const RouteLayer: FC<Props> = ({
         return () => {
             if (animation) {
                 cancelAnimationFrame(animation);
-                const source = map.getSource(sourceIds.line) as maplibregl.GeoJSONSource;
-                const data = getData(geojson, startTimeEpoch);
-                source.setData(data);
             }
         };
     }, [isPlaying, isLayerAdded]);
+
+    useEffect(() => {
+        if (progressMs === 0) {
+            map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(getData(geojson, routeTimes.startTimeEpoch, 0));
+        }
+    }, [progressMs]);
 
     return null;
 };
