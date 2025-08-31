@@ -1,19 +1,18 @@
 import { FC, useCallback, useMemo } from "react";
 import styles from './player.module.css';
+import { RouteTimes } from "../layers/RouteLayer";
 
 interface Props {
-    timeEpoch?: number;
-    startTimeEpoch?: number;
-    endTimeEpoch?: number;
+    progressMs: number;
+    routeTimes?: RouteTimes;
     isPlaying: boolean;
     onIsPlayingChange: React.Dispatch<React.SetStateAction<boolean>>;
     onStop: () => void;
 }
 
 export const Player: FC<Props> = ({
-    timeEpoch,
-    startTimeEpoch,
-    endTimeEpoch,
+    progressMs,
+    routeTimes,
     isPlaying,
     onIsPlayingChange,
     onStop
@@ -31,17 +30,15 @@ export const Player: FC<Props> = ({
         [onIsPlayingChange, onStop]
     );
 
-    const currentTime =  useMemo(
+    const progress = useMemo(
         (): string => {
-            if (!timeEpoch || !startTimeEpoch || !endTimeEpoch) {
+            if (!routeTimes) {
                 return '-';
             }
-            const total = endTimeEpoch - startTimeEpoch;
-            const current = timeEpoch - startTimeEpoch;
 
-            return (current / total * 100).toFixed(0) + '%';
+            return (progressMs / routeTimes.duration * 100).toFixed(0) + '%';
         },
-        [timeEpoch, startTimeEpoch, endTimeEpoch]
+        [progressMs, routeTimes?.duration]
     );
 
     return (
@@ -52,7 +49,9 @@ export const Player: FC<Props> = ({
             <button onClick={handlePlayClick}>
                 {isPlaying ? 'Pause' : 'Play'}
             </button>
-            <p className={styles.text}>{currentTime}</p>
+            <p className={styles.text}>
+                {progress}
+            </p>
         </div>
     );
 };
