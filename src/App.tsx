@@ -1,15 +1,15 @@
 import { FC, StrictMode } from "react";
 import { NavGauge } from "./nav-gauge/NavGauge";
-import styles from './app.module.css';
+import * as style from './app.module.css';
 
 const App: FC = () => {
     return (
         <StrictMode>
-            <nav className={styles["navbar"]}>
+            <nav className={style.navbar}>
                 <span>nav gauge</span>
             </nav>
             <NavGauge />
-            <footer className={styles["footer"]}>
+            <footer className={style["footer"]}>
                 <a target="_blank" rel="noreferrer" href="https://openstreetmap.org/copyright">
                     © OpenStreetMap
                 </a>

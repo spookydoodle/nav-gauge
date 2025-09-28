@@ -14,10 +14,9 @@
     },
     "scripts": {
         "analyze": "source-map-explorer 'build/static/js/*.js'",
-        "dev": "vite",
-        "build": "tsc && vite build",
+        "dev": "rspack serve --mode development --config rspack.config.development.js",
+        "build": "tsc --noEmit && rspack --mode production --config rspack.config.production.js",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-        "preview": "vite preview",
         "clean": "npx shx rm -rf node_modules/"
     },
     "browserslist": {
@@ -44,21 +43,25 @@
         "react-dom": "19.1.1"
     },
     "devDependencies": {
-        "@emotion/babel-plugin": "^11.13.5",
-        "@emotion/react": "11.14.0",
+        "@rspack/cli": "^1.5.7",
+        "@rspack/core": "^1.5.7",
+        "@rspack/plugin-react-refresh": "^1.5.1",
+        "@svgr/webpack": "^8.1.0",
         "@types/eslint": "^9.6.1",
         "@types/luxon": "^3.4.2",
         "@types/react": "^18.3.12",
         "@types/react-dom": "^18.3.1",
-        "@types/typescript": "^2.0.0",
         "@typescript-eslint/eslint-plugin": "^8.38.0",
         "@typescript-eslint/parser": "^8.38.0",
-        "@vitejs/plugin-react": "^4.7.0",
+        "css-loader": "^7.1.2",
         "eslint": "^9.32.0",
         "eslint-plugin-react": "^7.37.5",
         "path": "^0.12.7",
-        "typescript": "5.9.2",
-        "vite": "^7.0.6",
-        "vite-plugin-svgr": "^4.3.0"
+        "react-refresh": "^0.17.0",
+        "style-loader": "^4.0.0",
+        "ts-checker-rspack-plugin": "^1.1.5",
+        "typescript": "5.8.3",
+        "webpack-bundle-analyzer": "^4.10.2",
+        "webpack-merge": "^6.0.1"
     }
 }

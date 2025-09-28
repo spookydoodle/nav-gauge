@@ -12,12 +12,8 @@ declare module '*.svg' {
   export default src;
 }
 declare module '*.module.css' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-declare module '*.css' {
-    const content: string;
-    export default content;
+  const content: { [key: string]: string };
+  export = content;
 }
 declare module '*.png' {
     const content: string;

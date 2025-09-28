@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import { Input } from "../../components";
-import styles from './controls.module.css';
+import * as styles from './controls.module.css';
 
 const controlsPositions: maplibregl.ControlPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
 

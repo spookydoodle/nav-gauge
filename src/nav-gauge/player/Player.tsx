@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo } from "react";
-import styles from './player.module.css';
 import { RouteTimes } from "../layers/RouteLayer";
+import * as styles from './player.module.css';
 
 interface Props {
     progressMs: number;

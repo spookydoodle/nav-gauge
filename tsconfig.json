@@ -3,10 +3,10 @@
         "jsx": "react-jsx",
         "strict": true,
         "esModuleInterop": true,
-        "target": "ESNext",
+        "target": "ES2020",
         "module": "ESNext",
-        "moduleResolution": "node",
-        "sourceMap": true,
+        "moduleResolution": "Node",
+        "skipLibCheck": true,
         "lib": [
             "ESNext",
             "DOM",
@@ -16,19 +16,8 @@
             "@types",
             "node_modules/@types"
         ],
-        "outDir": "dist"
     },
     "exclude": [
-      "node_modules",
-      "build",
-      "coverage",
-      "vite.*.js",
-      "*.config.js",
-      "*.test.ts*"
-    ],
-    "ts-node": {
-      "compilerOptions": {
-        "module": "CommonJS"
-      }
-    }
+        "**/*.cy.ts"
+    ]
 }

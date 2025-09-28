@@ -1,5 +1,5 @@
 import { FC } from "react";
-import styles from './file-input-status.module.css';
+import * as styles from './file-input-status.module.css';
 
 const getCauseProp = (prop: string, error?: Error): string | undefined => {
     if (!error?.cause || typeof error.cause !== 'object' || !(prop in error.cause)) {
