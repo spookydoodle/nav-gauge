@@ -94,7 +94,10 @@ module.exports = (env, argv) => merge(config(env, argv), {
     },
     plugins: [
         new rspack.CssExtractRspackPlugin({ filename: "[name].[contenthash].css" }),
-        new BundleAnalyzerPlugin(),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            openAnalyzer: false,
+        }),
         new rspack.CopyRspackPlugin({
             from: '/public'
         })
