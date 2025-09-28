@@ -19,7 +19,7 @@
         "build": "tsc --noEmit && rspack --mode production --config rspack.config.production.cjs",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "clean": "npx shx rm -rf node_modules/",
-        "test": "mocha 'src/test/**/*.test.ts'"
+        "test": "mocha"
     },
     "browserslist": {
         "production": [
