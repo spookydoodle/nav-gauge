@@ -5,7 +5,7 @@ import * as styles from './controls.module.css';
 
 const controlsPositions: maplibregl.ControlPosition[] = ["top-left", "top-right", "bottom-left", "bottom-right"];
 
-interface ControlPlacement {
+export interface ControlPlacement {
     top: number;
     bottom: number;
     left: number;
@@ -71,6 +71,7 @@ export const GaugeControls: FC<Props> = ({
             <div>
                 <label htmlFor="controls-position">Controls position</label>
                 <select
+                    id="controls-position"
                     name="controls-position"
                     value={controlPosition}
                     onChange={(event) => onGaugeConrolsChange((prev) => ({
@@ -87,6 +88,7 @@ export const GaugeControls: FC<Props> = ({
                     return (
                         <Input
                             key={el}
+                            id={`controls-${el}`}
                             name={`controls-${el}`}
                             label="Offset {el} (px)"
                             type='number'
@@ -103,6 +105,7 @@ export const GaugeControls: FC<Props> = ({
             </div>
 
             <Input
+                id="controls-zoom"
                 name="controls-zoom"
                 label="Globe view"
                 labelPlacement="after"
@@ -113,6 +116,7 @@ export const GaugeControls: FC<Props> = ({
                 containerClassName={styles["checkbox"]}
             />
             <Input
+                id="controls-zoom"
                 name="controls-zoom"
                 label="Show zoom buttons"
                 labelPlacement="after"
@@ -123,6 +127,7 @@ export const GaugeControls: FC<Props> = ({
                 containerClassName={styles["checkbox"]}
             />
             <Input
+                id="controls-compass"
                 name="controls-compass"
                 label="Show compass button"
                 labelPlacement="after"
@@ -133,6 +138,7 @@ export const GaugeControls: FC<Props> = ({
                 containerClassName={styles["checkbox"]}
             />
             <Input
+                id="green-screen"
                 name="green-screen"
                 label="Show green screen"
                 labelPlacement="after"
@@ -143,6 +149,7 @@ export const GaugeControls: FC<Props> = ({
                 containerClassName={styles["checkbox"]}
             />
             <Input
+                id="route-line"
                 name="route-line"
                 label="Show route line"
                 labelPlacement="after"
@@ -153,6 +160,7 @@ export const GaugeControls: FC<Props> = ({
                 containerClassName={styles["checkbox"]}
             />
             <Input
+                id="route-points"
                 name="route-points"
                 label="Show route points"
                 labelPlacement="after"

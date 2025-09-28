@@ -6,16 +6,18 @@ interface Props {
      * Defaults to `before`.
      */
     labelPlacement?: 'before' | 'after';
+    id: string;
     name: string;
     autoSelect?: boolean;
     onContainerClick?: (event: MouseEvent<HTMLDivElement>) => void;
     containerClassName?: string;
 }
 
-export const Input: FC<Props & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'name'>> = ({
+export const Input: FC<Props & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, 'name' | 'id'>> = ({
     label,
     labelPlacement = 'before',
     autoSelect,
+    id,
     name,
     onClick,
     onContainerClick,
@@ -29,12 +31,12 @@ export const Input: FC<Props & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLIn
         onClick?.(event);
     };
 
-    const labelComponent = <label htmlFor={name}>{label}</label>;
+    const labelComponent = <label htmlFor={id}>{label}</label>;
 
     return (
         <div onClick={onContainerClick} className={containerClassName}>
             {labelPlacement === 'before' ? labelComponent : null}
-            <input  {...props} name={name} onClick={handleClick} />
+            <input {...props} id={id} name={name} onClick={handleClick} />
             {labelPlacement === 'after' ? labelComponent : null}
         </div>
     );
