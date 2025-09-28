@@ -6,7 +6,7 @@ Record with an external tool or save a series of pictures.
 ## License
 
 This project is licensed under the **GNU Affero General Public License v3.0**  
-See the [LICENCE](LICENCE) file for details.
+See the [LICENSE](LICENSE) file for details.
 
 ## Support My Work
 
