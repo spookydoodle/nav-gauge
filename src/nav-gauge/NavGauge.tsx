@@ -8,16 +8,19 @@ import { GaugeContext } from "../gauge-settings/gauge-settings";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
 import * as styles from './nav-gauge.module.css';
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
-    const [gaugeControls, setGaugeControls] = useState<GaugeControls>(defaultGaugeControls);
-    const [mapLayout, setMapLayout] = useState<MapLayout>(defaultMapLayout);
+    const [gaugeControls, setGaugeControls] = useLocalStorage<GaugeControls>('gauge-controls', defaultGaugeControls);
+    const [mapLayout, setMapLayout] = useLocalStorage<MapLayout>('map-layout', defaultMapLayout);
 
-    const { controlPosition, controlPlacement, globeProjection, showZoom, showCompass, showGreenScreen } = gaugeControls;
+    useEffect(() => {}, [gaugeControls])
 
     const controlsCssStyle = useMemo(
         () => {
+            const { controlPosition, controlPlacement } = gaugeControls;
+            
             switch (controlPosition) {
                 case 'top-left': return { '--ctrl-top': controlPlacement.top + 'px', '--ctrl-left': controlPlacement.left + 'px' }
                 case 'top-right': return { '--ctrl-top': controlPlacement.top + 'px', '--ctrl-right': controlPlacement.right + 'px' }
@@ -25,23 +28,21 @@ export const NavGauge: FC = () => {
                 case 'bottom-right': return { '--ctrl-bottom': controlPlacement.bottom + 'px', '--ctrl-right': controlPlacement.right + 'px' }
             }
         },
-        [controlPosition, controlPlacement]
+        [gaugeControls]
     );
 
     const mapLayoutCssStyle = useMemo(
-        () => {
-            return {
-                '--map-width': mapLayout.width + 'px',
-                '--map-height': mapLayout.height + 'px',
-                '--map-border-width': mapLayout.borderWidth + 'px',
-                '--map-border-color': mapLayout.borderColor,
-                '--map-inner-border-width': mapLayout.innerBorderWidth + 'px',
-                '--map-inner-border-color': mapLayout.innerBorderColor,
-                '--map-radius': mapLayout.borderRadius,
-                '--map-box-shadow': mapLayout.boxShadow,
-                '--map-inner-box-shadow': mapLayout.innerBoxShadow,
-            }
-        },
+        () => ({
+            '--map-width': mapLayout.width + 'px',
+            '--map-height': mapLayout.height + 'px',
+            '--map-border-width': mapLayout.borderWidth + 'px',
+            '--map-border-color': mapLayout.borderColor,
+            '--map-inner-border-width': mapLayout.innerBorderWidth + 'px',
+            '--map-inner-border-color': mapLayout.innerBorderColor,
+            '--map-radius': mapLayout.borderRadius,
+            '--map-box-shadow': mapLayout.boxShadow,
+            '--map-inner-box-shadow': mapLayout.innerBoxShadow,
+        }),
         [mapLayout]
     );
 
