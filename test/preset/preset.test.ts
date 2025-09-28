@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { describe } from "mocha";
-import { validateGaugeControls, validateMapLayout } from "../../nav-gauge/controls/validation.js";
-import { MapLayout } from "../../nav-gauge/controls/MapLayoutControls.js";
-import { GaugeControls } from "../../nav-gauge/controls/GaugeControls.js";
+import { validateGaugeControls, validateMapLayout } from "../../src/nav-gauge/controls/validation.js";
+import { MapLayout } from "../../src/nav-gauge/controls/MapLayoutControls.js";
+import { GaugeControls } from "../../src/nav-gauge/controls/GaugeControls.js";
 
 describe("Preset", () => {
     describe("File upload validation", () => {
