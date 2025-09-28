@@ -10,12 +10,31 @@ on:
 env:
   IMAGE_NAME: nav-gauge
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        env:
+            NODE_OPTIONS: --loader ts-node/esm
+        run: yarn test
   push:
     runs-on: ubuntu-latest
     permissions:
       packages: write
       contents: read
-      #
     steps:
       - uses: actions/checkout@v4
 

@@ -38,6 +38,7 @@ export const MapLayoutControls: FC<Props> = ({
     return (
         <div className={styles["section"]}>
             <Input
+                id="map-width"
                 name="map-width"
                 label="Width (px)"
                 type='number'
@@ -54,6 +55,7 @@ export const MapLayoutControls: FC<Props> = ({
                 }}
             />
             <Input
+                id="map-height"
                 name="map-height"
                 label="Height (px)"
                 type='number'
@@ -67,6 +69,7 @@ export const MapLayoutControls: FC<Props> = ({
                 }}
             />
             <Input
+                id="map-border-width"
                 name="map-border-width"
                 label="Border width (px)"
                 type='number'
@@ -80,6 +83,7 @@ export const MapLayoutControls: FC<Props> = ({
                 }}
             />
             <Input
+                id="map-inner-border-width"
                 name="map-inner-border-width"
                 label="Inner border width (px)"
                 type='number'
@@ -93,6 +97,7 @@ export const MapLayoutControls: FC<Props> = ({
                 }}
             />
             <Input
+                id="map-border-color"
                 name="map-border-color"
                 label="Border color"
                 type='color'
@@ -103,6 +108,7 @@ export const MapLayoutControls: FC<Props> = ({
                 className={styles["color"]}
             />
             <Input
+                id="map-inner-border-color"
                 name="map-inner-border-color"
                 label="Inner border color"
                 type='color'
@@ -113,6 +119,7 @@ export const MapLayoutControls: FC<Props> = ({
                 className={styles["color"]}
             />
             <TextArea
+                id="map-border-box-shadow"
                 name="map-border-box-shadow"
                 label="Box shadow"
                 value={mapLayout.boxShadow}
@@ -123,6 +130,7 @@ export const MapLayoutControls: FC<Props> = ({
                 className={styles["textarea"]}
             />
             <TextArea
+                id="map-border-inner-box-shadow"
                 name="map-border-inner-box-shadow"
                 label="Inner box shadow"
                 value={mapLayout.innerBoxShadow}
@@ -133,6 +141,7 @@ export const MapLayoutControls: FC<Props> = ({
                 className={styles["textarea"]}
             />
             <Input
+                id="map-border-radius"
                 name="map-border-radius"
                 label="Radius (px, %)"
                 type='text'

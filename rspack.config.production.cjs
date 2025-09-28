@@ -1,6 +1,6 @@
 const path = require("path");
 const { merge } = require('webpack-merge');
-const config = require('./rspack.config.js');
+const config = require('./rspack.config.cjs');
 const rspack = require("@rspack/core");
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
@@ -94,7 +94,10 @@ module.exports = (env, argv) => merge(config(env, argv), {
     },
     plugins: [
         new rspack.CssExtractRspackPlugin({ filename: "[name].[contenthash].css" }),
-        new BundleAnalyzerPlugin(),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            openAnalyzer: false,
+        }),
         new rspack.CopyRspackPlugin({
             from: '/public'
         })

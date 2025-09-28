@@ -1,6 +1,7 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components";
+import { detectPreset, Preset, Presets } from "./controls/Presets";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLayoutControls";
 import { defaultGaugeControls, GaugeControls } from "./controls/GaugeControls";
 import { MapSection } from "./MapSection";
@@ -14,18 +15,27 @@ export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControls>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
+    const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
 
-    useEffect(() => {}, [gaugeControls])
+    const handlePresetChange = (preset: Preset, presetMapLayout?: MapLayout, presetGaugeControls?: GaugeControls) => {
+        setPreset(preset);
+        if (presetMapLayout) {
+            setMapLayout(presetMapLayout);
+        }
+        if (presetGaugeControls) {
+            setGaugeControls(presetGaugeControls);
+        }
+    };
 
     const controlsCssStyle = useMemo(
         () => {
-            const { controlPosition, controlPlacement } = gaugeControls;
+            const { top, bottom, right, left  } = gaugeControls.controlPlacement;
             
-            switch (controlPosition) {
-                case 'top-left': return { '--ctrl-top': controlPlacement.top + 'px', '--ctrl-left': controlPlacement.left + 'px' }
-                case 'top-right': return { '--ctrl-top': controlPlacement.top + 'px', '--ctrl-right': controlPlacement.right + 'px' }
-                case 'bottom-left': return { '--ctrl-bottom': controlPlacement.bottom + 'px', '--ctrl-left': controlPlacement.left + 'px' }
-                case 'bottom-right': return { '--ctrl-bottom': controlPlacement.bottom + 'px', '--ctrl-right': controlPlacement.right + 'px' }
+            switch (gaugeControls.controlPosition) {
+                case 'top-left': return { '--ctrl-top': top + 'px', '--ctrl-left': left + 'px' }
+                case 'top-right': return { '--ctrl-top': top + 'px', '--ctrl-right': right + 'px' }
+                case 'bottom-left': return { '--ctrl-bottom': bottom + 'px', '--ctrl-left': left + 'px' }
+                case 'bottom-right': return { '--ctrl-bottom': bottom + 'px', '--ctrl-right': right + 'px' }
             }
         },
         [gaugeControls]
@@ -76,6 +86,8 @@ export const NavGauge: FC = () => {
                         <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
                         <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
                     </div>
+                    <hr className={styles.divider} />
+                    <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
                     <hr className={styles.divider} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <hr className={styles.divider} />
