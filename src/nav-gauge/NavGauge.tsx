@@ -5,15 +5,15 @@ import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLa
 import { defaultGaugeControls, GaugeControls } from "./controls/GaugeControls";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../gauge-settings/gauge-settings";
+import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
 import * as styles from './nav-gauge.module.css';
-import { useLocalStorage } from "../hooks/useLocalStorage";
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
-    const [gaugeControls, setGaugeControls] = useLocalStorage<GaugeControls>('gauge-controls', defaultGaugeControls);
-    const [mapLayout, setMapLayout] = useLocalStorage<MapLayout>('map-layout', defaultMapLayout);
+    const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControls>('gauge-controls', defaultGaugeControls);
+    const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
 
     useEffect(() => {}, [gaugeControls])
 

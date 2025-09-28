@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
  * On mount initializes the state with the data in local storage, if available (otherwise with the `defaultState`).
  * On each change of `state` value, updates local storage.
  */
-export function useLocalStorage<T extends Object>(
+export function useLocalStorageState<T extends Object>(
     id: string,
     defaultState: T
 ): [T, Dispatch<SetStateAction<T>>] {
