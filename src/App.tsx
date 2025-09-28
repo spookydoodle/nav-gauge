@@ -1,6 +1,6 @@
 import { FC, StrictMode } from "react";
 import { NavGauge } from "./nav-gauge/NavGauge";
-import styles from './app.module.css';
+import * as styles from './app.module.css';
 
 const App: FC = () => {
     return (

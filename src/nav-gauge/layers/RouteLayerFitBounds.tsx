@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import { useMap } from "../../map/useMap";
 import findIcon from '../../icons/find.svg';
-import styles from './route-layer.module.css';
+import * as styles from './route-layer.module.css';
 
 interface Props {
     boundingBox?: GeoJSON.BBox;

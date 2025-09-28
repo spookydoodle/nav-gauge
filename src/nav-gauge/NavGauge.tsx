@@ -7,7 +7,7 @@ import { MapSection } from "./MapSection";
 import { GaugeContext } from "../gauge-settings/gauge-settings";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
-import styles from './nav-gauge.module.css';
+import * as styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});

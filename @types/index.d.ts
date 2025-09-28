@@ -13,11 +13,7 @@ declare module '*.svg' {
 }
 declare module '*.module.css' {
   const classes: { [key: string]: string };
-  export default classes;
-}
-declare module '*.css' {
-    const content: string;
-    export default content;
+  export = classes;
 }
 declare module '*.png' {
     const content: string;

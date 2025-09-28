@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { Input, TextArea } from "../../components";
-import styles from './controls.module.css';
+import * as styles from './controls.module.css';
 
 export interface MapLayout {
     width: number;
