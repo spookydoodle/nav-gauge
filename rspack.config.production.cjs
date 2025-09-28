@@ -1,6 +1,6 @@
 const path = require("path");
 const { merge } = require('webpack-merge');
-const config = require('./rspack.config.js');
+const config = require('./rspack.config.cjs');
 const rspack = require("@rspack/core");
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 

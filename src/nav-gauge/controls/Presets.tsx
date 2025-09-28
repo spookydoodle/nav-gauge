@@ -1,7 +1,8 @@
-import { Dispatch, FC, SetStateAction, useEffect } from "react";
-import * as styles from './controls.module.css';
+import { FC, useEffect } from "react";
 import { ControlPlacement, defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { defaultMapLayout, MapLayout } from "./MapLayoutControls";
+import { validateGaugeControls, validateMapLayout } from "./validation";
+import * as styles from './controls.module.css';
 
 export type Preset = 'default' | 'test1' | '';
 
@@ -13,22 +14,22 @@ export interface PresetOption {
 }
 
 const options: PresetOption[] = [
-        {
-            value: 'default',
-            label: 'Default',
-            mapLayout: defaultMapLayout,
-            gaugeControls: defaultGaugeControls,
+    {
+        value: 'default',
+        label: 'Default',
+        mapLayout: defaultMapLayout,
+        gaugeControls: defaultGaugeControls,
+    },
+    {
+        value: 'test1',
+        label: 'Test 1',
+        mapLayout: {
+            ...defaultMapLayout,
+            borderColor: '#ffff00'
         },
-        {
-            value: 'test1',
-            label: 'Test 1',
-            mapLayout: {
-                ...defaultMapLayout,
-                borderColor: '#ffff00'
-            },
-            gaugeControls: defaultGaugeControls,
-        },
-    ];
+        gaugeControls: defaultGaugeControls,
+    },
+];
 
 export const detectPreset = (
     mapLayout: MapLayout,
@@ -66,8 +67,43 @@ export const Presets: FC<Props> = ({
         onPresetChange(nextPreset, option?.mapLayout, option?.gaugeControls);
     };
 
-    const handleExport = () => { };
-    const handleImport = () => { };
+    const handleExport = () => {
+        const jsonString = JSON.stringify({ mapLayout, gaugeControls }, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Nav gauge preset';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+    };
+
+    const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.item(0);
+        if (!file) {
+            return;
+        }
+        file
+            .text()
+            .then((text) => {
+                try {
+                    const result = JSON.parse(text);
+                    const possibleMapLayout = { defaultMapLayout, ...(result.mapLayout as MapLayout) };
+                    const possibleGaugeControls = { defaultGaugeControls, ...(result.gaugeControls as GaugeControls) };
+                    validateMapLayout(possibleMapLayout);
+                    validateGaugeControls(possibleGaugeControls);
+                    onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), possibleMapLayout, possibleGaugeControls);
+                } catch (e) {
+                    console.error(e);
+                }
+            })
+            .catch(console.error);
+    };
 
     return (
         <div className={styles['presets']}>
@@ -84,7 +120,8 @@ export const Presets: FC<Props> = ({
             </div>
             <div className={styles['export-import']}>
                 <button onClick={handleExport}>Export</button>
-                <button onClick={handleImport}>Import</button>
+                <button onClick={() => document.getElementById('import-preset')?.click()}>Import</button>
+                <input id="import-preset" type="file" accept='json' onChange={handleImport} className={styles['import-input']} />
             </div>
         </div>
     );

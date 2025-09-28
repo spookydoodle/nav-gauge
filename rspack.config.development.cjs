@@ -1,6 +1,6 @@
 const { merge } = require('webpack-merge');
 const path = require("path");
-const config = require('./rspack.config.js');
+const config = require('./rspack.config.cjs');
 const { TsCheckerRspackPlugin } = require('ts-checker-rspack-plugin');
 const ReactRefreshRspackPlugin = require("@rspack/plugin-react-refresh");
 
