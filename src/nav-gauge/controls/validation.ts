@@ -44,13 +44,16 @@ export const validateGaugeControls = (gaugeControls: Partial<GaugeControls>) => 
         throw new Error("Control position incorrect");
     }
     if (gaugeControls.globeProjection !== undefined && typeof gaugeControls.globeProjection !== 'boolean') {
-        throw new Error("Globa projection incorrect");
+        throw new Error("Globe projection incorrect");
     }
     if (gaugeControls.showCompass !== undefined && typeof gaugeControls.showCompass !== 'boolean') {
         throw new Error("Show compass incorrect");
     }
     if (gaugeControls.showGreenScreen !== undefined && typeof gaugeControls.showGreenScreen !== 'boolean') {
         throw new Error("Show green screen incorrect");
+    }
+    if (gaugeControls.showRouteLine !== undefined && typeof gaugeControls.showRouteLine !== 'boolean') {
+        throw new Error("Show route line incorrect");
     }
     if (gaugeControls.showRoutePoints !== undefined && typeof gaugeControls.showRoutePoints !== 'boolean') {
         throw new Error("Show route points incorrect");
