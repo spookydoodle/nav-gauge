@@ -1,59 +1,64 @@
 {
-  "name": "nav-gauge",
-  "version": "1.0.0",
-  "description": "Navigation gauge with map component with customization options with data from a .gpx file",
-  "main": "src/index.tsx",
-  "private": true,
-  "scripts": {
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "clean": "npx shx rm -rf node_modules/"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "dependencies": {
-    "@tmcw/togeojson": "^7.1.2",
-    "@turf/bbox": "^7.2.0",
-    "@turf/helpers": "^7.2.0",
-    "@xmldom/xmldom": "^0.9.8",
-    "classnames": "^2.5.1",
-    "luxon": "3.7.1",
-    "maplibre-gl": "5.6.1",
-    "react": "19.1.1",
-    "react-dom": "19.1.1"
-  },
-  "devDependencies": {
-    "@emotion/babel-plugin": "^11.13.5",
-    "@emotion/react": "11.14.0",
-    "@types/eslint": "^9.6.1",
-    "@types/luxon": "^3.4.2",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@types/typescript": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.38.0",
-    "@typescript-eslint/parser": "^8.38.0",
-    "@vitejs/plugin-react": "^4.7.0",
-    "eslint": "^9.32.0",
-    "eslint-plugin-react": "^7.37.5",
-    "path": "^0.12.7",
-    "typescript": "5.9.2",
-    "vite": "^7.0.6",
-    "vite-plugin-svgr": "^4.3.0"
-  }
+    "name": "nav-gauge",
+    "version": "1.0.0",
+    "description": "Navigation gauge and story generator with map component with customization options with data from a .gpx file and uploaded images.",
+    "homepage": "https://nav-gauge.spookydoodle.com",
+    "main": "src/index.tsx",
+    "private": true,
+    "license": "AGPL-3.0",
+    "author": "spookydoodle",
+    "funding": "https://ko-fi.com/spookydoodle",
+    "repository": "https://github.com/spookydoodle/nav-gauge",
+    "bugs": {
+        "url": "https://github.com/spookydoodle/nav-gauge/issues"
+    },
+    "scripts": {
+        "analyze": "source-map-explorer 'build/static/js/*.js'",
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "preview": "vite preview",
+        "clean": "npx shx rm -rf node_modules/"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "dependencies": {
+        "@tmcw/togeojson": "^7.1.2",
+        "@turf/bbox": "^7.2.0",
+        "@turf/helpers": "^7.2.0",
+        "@xmldom/xmldom": "^0.9.8",
+        "classnames": "^2.5.1",
+        "luxon": "3.7.1",
+        "maplibre-gl": "5.6.1",
+        "react": "19.1.1",
+        "react-dom": "19.1.1"
+    },
+    "devDependencies": {
+        "@emotion/babel-plugin": "^11.13.5",
+        "@emotion/react": "11.14.0",
+        "@types/eslint": "^9.6.1",
+        "@types/luxon": "^3.4.2",
+        "@types/react": "^18.3.12",
+        "@types/react-dom": "^18.3.1",
+        "@types/typescript": "^2.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.38.0",
+        "@typescript-eslint/parser": "^8.38.0",
+        "@vitejs/plugin-react": "^4.7.0",
+        "eslint": "^9.32.0",
+        "eslint-plugin-react": "^7.37.5",
+        "path": "^0.12.7",
+        "typescript": "5.9.2",
+        "vite": "^7.0.6",
+        "vite-plugin-svgr": "^4.3.0"
+    }
 }
