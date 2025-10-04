@@ -45,6 +45,7 @@
     border: 2px solid white;
     cursor: pointer;
     user-select: none;
+    touch-action: none;
 }
 
 .buttons {

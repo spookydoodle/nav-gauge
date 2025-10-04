@@ -40,10 +40,10 @@ export const Player: FC<Props> = ({
         [progressMs, routeTimes?.duration]
     );
 
-    const startDragging = (clientX: number, event: React.MouseEvent | React.TouchEvent) => {
+    const startDragging = (type: 'mouse' | 'touch', clientX: number, event: React.MouseEvent | React.TouchEvent) => {
         onIsPlayingChange(false);
         setDragState({
-            type: 'mouse',
+            type,
             isPlaying,
             startProgressPercentage: progressPercentage ?? 0,
             width: event.currentTarget.parentElement?.clientWidth ?? 0,
@@ -62,7 +62,7 @@ export const Player: FC<Props> = ({
     }
 
     const handleThumbMouseDown = (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-        startDragging(event.clientX, event);
+        startDragging('mouse', event.clientX, event);
     };
 
     useEffect(() => {
@@ -89,7 +89,7 @@ export const Player: FC<Props> = ({
     }, [dragState?.type]);
 
     const handleThumbTouchStart = (event: React.TouchEvent<HTMLSpanElement>) => {
-        startDragging(event.touches[0]?.clientX ?? 0, event);
+        startDragging('touch', event.touches[0]?.clientX ?? 0, event);
     };
 
     useEffect(() => {
@@ -97,6 +97,7 @@ export const Player: FC<Props> = ({
             return;
         }
         const touchMoveHander = (event: TouchEvent) => {
+        event.preventDefault();
             drag(event.touches[0]?.clientX ?? 0);
         };
         const touchEndHandler = () => {
@@ -104,7 +105,8 @@ export const Player: FC<Props> = ({
             document.removeEventListener('touchmove', touchMoveHander);
             document.removeEventListener('touchend', touchEndHandler);
         };
-        document.addEventListener('touchmove', touchMoveHander);
+
+        document.addEventListener('touchmove', touchMoveHander, { passive: false });
         document.addEventListener('touchend', touchEndHandler);
 
         return () => {
@@ -117,12 +119,10 @@ export const Player: FC<Props> = ({
         if (!dragState || !routeTimes) {
             return;
         }
-        onProgressMsChange((prev) => {
-            const diffPercentage = Number(((dragState.currentClientX - dragState.startClientX) / dragState.width * 100).toFixed(0));
-            const nextPercentage = dragState.startProgressPercentage + diffPercentage;
-            const clampedPercentage = (Math.max(0, Math.min(100, nextPercentage)));
-            return (clampedPercentage / 100) * routeTimes.duration;
-        });
+        const diffPercentage = Number(((dragState.currentClientX - dragState.startClientX) / dragState.width * 100).toFixed(0));
+        const nextPercentage = dragState.startProgressPercentage + diffPercentage;
+        const clampedPercentage = (Math.max(0, Math.min(100, nextPercentage)));
+        onProgressMsChange((clampedPercentage / 100) * routeTimes.duration);
     }, [dragState?.currentClientX]);
 
     return (
@@ -133,7 +133,7 @@ export const Player: FC<Props> = ({
             <div className={styles.slider} style={{
                 '--track-complete': `${progressPercentage ?? 0}%`
             } as CSSProperties}>
-                <span className={styles.thumb} onMouseDown={handleThumbMouseDown} onTouchStart={e => handleThumbTouchStart} />
+                <span className={styles.thumb} onMouseDown={handleThumbMouseDown} onTouchStart={handleThumbTouchStart} />
             </div>
             <div className={styles.buttons}>
                 <p className={styles.text}>
