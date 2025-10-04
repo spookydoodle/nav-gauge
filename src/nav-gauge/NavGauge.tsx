@@ -93,7 +93,9 @@ export const NavGauge: FC = () => {
                     <hr className={styles.divider} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                 </div>
-                <MapSection geojson={geojson} boundingBox={boundingBox} />
+                <div className={styles["main-area"]}>
+                    <MapSection geojson={geojson} boundingBox={boundingBox} />
+                </div>
             </div>
         </GaugeContext.Provider>
     );

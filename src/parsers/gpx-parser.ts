@@ -1,6 +1,6 @@
 import { gpx } from '@tmcw/togeojson';
 import { FileToGeoJSONParser } from './file-parser';
-import { KnownErrorCauses, ParsingResult } from './model';
+import { ParsingResult } from './model';
 import { createFeature, getMissingTimeInformationError, getUnsupportedGeometryError } from './utils';
 
 export class GpxParser extends FileToGeoJSONParser {

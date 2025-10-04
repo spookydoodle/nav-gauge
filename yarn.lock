@@ -1774,6 +1774,13 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
 
+"@types/exif-js@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@types/exif-js/-/exif-js-2.3.1.tgz#abd9de21ecc722036a3cf1a28dc8923d19497541"
+  integrity sha512-vylc2UhpCygw5i1cNA0m+acpq+Ufs3m9ekFJhZ7+PZyDECh05qfmRtgJE0y9QLFZo0hnvHfP+lVkPM746of5Uw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/express-serve-static-core@*", "@types/express-serve-static-core@^5.0.0":
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-5.0.7.tgz#2fa94879c9d46b11a5df4c74ac75befd6b283de6"
@@ -3268,6 +3275,11 @@ eventemitter3@^4.0.0:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
+
+exif-js@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/exif-js/-/exif-js-2.3.0.tgz#9d10819bf571f873813e7640241255ab9ce1a814"
+  integrity sha512-1Og9pAzG2FZRVlaavH8bB8BTeHcjMdJhKmeQITkX+uLRCD0xPtKAdZ2clZmQdJ56p9adXtJ8+jwrGp/4505lYg==
 
 exit-hook@^4.0.0:
   version "4.0.0"

@@ -90,7 +90,7 @@ export const GaugeControls: FC<Props> = ({
                             key={el}
                             id={`controls-${el}`}
                             name={`controls-${el}`}
-                            label="Offset {el} (px)"
+                            label={`Offset ${el} (px)`}
                             type='number'
                             value={reverseFactor * controlPlacement[el]}
                             onChange={(event) => onGaugeConrolsChange((prev) => !isNaN(Number(event.target.value))

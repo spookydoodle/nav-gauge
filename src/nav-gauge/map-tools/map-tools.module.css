@@ -2,6 +2,7 @@
     --toolbox-size: 30px;
 
     position: relative;
+    height: 100%;
     display: grid;
     grid-template-columns: var(--toolbox-size) auto var(--toolbox-size);
     grid-template-rows: var(--toolbox-size) auto var(--toolbox-size);
