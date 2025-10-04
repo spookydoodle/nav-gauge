@@ -86,18 +86,22 @@ export const NavGauge: FC = () => {
     const handleInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
         setGeoJson({});
 
-        const file = event.target.files?.item(0);
-        if (!file) {
+        const { files } = event.target;
+        if (!files || files.length === 0) {
             return;
         }
-        if (file.type.includes('image')) {
-            readImage(file);
-            return;
+        for (let i = 0; i < files.length; i++) {
+            const file = files.item(i)!;
+            if (file.type.includes('image')) {
+                readImage(file);
+                continue;
+            }
+            parsers
+                .get(FileToGeoJSONParser.getFileExtension(file))
+                ?.parse(file)
+                .then((result => setGeoJson(result ?? { error: new Error('No parser found for file.') })));
+            
         }
-
-        const fileExtension = FileToGeoJSONParser.getFileExtension(file);
-        const result = await parsers.get(fileExtension)?.parse(file);
-        setGeoJson(result ?? { error: new Error('No parser found for file.') });
     };
 
     return (
@@ -109,7 +113,7 @@ export const NavGauge: FC = () => {
             } as unknown as CSSProperties}>
                 <div className={styles["side-panel"]}>
                     <div>
-                        <input id="files" type="file" accept={[...parsers.keys(), "image/png", "image/jpeg", "image/jpg"].join(', ')} onChange={handleInput} />
+                        <input id="files" type="file" multiple accept={[...parsers.keys(), "image/png", "image/jpeg", "image/jpg"].join(', ')} onChange={handleInput} />
                         <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
                     </div>
                     <hr className={styles.divider} />

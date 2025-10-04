@@ -3,7 +3,7 @@ import { ImageData, parseImage } from "../parsers";
 
 export const useImageReader = (): [ImageData[], (file: File) => void] => {
     const [images, setImages] = useState<ImageData[]>([]);
-
+console.log(images)
     const readImage = (file: File) => {
         const reader = new FileReader();
 
