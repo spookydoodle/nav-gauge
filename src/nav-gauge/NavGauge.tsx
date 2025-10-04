@@ -84,7 +84,6 @@ export const NavGauge: FC = () => {
     }, []);
 
     const handleInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        setGeoJson({});
 
         const { files } = event.target;
         if (!files || files.length === 0) {
@@ -96,6 +95,7 @@ export const NavGauge: FC = () => {
                 readImage(file);
                 continue;
             }
+            setGeoJson({});
             parsers
                 .get(FileToGeoJSONParser.getFileExtension(file))
                 ?.parse(file)

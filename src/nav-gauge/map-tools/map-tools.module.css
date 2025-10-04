@@ -1,6 +1,6 @@
 .container {
     --toolbox-size: 30px;
-    --toolbox-bottom-size: 80px;
+    --toolbox-bottom-size: 70px;
 
     position: relative;
     height: 100%;

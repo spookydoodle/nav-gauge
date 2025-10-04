@@ -48,9 +48,9 @@ export const MapSection: React.FC<Props> = ({
                 images={images}
                 routeTimes={routeTimes}
                 progressMs={progressMs}
+                onProgressMsChange={setProgressMs}
                 isPlaying={isPlaying}
                 onIsPlayingChange={setIsPlaying}
-                onStop={(() => setProgressMs(0))}
             />}
         >
             {geojson && boundingBox && routeTimes
