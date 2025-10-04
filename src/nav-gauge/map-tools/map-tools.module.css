@@ -1,10 +1,12 @@
 .container {
     --toolbox-size: 30px;
+    --toolbox-bottom-size: 70px;
 
     position: relative;
+    height: 100%;
     display: grid;
     grid-template-columns: var(--toolbox-size) auto var(--toolbox-size);
-    grid-template-rows: var(--toolbox-size) auto var(--toolbox-size);
+    grid-template-rows: var(--toolbox-size) auto var(--toolbox-bottom-size);
     grid-template-areas:
         "toolbox-left toolbox-top toolbox-right"
         "toolbox-left map toolbox-right"

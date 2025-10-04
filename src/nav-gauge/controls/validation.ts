@@ -14,10 +14,13 @@ export const validateMapLayout = (mapLayout: Partial<MapLayout>) => {
     if (mapLayout.boxShadow && typeof mapLayout.boxShadow !== 'string') {
         throw new Error('Box shadow should be of type string');
     }
-    if (mapLayout.height && typeof mapLayout.height !== 'number') {
+    if (mapLayout.size?.type && !['full-screen', 'manual'].includes(mapLayout.size.type)) {
+        throw new Error('Size type should be of type full-screen or manual');
+    }
+    if (mapLayout.size?.height && typeof mapLayout.size.height !== 'number') {
         throw new Error('Height should be of type number');
     }
-    if (mapLayout.width && typeof mapLayout.width !== 'number') {
+    if (mapLayout.size?.width && typeof mapLayout.size.width !== 'number') {
         throw new Error('Width should be of type number');
     }
     if (mapLayout.innerBorderColor && typeof mapLayout.innerBorderColor !== 'string') {

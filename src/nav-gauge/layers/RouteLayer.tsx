@@ -163,6 +163,14 @@ export const RouteLayer: FC<Props> = ({
     }, [isPlaying, isLayerAdded]);
 
     useEffect(() => {
+        if (isPlaying) {
+            return;
+        }
+        const { startTimeEpoch } = routeTimes;
+        map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(getData(geojson, startTimeEpoch, progressMs));
+    }, [progressMs]);
+
+    useEffect(() => {
         if (progressMs === 0) {
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(getData(geojson, routeTimes.startTimeEpoch, 0));
         }

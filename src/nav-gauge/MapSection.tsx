@@ -1,20 +1,23 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { MapTools } from "./map-tools/MapTools";
 import { RouteLayer, RouteTimes } from "./layers/RouteLayer";
 import { RouteLayerFitBounds } from "./layers/RouteLayerFitBounds";
 import { Player } from "./player/Player";
-import { GeoJson } from "../parsers";
+import { GeoJson, ImageData } from "../parsers";
 
 interface Props {
     geojson?: GeoJson;
     boundingBox?: GeoJSON.BBox;
+    images: ImageData[];
 }
 
 export const MapSection: React.FC<Props> = ({
     geojson,
     boundingBox,
+    images,
 }) => {
     const [isPlaying, setIsPlaying] = useState(false);
+
     const routeTimes = useMemo(
         (): RouteTimes | undefined => {
             if (!geojson?.features[0]) {
@@ -35,18 +38,19 @@ export const MapSection: React.FC<Props> = ({
         },
         [geojson]
     );
-    
+
     const [progressMs, setProgressMs] = useState(0);
 
     return (
         <MapTools
             toolsLeft={<RouteLayerFitBounds boundingBox={boundingBox} />}
             toolsBottom={<Player
+                images={images}
                 routeTimes={routeTimes}
                 progressMs={progressMs}
+                onProgressMsChange={setProgressMs}
                 isPlaying={isPlaying}
                 onIsPlayingChange={setIsPlaying}
-                onStop={(() => setProgressMs(0))}
             />}
         >
             {geojson && boundingBox && routeTimes

@@ -26,9 +26,13 @@ describe("Preset", () => {
                 expect(() => validateMapLayout({ boxShadow: "10px 10px red" })).to.not.throw();
                 expect(() => validateMapLayout({ boxShadow: true } as unknown as MapLayout)).to.throw("Box shadow should be of type string");
             });
+            it("should throw if map size type incorrect", () => {
+                expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
+                expect(() => validateMapLayout({ size: { type: 'boo' } } as unknown as MapLayout)).to.throw("Size type should be of type full-screen or manual");
+            });
             it("should throw if height incorrect", () => {
-                expect(() => validateMapLayout({ height: 12 })).to.not.throw();
-                expect(() => validateMapLayout({ height: true } as unknown as MapLayout)).to.throw("Height should be of type number");
+                expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
+                expect(() => validateMapLayout({ size: { height: true } } as unknown as MapLayout)).to.throw("Height should be of type number");
             });
             it("should throw if inner border color incorrect", () => {
                 expect(() => validateMapLayout({ innerBorderColor: "#ff00ff" })).to.not.throw();
@@ -43,8 +47,8 @@ describe("Preset", () => {
                 expect(() => validateMapLayout({ innerBoxShadow: true } as unknown as MapLayout)).to.throw("Inner box shadow should be of type string");
             });
             it("should throw if width incorrect", () => {
-                expect(() => validateMapLayout({ width: 20 })).to.not.throw();
-                expect(() => validateMapLayout({ width: true } as unknown as MapLayout)).to.throw("Width should be of type number");
+                expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
+                expect(() => validateMapLayout({ size: { width: true } } as unknown as MapLayout)).to.throw("Width should be of type number");
             });
         });
 

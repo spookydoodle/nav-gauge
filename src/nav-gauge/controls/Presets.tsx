@@ -1,10 +1,10 @@
 import { FC, useEffect } from "react";
 import { ControlPlacement, defaultGaugeControls, GaugeControls } from "./GaugeControls";
-import { defaultMapLayout, MapLayout } from "./MapLayoutControls";
+import { defaultMapLayout, racingGameMapLayout, MapLayout } from "./MapLayoutControls";
 import { validateGaugeControls, validateMapLayout } from "./validation";
 import * as styles from './controls.module.css';
 
-export type Preset = 'default' | 'test1' | '';
+export type Preset = 'default' | 'racing-game' | 'test1' | '';
 
 export interface PresetOption {
     value: Preset;
@@ -21,12 +21,9 @@ const options: PresetOption[] = [
         gaugeControls: defaultGaugeControls,
     },
     {
-        value: 'test1',
-        label: 'Test 1',
-        mapLayout: {
-            ...defaultMapLayout,
-            borderColor: '#ffff00'
-        },
+        value: 'racing-game',
+        label: 'Racing game',
+        mapLayout: racingGameMapLayout,
         gaugeControls: defaultGaugeControls,
     },
 ];
@@ -110,7 +107,7 @@ export const Presets: FC<Props> = ({
             <div>
                 <label htmlFor="presets">Preset</label>
                 <select name="presets" id="presets" value={preset} onChange={handleChange}>
-                    <option value="" disabled selected>Custom</option>
+                    <option value="" disabled defaultValue="">Custom</option>
                     {options.map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.label}

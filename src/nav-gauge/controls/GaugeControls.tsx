@@ -21,6 +21,8 @@ export interface GaugeControls {
     controlPlacement: ControlPlacement;
     showRouteLine: boolean;
     showRoutePoints: boolean;
+    // TODO: Move to another settings section
+    confirmBeforeLeave: boolean;
 }
 
 export const defaultGaugeControls: GaugeControls = {
@@ -32,6 +34,7 @@ export const defaultGaugeControls: GaugeControls = {
     controlPlacement: { top: 0, bottom: 0, left: 0, right: 0 },
     showRouteLine: true,
     showRoutePoints: true,
+    confirmBeforeLeave: false,
 }
 
 interface Props {
@@ -52,6 +55,7 @@ export const GaugeControls: FC<Props> = ({
         controlPlacement,
         showRouteLine,
         showRoutePoints,
+        confirmBeforeLeave,
     } = gaugeControls;
 
     const placements = useMemo(
@@ -90,7 +94,7 @@ export const GaugeControls: FC<Props> = ({
                             key={el}
                             id={`controls-${el}`}
                             name={`controls-${el}`}
-                            label="Offset {el} (px)"
+                            label={`Offset ${el} (px)`}
                             type='number'
                             value={reverseFactor * controlPlacement[el]}
                             onChange={(event) => onGaugeConrolsChange((prev) => !isNaN(Number(event.target.value))
@@ -105,8 +109,8 @@ export const GaugeControls: FC<Props> = ({
             </div>
 
             <Input
-                id="controls-zoom"
-                name="controls-zoom"
+                id="controls-globe-projection"
+                name="controls-globe-projection"
                 label="Globe view"
                 labelPlacement="after"
                 type='checkbox'
@@ -168,6 +172,17 @@ export const GaugeControls: FC<Props> = ({
                 checked={showRoutePoints}
                 onChange={() => {}}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRoutePoints: !prev.showRoutePoints }))}
+                containerClassName={styles["checkbox"]}
+            />
+            <Input
+                id="confirm-before-leave"
+                name="confirm-before-leave"
+                label="Confirm before leave"
+                labelPlacement="after"
+                type='checkbox'
+                checked={confirmBeforeLeave}
+                onChange={() => {}}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, confirmBeforeLeave: !prev.confirmBeforeLeave }))}
                 containerClassName={styles["checkbox"]}
             />
         </>

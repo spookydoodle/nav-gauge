@@ -1,17 +1,18 @@
-:root {
-    --side-panel-width: 400px;
-}
-
 .layout {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 2fr;
-    height: calc(100vh - 70px);
+    grid-template-rows: 2fr max-content;
+    grid-template-areas:
+        "main main"
+        "side-panel side-panel";
+    height: calc(100vh - calc(var(--app-navbar-height) + var(--app-footer-height)));
     box-sizing: border-box;
 }
 
 .side-panel {
     display: grid;
+    grid-area: side-panel;
+    height: var(--side-panel-height-sm);
     column-gap: 10px;
     row-gap: 10px;
     grid-template-columns: 1fr;
@@ -31,13 +32,22 @@
     }
 }
 
+.main-area {
+    grid-area: main;
+    position: relative;
+}
+
 @media screen and (min-width: 800px) {
     .layout {
         grid-template-columns: var(--side-panel-width) auto;
         grid-template-rows: 1fr;
+        grid-template-areas:
+            "side-panel main"
+            "side-panel main";
     }
 
     .side-panel {
+        height: initial;
         border-right: 1px solid #66666E;
 
         @starting-style {
