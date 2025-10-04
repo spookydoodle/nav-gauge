@@ -1,7 +1,13 @@
+:root {
+    --app-navbar-height: 40px;
+    --app-footer-height: 20px;
+    --side-panel-width: 400px;
+}
+
 .navbar {
     padding: 10px 20px;
     box-sizing: border-box;
-    height: 50px;
+    height: var(--app-navbar-height);
     display: flex;
     align-items: center;
     border-bottom: 1px solid #66666E;
@@ -16,7 +22,7 @@
 .footer {
     margin-top: auto;
     padding: 0 20px;
-    height: 20px;
+    height: var(--app-footer-height);
     box-sizing: border-box;
     display: flex;
     justify-content: flex-end;

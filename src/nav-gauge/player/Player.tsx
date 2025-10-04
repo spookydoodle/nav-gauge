@@ -1,8 +1,10 @@
 import { FC, useCallback, useMemo } from "react";
 import { RouteTimes } from "../layers/RouteLayer";
+import { ImageData } from "../../parsers";
 import * as styles from './player.module.css';
 
 interface Props {
+    images: ImageData[];
     progressMs: number;
     routeTimes?: RouteTimes;
     isPlaying: boolean;
@@ -11,31 +13,25 @@ interface Props {
 }
 
 export const Player: FC<Props> = ({
+    images,
     progressMs,
     routeTimes,
     isPlaying,
     onIsPlayingChange,
     onStop
 }) => {
-    const handlePlayClick = useCallback(
-        () => onIsPlayingChange((prev) => !prev),
-        []
-    );
+    const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
 
-    const handleStop = useCallback(
-        () => {
-            onIsPlayingChange(false);
-            onStop();
-        },
-        [onIsPlayingChange, onStop]
-    );
+    const handleStop = () => {
+        onIsPlayingChange(false);
+        onStop();
+    };
 
     const progress = useMemo(
         (): string => {
             if (!routeTimes) {
                 return '-';
             }
-
             return (progressMs / routeTimes.duration * 100).toFixed(0) + '%';
         },
         [progressMs, routeTimes?.duration]

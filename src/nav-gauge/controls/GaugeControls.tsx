@@ -34,7 +34,7 @@ export const defaultGaugeControls: GaugeControls = {
     controlPlacement: { top: 0, bottom: 0, left: 0, right: 0 },
     showRouteLine: true,
     showRoutePoints: true,
-    confirmBeforeLeave: true,
+    confirmBeforeLeave: false,
 }
 
 interface Props {

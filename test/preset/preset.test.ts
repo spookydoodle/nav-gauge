@@ -32,7 +32,7 @@ describe("Preset", () => {
             });
             it("should throw if height incorrect", () => {
                 expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
-                expect(() => validateMapLayout({size: { height: true }} as unknown as MapLayout)).to.throw("Height should be of type number");
+                expect(() => validateMapLayout({ size: { height: true } } as unknown as MapLayout)).to.throw("Height should be of type number");
             });
             it("should throw if inner border color incorrect", () => {
                 expect(() => validateMapLayout({ innerBorderColor: "#ff00ff" })).to.not.throw();

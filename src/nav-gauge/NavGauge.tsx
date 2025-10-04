@@ -124,7 +124,7 @@ export const NavGauge: FC = () => {
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                 </div>
                 <div className={styles["main-area"]}>
-                    <MapSection geojson={geojson} boundingBox={boundingBox} />
+                    <MapSection geojson={geojson} boundingBox={boundingBox} images={images} />
                 </div>
             </div>
         </GaugeContext.Provider>
