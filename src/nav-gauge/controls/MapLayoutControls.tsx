@@ -3,8 +3,11 @@ import { Input, TextArea } from "../../components";
 import * as styles from './controls.module.css';
 
 export interface MapLayout {
-    width: number;
-    height: number;
+    size: {
+        type: 'manual' | 'full-screen',
+        width: number;
+        height: number;
+    };
     borderWidth: number;
     borderColor: string;
     innerBorderWidth: number;
@@ -15,8 +18,26 @@ export interface MapLayout {
 };
 
 export const defaultMapLayout: MapLayout = {
-    width: 400,
-    height: 400,
+    size: {
+        type: 'full-screen',
+        width: 400,
+        height: 400
+    },
+    borderWidth: 0,
+    borderColor: '#000',
+    borderRadius: '0',
+    innerBorderWidth: 0,
+    innerBorderColor: '#000000',
+    boxShadow: '',
+    innerBoxShadow: '',
+};
+
+export const racingGameMapLayout: MapLayout = {
+    size: {
+        type: 'manual',
+        width: 400,
+        height: 400
+    },
     borderWidth: 5,
     borderColor: '#ff0000',
     borderRadius: '50%',
@@ -38,13 +59,33 @@ export const MapLayoutControls: FC<Props> = ({
     return (
         <div className={styles["section"]}>
             <Input
+                id="map-size"
+                name="map-size"
+                label="Full screen"
+                labelPlacement="after"
+                type='checkbox'
+                checked={mapLayout.size.type === 'full-screen'}
+                onChange={() => {}}
+                onContainerClick={() => onMapLayoutChange((prev) => ({
+                    ...prev, size: {
+                        ...prev.size,
+                        type: prev.size.type === 'full-screen' 
+                            ? 'manual' 
+                            : 'full-screen'
+                    }
+                }))}
+                containerClassName={styles["checkbox"]}
+            />
+            <div />
+            <Input
                 id="map-width"
                 name="map-width"
                 label="Width (px)"
                 type='number'
+                disabled={mapLayout.size.type === 'full-screen'}
                 autoSelect
                 min={0}
-                value={mapLayout.width}
+                value={mapLayout.size.width}
                 onChange={(event) => {
                     if (!isNaN(Number(event.target.value))) {
                         onMapLayoutChange((prev) => ({
@@ -59,9 +100,10 @@ export const MapLayoutControls: FC<Props> = ({
                 name="map-height"
                 label="Height (px)"
                 type='number'
+                disabled={mapLayout.size.type === 'full-screen'}
                 autoSelect
                 min={0}
-                value={mapLayout.height}
+                value={mapLayout.size.height}
                 onChange={(event) => {
                     if (!isNaN(Number(event.target.value))) {
                         onMapLayoutChange((prev) => ({ ...prev, height: Number(event.target.value) }));

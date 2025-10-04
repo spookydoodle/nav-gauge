@@ -60,8 +60,8 @@ export const NavGauge: FC = () => {
 
     const mapLayoutCssStyle = useMemo(
         () => ({
-            '--map-width': mapLayout.width + 'px',
-            '--map-height': mapLayout.height + 'px',
+            '--map-width': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.width}px`,
+            '--map-height': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.height}px`,
             '--map-border-width': mapLayout.borderWidth + 'px',
             '--map-border-color': mapLayout.borderColor,
             '--map-inner-border-width': mapLayout.innerBorderWidth + 'px',
