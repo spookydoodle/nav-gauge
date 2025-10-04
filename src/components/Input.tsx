@@ -31,10 +31,13 @@ export const Input: FC<Props & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLIn
         onClick?.(event);
     };
 
-    const labelComponent = <label htmlFor={id}>{label}</label>;
+    const labelComponent = <label htmlFor={id} onClick={(e) => e.stopPropagation()}>{label}</label>;
 
     return (
-        <div onClick={onContainerClick} className={containerClassName}>
+        <div
+            onClick={onContainerClick}
+            className={containerClassName}
+        >
             {labelPlacement === 'before' ? labelComponent : null}
             <input {...props} id={id} name={name} onClick={handleClick} />
             {labelPlacement === 'after' ? labelComponent : null}

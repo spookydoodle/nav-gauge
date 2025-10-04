@@ -16,7 +16,7 @@
 .side-panel {
     display: grid;
     grid-area: side-panel;
-    height: 200px;
+    height: var(--side-panel-height-sm);
     column-gap: 10px;
     row-gap: 10px;
     grid-template-columns: 1fr;

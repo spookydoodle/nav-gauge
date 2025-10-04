@@ -110,7 +110,7 @@ export const Presets: FC<Props> = ({
             <div>
                 <label htmlFor="presets">Preset</label>
                 <select name="presets" id="presets" value={preset} onChange={handleChange}>
-                    <option value="" disabled selected>Custom</option>
+                    <option value="" disabled defaultValue="">Custom</option>
                     {options.map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.label}

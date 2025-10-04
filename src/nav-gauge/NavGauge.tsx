@@ -6,6 +6,7 @@ import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLa
 import { defaultGaugeControls, GaugeControls } from "./controls/GaugeControls";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../gauge-settings/gauge-settings";
+import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
@@ -13,9 +14,25 @@ import * as styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
+    const [images, readImage] = useImageReader();
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControls>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
+
+    useEffect(() => {
+        if (!gaugeControls.confirmBeforeLeave || (!geojson && images.length === 0)) {
+            return;
+        }
+        const confirmationHandler = (event: BeforeUnloadEvent) => {
+            event.preventDefault();
+            return "Route and image data will be lost.";
+        };
+        window.addEventListener("beforeunload", confirmationHandler);
+
+        return () => {
+            window.removeEventListener('beforeunload', confirmationHandler);
+        }
+    }, [gaugeControls.confirmBeforeLeave, images, geojson]);
 
     const handlePresetChange = (preset: Preset, presetMapLayout?: MapLayout, presetGaugeControls?: GaugeControls) => {
         setPreset(preset);
@@ -29,8 +46,8 @@ export const NavGauge: FC = () => {
 
     const controlsCssStyle = useMemo(
         () => {
-            const { top, bottom, right, left  } = gaugeControls.controlPlacement;
-            
+            const { top, bottom, right, left } = gaugeControls.controlPlacement;
+
             switch (gaugeControls.controlPosition) {
                 case 'top-left': return { '--ctrl-top': top + 'px', '--ctrl-left': left + 'px' }
                 case 'top-right': return { '--ctrl-top': top + 'px', '--ctrl-right': right + 'px' }
@@ -73,6 +90,11 @@ export const NavGauge: FC = () => {
         if (!file) {
             return;
         }
+        if (file.type.includes('image')) {
+            readImage(file);
+            return;
+        }
+
         const fileExtension = FileToGeoJSONParser.getFileExtension(file);
         const result = await parsers.get(fileExtension)?.parse(file);
         setGeoJson(result ?? { error: new Error('No parser found for file.') });
@@ -80,10 +102,14 @@ export const NavGauge: FC = () => {
 
     return (
         <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout }}>
-            <div className={styles.layout} style={{ ...controlsCssStyle, ...mapLayoutCssStyle } as CSSProperties}>
+            <div className={styles.layout} style={{
+                ...controlsCssStyle,
+                ...mapLayoutCssStyle,
+                '--side-panel-height-sm': "240px",
+            } as unknown as CSSProperties}>
                 <div className={styles["side-panel"]}>
                     <div>
-                        <input type="file" accept={[...parsers.keys()].join(', ')} onChange={handleInput} />
+                        <input id="files" type="file" accept={[...parsers.keys(), "image/png", "image/jpeg", "image/jpg"].join(', ')} onChange={handleInput} />
                         <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
                     </div>
                     <hr className={styles.divider} />

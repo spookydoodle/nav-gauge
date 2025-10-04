@@ -1,3 +1,4 @@
+export { type ExifData, type ImageData, parseImage } from './image-parser';
 import { FileToGeoJSONParser } from './file-parser';
 import { GpxParser } from './gpx-parser';
 import { KmlParser } from './kml-parser';
