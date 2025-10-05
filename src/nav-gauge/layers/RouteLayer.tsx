@@ -204,7 +204,7 @@ export const RouteLayer: FC<Props> = ({
 
         const animate = () => {
             current += 10000;
-            if (startTimeEpoch + current > endTimeEpoch) {
+            if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
             const [currentPoint, lines] = getData(geojson, startTimeEpoch, current);
