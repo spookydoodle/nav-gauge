@@ -3,7 +3,7 @@ import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
 import { useMap } from "../../map/useMap";
-import { GeoJson } from "../../parsers";
+import { GeoJson, ImageData } from "../../parsers";
 import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
 
 export interface RouteTimes {
@@ -28,7 +28,8 @@ const layerIds = {
     currentPointOutline: 'route-current-point-outline',
     currentPoint: 'route-current-point',
     points: 'route-points',
-    line: 'route-line'
+    line: 'route-line',
+    images: 'route-image'
 }
 
 const getCurrentPoint = (
@@ -53,7 +54,7 @@ const getCurrentPoint = (
 const getData = (
     geojson: GeoJson,
     startTimeEpoch: number,
-    progressMs: number
+    progressMs: number,
 ): [GeoJSON.Feature<GeoJSON.Point>, GeoJSON.GeoJSON] => {
     const currentTime = startTimeEpoch + progressMs;
     const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf());
@@ -92,6 +93,7 @@ interface Props {
     routeTimes: RouteTimes;
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
+    images: ImageData[];
 }
 
 export const RouteLayer: FC<Props> = ({
@@ -99,25 +101,26 @@ export const RouteLayer: FC<Props> = ({
     geojson,
     routeTimes,
     progressMs,
-    onProgressMsChange
+    onProgressMsChange,
+    images
 }) => {
     const { map } = useMap();
     const { showRouteLine, showRoutePoints } = useGaugeSettings();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
-    const [currentPoint, lines] = getData(geojson, routeTimes.startTimeEpoch, progressMs);
 
     useEffect(() => {
-        map.addSource(sourceIds.currentPoint, {
-            type: 'geojson',
-            data: currentPoint,
-        });
-
+        const [currentPoint, lines] = getData(geojson, routeTimes.startTimeEpoch, progressMs);
         if (showRouteLine || showRoutePoints) {
             map.addSource(sourceIds.line, {
                 type: 'geojson',
                 data: lines,
             });
         }
+        
+        map.addSource(sourceIds.currentPoint, {
+            type: 'geojson',
+            data: currentPoint,
+        });
 
         if (showRouteLine) {
             map.addLayer({
@@ -192,7 +195,7 @@ export const RouteLayer: FC<Props> = ({
                 }
             }
         };
-    }, [map, geojson, showRouteLine, showRoutePoints]);
+    }, [map, geojson, showRouteLine, showRoutePoints, images]);
 
     useEffect(() => {
         if (!isPlaying || !isLayerAdded) {
@@ -210,6 +213,7 @@ export const RouteLayer: FC<Props> = ({
             const [currentPoint, lines] = getData(geojson, startTimeEpoch, current);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
+            // TODO: Calculate % of geometry done based on current progressMs and update paint property line gradient instead of all data.
             onProgressMsChange(current);
             animation = requestAnimationFrame(animate);
         };
@@ -224,21 +228,13 @@ export const RouteLayer: FC<Props> = ({
     }, [isPlaying, isLayerAdded]);
 
     useEffect(() => {
-    }, [progressMs]);
-
-    useEffect(() => {
-        if (progressMs === 0) {
-            const [currentPoint, lines] = getData(geojson, routeTimes.startTimeEpoch, 0);
-            map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
-            map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
+        if (isPlaying) {
+            return;
         }
-
-        if (!isPlaying) {
-            const { startTimeEpoch } = routeTimes;
-            const [currentPoint, lines] = getData(geojson, startTimeEpoch, progressMs);
-            map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
-            map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
-        }
+        const { startTimeEpoch } = routeTimes;
+        const [currentPoint, lines] = getData(geojson, startTimeEpoch, progressMs);
+        map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
+        map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
     }, [progressMs]);
 
     return null;

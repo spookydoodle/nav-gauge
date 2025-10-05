@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { ImageData, parseImage } from "../parsers";
+import turfDistance from "@turf/distance";
+import * as turfHelpers from "@turf/helpers";
+import { GeoJson, ImageData, parseImage } from "../parsers";
+import { RouteTimes } from "../nav-gauge/layers/RouteLayer";
 
-export const useImageReader = (): [ImageData[], (file: File) => void] => {
+export const useImageReader = (
+    geojson?: GeoJson,
+    routeTimes?: RouteTimes
+): [ImageData[], (file: File) => void] => {
     const [images, setImages] = useState<ImageData[]>([]);
-console.log(images)
+
     const readImage = (file: File) => {
         const reader = new FileReader();
 
@@ -37,7 +43,26 @@ console.log(images)
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
-                nextImages[index] = { ...nextImages[index], progress: 100, lngLat, data, exif, error }
+
+                const [time] = !geojson || !lngLat
+                    ? []
+                    : geojson.features.reduce<[string, number]>((acc, val, i) => {
+                        const from = turfHelpers.point([lngLat.lng, lngLat.lat]);
+                        const to = turfHelpers.point(val.geometry.coordinates);
+                        const distance = turfDistance(from, to, { units: 'meters' });
+
+                        return distance < acc[1] ? [val.properties.time, distance] : acc;
+                    }, ['', Infinity]);
+
+                nextImages[index] = {
+                    ...nextImages[index],
+                    progress: 100,
+                    lngLat,
+                    data,
+                    exif,
+                    error,
+                    time,
+                }
                 return nextImages;
             });
         };
