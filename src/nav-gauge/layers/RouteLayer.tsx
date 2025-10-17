@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import maplibregl from "maplibre-gl";
 import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
@@ -6,6 +7,23 @@ import { useMap } from "../../map/useMap";
 import { GeoJson, ImageData } from "../../parsers";
 import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
 
+const clearLayersAndSources = (
+    map: maplibregl.Map,
+    layerIds: string[],
+    sourceIds: string[]
+) => {
+
+    for (const id of layerIds) {
+        if (map.getLayer(id)) {
+            map.removeLayer(id);
+        }
+    }
+    for (const id of sourceIds) {
+        if (map.getSource(id)) {
+            map.removeSource(id);
+        }
+    }
+};
 export interface RouteTimes {
     startTime: string;
     endTime: string;
@@ -22,6 +40,7 @@ const sourceId = 'route';
 const sourceIds = {
     currentPoint: sourceId + '-current-point',
     line: sourceId + '-line',
+    image: sourceId + '-image',
 }
 
 const layerIds = {
@@ -29,7 +48,7 @@ const layerIds = {
     currentPoint: 'route-current-point',
     points: 'route-points',
     line: 'route-line',
-    images: 'route-image'
+    images: 'route-image',
 }
 
 const getCurrentPoint = (
@@ -116,7 +135,7 @@ export const RouteLayer: FC<Props> = ({
                 data: lines,
             });
         }
-        
+
         map.addSource(sourceIds.currentPoint, {
             type: 'geojson',
             data: currentPoint,
@@ -184,18 +203,73 @@ export const RouteLayer: FC<Props> = ({
 
         return () => {
             setIsLayerAdded(false);
-            for (const id of Object.values(layerIds)) {
-                if (map.getLayer(id)) {
-                    map.removeLayer(id);
-                }
-            }
-            for (const id of Object.values(sourceIds)) {
-                if (map.getSource(id)) {
-                    map.removeSource(id);
-                }
-            }
+            clearLayersAndSources(
+                map, 
+                [layerIds.line, layerIds.points, layerIds.currentPointOutline, layerIds.currentPoint],
+                [sourceIds.line, sourceIds.currentPoint]
+            );
         };
-    }, [map, geojson, showRouteLine, showRoutePoints, images]);
+    }, [map, geojson, showRouteLine, showRoutePoints]);
+
+    useEffect(() => {
+        const loadedImages = images.filter((image) => image.data && image.lngLat && image.time && !image.error);
+        if (loadedImages.length === 0) {
+            return;
+        }
+        const markers: maplibregl.Marker[] = [];
+        const markerElements: HTMLElement[] = [];
+        for (const image of loadedImages) {
+            const el = document.createElement('img');
+            el.src = image.data!;
+            markerElements.push(el);
+
+            el.className = 'marker';
+            el.style.display = "block";
+            el.style.objectFit = 'contain';
+            el.style.width = `30px`;
+            el.style.height = `30px`;
+            el.style.borderRadius = "50%";
+            el.style.border = "2px solid white";
+
+            markers.push(new maplibregl.Marker({
+                element: el,
+            })
+                .setLngLat([image.lngLat!.lng, image.lngLat!.lat])
+                .addTo(map));
+        }
+        
+        map.addSource(sourceIds.image, {
+            type: 'geojson',
+            data: {
+                type: 'FeatureCollection',
+                features: loadedImages.map((image): GeoJSON.Feature<GeoJSON.Point> => ({
+                    type: 'Feature',
+                    geometry: geojson.features.find((f) => f.properties.time === image.time)?.geometry!,
+                    properties: {}
+                }))
+                    .filter((el) => !!el.geometry)
+            }
+        });
+
+        map.addLayer({
+            id: layerIds.images,
+            type: 'circle',
+            source: sourceIds.image,
+            paint: {
+                'circle-color': "red",
+                "circle-radius": 5
+            }
+        });
+
+        return () => {
+            markers.forEach((marker) => marker.remove());
+            clearLayersAndSources(
+                map,
+                [layerIds.images],
+                [sourceIds.image]
+            );
+        };
+    }, [map, images]);
 
     useEffect(() => {
         if (!isPlaying || !isLayerAdded) {

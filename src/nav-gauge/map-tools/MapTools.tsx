@@ -3,6 +3,7 @@ import maplibregl from "maplibre-gl";
 import classNames from "classnames";
 import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
 import { map, MapContext } from "../../map/map-context";
+import findIcon from '../../icons/find.svg';
 import * as styles from './map-tools.module.css';
 import './map.css';
 
@@ -131,6 +132,31 @@ export const MapTools: FC<Props> = ({
             map.off('style.load', projectionHandler);
         };
     }, [isStyleLoaded, globeProjection]);
+
+    useEffect(() => {
+        if (!isInitialized) {
+            return;
+        }
+        (async () => {
+            if (!map.hasImage('placeholder')) {
+                const image = new Image();
+                const promise = new Promise((resolve) => {
+                    image.onload = resolve;
+                });
+                image.src = findIcon;
+                await promise;
+                image.width = 20;
+                image.height = 20;
+                map.addImage('placeholder', image);
+            }
+        })();
+
+        return () => {
+            if (map.hasImage('placeholder')) {
+                map.removeImage('placeholder');
+            }
+        };
+    }, [isInitialized]);
 
     return (
         <MapContext.Provider value={{ map, mapZoom }}>

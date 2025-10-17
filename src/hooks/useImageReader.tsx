@@ -33,7 +33,8 @@ export const useImageReader = (
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
-                nextImages[index] = { ...nextImages[index], progress: Number((e.loaded / e.total * 100).toFixed(0)) }
+                nextImages[index] = { ...nextImages[index], progress: Number((e.loaded / e.total * 100).toFixed(0)) };
+
                 return nextImages;
             });
         };
@@ -46,7 +47,7 @@ export const useImageReader = (
 
                 const [time] = !geojson || !lngLat
                     ? []
-                    : geojson.features.reduce<[string, number]>((acc, val, i) => {
+                    : geojson.features.reduce<[string, number]>((acc, val) => {
                         const from = turfHelpers.point([lngLat.lng, lngLat.lat]);
                         const to = turfHelpers.point(val.geometry.coordinates);
                         const distance = turfDistance(from, to, { units: 'meters' });
