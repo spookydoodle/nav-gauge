@@ -45,15 +45,15 @@ export const useImageReader = (
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
 
-                const [time] = !geojson || !lngLat
+                const [id] = !geojson || !lngLat
                     ? []
-                    : geojson.features.reduce<[string, number]>((acc, val) => {
+                    : geojson.features.reduce<[number, number]>((acc, val) => {
                         const from = turfHelpers.point([lngLat.lng, lngLat.lat]);
                         const to = turfHelpers.point(val.geometry.coordinates);
                         const distance = turfDistance(from, to, { units: 'meters' });
 
-                        return distance < acc[1] ? [val.properties.time, distance] : acc;
-                    }, ['', Infinity]);
+                        return distance < acc[1] ? [val.properties.id, distance] : acc;
+                    }, [0, Infinity]);
 
                 nextImages[index] = {
                     ...nextImages[index],
@@ -62,8 +62,9 @@ export const useImageReader = (
                     data,
                     exif,
                     error,
-                    time,
-                }
+                    featureId: id,
+                };
+
                 return nextImages;
             });
         };
@@ -72,7 +73,8 @@ export const useImageReader = (
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
-                nextImages[index] = { ...nextImages[index], error: e.target?.error?.message ?? 'Cannot read file' }
+                nextImages[index] = { ...nextImages[index], error: e.target?.error?.message ?? 'Cannot read file' };
+
                 return nextImages;
             });
         };

@@ -34,7 +34,7 @@ export interface ImageData {
     data?: string;
     exif?: ExifData;
     error?: string;
-    time?: string;
+    featureId?: number;
 }
 
 export const parseImage = async (file: File, e: ProgressEvent<FileReader>): Promise<{ data?: string; exif?: ExifData; error?: string; lngLat?: maplibregl.LngLat; }> => {

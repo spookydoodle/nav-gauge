@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import ReactDOM from 'react-dom';
 import maplibregl from "maplibre-gl";
 import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
@@ -6,6 +7,7 @@ import turfLength from "@turf/length";
 import { useMap } from "../../map/useMap";
 import { GeoJson, ImageData } from "../../parsers";
 import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
+import { ImageMarker } from "./ImageMarker";
 
 const clearLayersAndSources = (
     map: maplibregl.Map,
@@ -204,47 +206,45 @@ export const RouteLayer: FC<Props> = ({
         return () => {
             setIsLayerAdded(false);
             clearLayersAndSources(
-                map, 
+                map,
                 [layerIds.line, layerIds.points, layerIds.currentPointOutline, layerIds.currentPoint],
                 [sourceIds.line, sourceIds.currentPoint]
             );
         };
     }, [map, geojson, showRouteLine, showRoutePoints]);
 
+    const [markers, setMarkers] = useState<[HTMLDivElement, ImageData][]>([]);
+
+    // TODO: Simplify
     useEffect(() => {
-        const loadedImages = images.filter((image) => image.data && image.lngLat && image.time && !image.error);
+        const loadedImages = images.filter((image) => image.data && image.lngLat && image.featureId !== undefined && !image.error);
         if (loadedImages.length === 0) {
             return;
         }
         const markers: maplibregl.Marker[] = [];
-        const markerElements: HTMLElement[] = [];
+        const components: [HTMLDivElement, ImageData][] = [];
         for (const image of loadedImages) {
-            const el = document.createElement('img');
-            el.src = image.data!;
-            markerElements.push(el);
-
-            el.className = 'marker';
-            el.style.display = "block";
-            el.style.objectFit = 'contain';
-            el.style.width = `30px`;
-            el.style.height = `30px`;
-            el.style.borderRadius = "50%";
-            el.style.border = "2px solid white";
-
+            const feature = geojson.features.find((feature) => feature.properties.id === image.featureId)
+            if (!feature) {
+                continue;
+            }
+            const markerEl = document.createElement('div');
             markers.push(new maplibregl.Marker({
-                element: el,
+                element: markerEl,
             })
-                .setLngLat([image.lngLat!.lng, image.lngLat!.lat])
+                .setLngLat([feature.geometry.coordinates[0], feature.geometry.coordinates[1]])
                 .addTo(map));
+            components.push([markerEl, image]);
         }
-        
+        setMarkers(components);
+
         map.addSource(sourceIds.image, {
             type: 'geojson',
             data: {
                 type: 'FeatureCollection',
                 features: loadedImages.map((image): GeoJSON.Feature<GeoJSON.Point> => ({
                     type: 'Feature',
-                    geometry: geojson.features.find((f) => f.properties.time === image.time)?.geometry!,
+                    geometry: geojson.features.find((f) => f.properties.id === image.id)?.geometry!,
                     properties: {}
                 }))
                     .filter((el) => !!el.geometry)
@@ -262,6 +262,7 @@ export const RouteLayer: FC<Props> = ({
         });
 
         return () => {
+            setMarkers([]);
             markers.forEach((marker) => marker.remove());
             clearLayersAndSources(
                 map,
@@ -311,5 +312,5 @@ export const RouteLayer: FC<Props> = ({
         map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
     }, [progressMs]);
 
-    return null;
+    return markers.map(([markerElement, image]) => <ImageMarker key={image.id} element={markerElement} id={image.id} data={image.data!} />);
 };

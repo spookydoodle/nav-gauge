@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
+import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
 import { RouteTimes } from "../layers/RouteLayer";
 import { GeoJson, ImageData } from "../../parsers";
 import * as styles from './player.module.css';
@@ -14,6 +14,7 @@ interface Props {
 }
 
 export const Player: FC<Props> = ({
+    geojson,
     images,
     progressMs,
     onProgressMsChange,
@@ -127,15 +128,22 @@ export const Player: FC<Props> = ({
         onProgressMsChange((clampedPercentage / 100) * routeTimes.duration);
     }, [dragState?.currentClientX]);
 
-    const getPosition = (time?: string) => !time || !routeTimes 
-        ? 0 
-        : (new Date(time).valueOf() - new Date(routeTimes.startTime).valueOf()) / routeTimes.duration
+    const getPosition = useCallback(
+        (featureId: number) => {
+            const feature = geojson?.features.find((feature) => feature.properties.id === featureId);
+            if (!feature || !routeTimes) {
+                return 0;
+            }
+            return (new Date(feature.properties.time).valueOf() - new Date(routeTimes.startTime).valueOf()) / routeTimes.duration;
+        }, [geojson]);
 
     return (
         <div className={styles.player}>
             <div className={styles.pictures}>
-                {images.map((image) => (
-                    <span key={image.id} className={styles['image-marker']} style={{ left: `${getPosition(image.time).toFixed(0)}%` }} />
+                {images
+                .filter((image) => image.featureId !== undefined)
+                .map((image) => (
+                    <span key={image.id} className={styles['image-marker']} style={{ left: `${getPosition(image.featureId!).toFixed(0)}%` }} />
                 ))}
             </div>
             <div className={styles.slider} style={{
