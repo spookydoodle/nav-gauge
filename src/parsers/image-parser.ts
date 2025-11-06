@@ -34,12 +34,17 @@ export interface ImageData {
     data?: string;
     exif?: ExifData;
     error?: string;
+    featureId?: number;
+    markerElement?: HTMLDivElement;
+    marker?: maplibregl.Marker;
 }
 
 export const parseImage = async (file: File, e: ProgressEvent<FileReader>): Promise<{ data?: string; exif?: ExifData; error?: string; lngLat?: maplibregl.LngLat; }> => {
     const buffer = await file.arrayBuffer();
     const exif = EXIF.readFromBinaryFile(buffer) as false | ExifData;
 
+    // TODO: Compress image stored in memory or use
+    // TODO: Derive timezone
     return {
         data: e.target?.result?.toString(),
         exif: exif || undefined,

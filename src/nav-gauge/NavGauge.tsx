@@ -8,16 +8,41 @@ import { MapSection } from "./MapSection";
 import { GaugeContext } from "../gauge-settings/gauge-settings";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
+import { RouteTimes } from "./layers/RouteLayer";
 import { parsers } from "../parsers";
 import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
 import * as styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
-    const [images, readImage] = useImageReader();
+
+    const routeTimes = useMemo(
+        (): RouteTimes | undefined => {
+            if (!geojson?.features[0]) {
+                return;
+            }
+            const startTime = geojson.features[0].properties.time;
+            const endTime = geojson.features.slice(-1)[0]?.properties.time;
+            const startTimeEpoch = new Date(startTime).valueOf();
+            const endTimeEpoch = new Date(endTime).valueOf();
+
+            return {
+                startTime,
+                endTime,
+                startTimeEpoch,
+                endTimeEpoch,
+                duration: endTimeEpoch - startTimeEpoch
+            }
+        },
+        [geojson]
+    );
+
+    const [images, readImage] = useImageReader(geojson, routeTimes);
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControls>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
+    // TODO: Change to progress percentage of time duration and derive ms for current geojson
+    const [progressMs, setProgressMs] = useState(0);
 
     useEffect(() => {
         if (!gaugeControls.confirmBeforeLeave || (!geojson && images.length === 0)) {
@@ -84,7 +109,6 @@ export const NavGauge: FC = () => {
     }, []);
 
     const handleInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
-
         const { files } = event.target;
         if (!files || files.length === 0) {
             return;
@@ -96,11 +120,12 @@ export const NavGauge: FC = () => {
                 continue;
             }
             setGeoJson({});
+            setProgressMs(0);
             parsers
                 .get(FileToGeoJSONParser.getFileExtension(file))
                 ?.parse(file)
                 .then((result => setGeoJson(result ?? { error: new Error('No parser found for file.') })));
-            
+
         }
     };
 
@@ -124,7 +149,14 @@ export const NavGauge: FC = () => {
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                 </div>
                 <div className={styles["main-area"]}>
-                    <MapSection geojson={geojson} boundingBox={boundingBox} images={images} />
+                    <MapSection
+                        geojson={geojson}
+                        boundingBox={boundingBox}
+                        images={images}
+                        routeTimes={routeTimes}
+                        progressMs={progressMs}
+                        onProgressMsChange={setProgressMs}
+                    />
                 </div>
             </div>
         </GaugeContext.Provider>

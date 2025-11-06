@@ -9,46 +9,30 @@ interface Props {
     geojson?: GeoJson;
     boundingBox?: GeoJSON.BBox;
     images: ImageData[];
+    routeTimes?: RouteTimes;
+    progressMs: number;
+    onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const MapSection: React.FC<Props> = ({
     geojson,
     boundingBox,
     images,
+    routeTimes,
+    progressMs,
+    onProgressMsChange,
 }) => {
     const [isPlaying, setIsPlaying] = useState(false);
-
-    const routeTimes = useMemo(
-        (): RouteTimes | undefined => {
-            if (!geojson?.features[0]) {
-                return;
-            }
-            const startTime = geojson.features[0].properties.time;
-            const endTime = geojson.features.slice(-1)[0]?.properties.time;
-            const startTimeEpoch = new Date(startTime).valueOf();
-            const endTimeEpoch = new Date(endTime).valueOf();
-
-            return {
-                startTime,
-                endTime,
-                startTimeEpoch,
-                endTimeEpoch,
-                duration: endTimeEpoch - startTimeEpoch
-            }
-        },
-        [geojson]
-    );
-
-    const [progressMs, setProgressMs] = useState(0);
 
     return (
         <MapTools
             toolsLeft={<RouteLayerFitBounds boundingBox={boundingBox} />}
             toolsBottom={<Player
+                geojson={geojson}
                 images={images}
                 routeTimes={routeTimes}
                 progressMs={progressMs}
-                onProgressMsChange={setProgressMs}
+                onProgressMsChange={onProgressMsChange}
                 isPlaying={isPlaying}
                 onIsPlayingChange={setIsPlaying}
             />}
@@ -59,7 +43,8 @@ export const MapSection: React.FC<Props> = ({
                     geojson={geojson}
                     routeTimes={routeTimes}
                     progressMs={progressMs}
-                    onProgressMsChange={setProgressMs}
+                    onProgressMsChange={onProgressMsChange}
+                    images={images}
                 />
                 : null}
         </MapTools>

@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { ImageData, parseImage } from "../parsers";
+import maplibregl from "maplibre-gl";
+import turfDistance from "@turf/distance";
+import * as turfHelpers from "@turf/helpers";
+import { GeoJson, ImageData, parseImage } from "../parsers";
+import { RouteTimes } from "../nav-gauge/layers/RouteLayer";
 
-export const useImageReader = (): [ImageData[], (file: File) => void] => {
+export const useImageReader = (
+    geojson?: GeoJson,
+    routeTimes?: RouteTimes
+): [ImageData[], (file: File) => void] => {
     const [images, setImages] = useState<ImageData[]>([]);
-console.log(images)
+
     const readImage = (file: File) => {
         const reader = new FileReader();
 
@@ -27,7 +34,8 @@ console.log(images)
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
-                nextImages[index] = { ...nextImages[index], progress: Number((e.loaded / e.total * 100).toFixed(0)) }
+                nextImages[index] = { ...nextImages[index], progress: Number((e.loaded / e.total * 100).toFixed(0)) };
+
                 return nextImages;
             });
         };
@@ -37,7 +45,38 @@ console.log(images)
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
-                nextImages[index] = { ...nextImages[index], progress: 100, lngLat, data, exif, error }
+
+                const [featureId] = !geojson || !lngLat
+                    ? []
+                    : geojson.features.reduce<[number, number]>((acc, val) => {
+                        const from = turfHelpers.point([lngLat.lng, lngLat.lat]);
+                        const to = turfHelpers.point(val.geometry.coordinates);
+                        const distance = turfDistance(from, to, { units: 'meters' });
+
+                        return distance < acc[1] ? [val.properties.id, distance] : acc;
+                    }, [0, Infinity]);
+
+            const feature = (geojson?.features ?? []).find((feature) => feature.properties.id === featureId);
+
+                nextImages[index] = {
+                    ...nextImages[index],
+                    progress: 100,
+                    lngLat,
+                    data,
+                    exif,
+                    error,
+                    featureId,
+                };
+
+                if (feature) {
+                    const markerElement = document.createElement('div');
+                    markerElement.classList.add("test-marker-to-remove"); // TODO: Remove this;
+                    const featureLngLat = new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]);
+
+                    nextImages[index].markerElement = markerElement;
+                    nextImages[index].marker = new maplibregl.Marker({ element: markerElement, }).setLngLat(featureLngLat);
+                }
+
                 return nextImages;
             });
         };
@@ -46,7 +85,8 @@ console.log(images)
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
-                nextImages[index] = { ...nextImages[index], error: e.target?.error?.message ?? 'Cannot read file' }
+                nextImages[index] = { ...nextImages[index], error: e.target?.error?.message ?? 'Cannot read file' };
+
                 return nextImages;
             });
         };

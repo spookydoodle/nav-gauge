@@ -1,9 +1,10 @@
 import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
 import { RouteTimes } from "../layers/RouteLayer";
-import { ImageData } from "../../parsers";
+import { GeoJson, ImageData } from "../../parsers";
 import * as styles from './player.module.css';
 
 interface Props {
+    geojson?: GeoJson;
     images: ImageData[];
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export const Player: FC<Props> = ({
+    geojson,
     images,
     progressMs,
     onProgressMsChange,
@@ -28,6 +30,7 @@ export const Player: FC<Props> = ({
         startClientX: number;
         currentClientX: number;
     } | null>(null);
+
     const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
 
     const progressPercentage = useMemo(
@@ -125,10 +128,23 @@ export const Player: FC<Props> = ({
         onProgressMsChange((clampedPercentage / 100) * routeTimes.duration);
     }, [dragState?.currentClientX]);
 
+    const getPosition = useCallback(
+        (featureId: number) => {
+            const feature = geojson?.features.find((feature) => feature.properties.id === featureId);
+            if (!feature || !routeTimes) {
+                return 0;
+            }
+            return (new Date(feature.properties.time).valueOf() - new Date(routeTimes.startTime).valueOf()) / routeTimes.duration;
+        }, [geojson]);
+
     return (
         <div className={styles.player}>
             <div className={styles.pictures}>
-
+                {images
+                .filter((image) => image.featureId !== undefined)
+                .map((image) => (
+                    <span key={image.id} className={styles['image-marker']} style={{ left: `${getPosition(image.featureId!).toFixed(0)}%` }} />
+                ))}
             </div>
             <div className={styles.slider} style={{
                 '--track-complete': `${progressPercentage ?? 0}%`

@@ -65,12 +65,12 @@ export const MapLayoutControls: FC<Props> = ({
                 labelPlacement="after"
                 type='checkbox'
                 checked={mapLayout.size.type === 'full-screen'}
-                onChange={() => {}}
+                onChange={() => { }}
                 onContainerClick={() => onMapLayoutChange((prev) => ({
                     ...prev, size: {
                         ...prev.size,
-                        type: prev.size.type === 'full-screen' 
-                            ? 'manual' 
+                        type: prev.size.type === 'full-screen'
+                            ? 'manual'
                             : 'full-screen'
                     }
                 }))}
@@ -88,9 +88,12 @@ export const MapLayoutControls: FC<Props> = ({
                 value={mapLayout.size.width}
                 onChange={(event) => {
                     if (!isNaN(Number(event.target.value))) {
-                        onMapLayoutChange((prev) => ({
+                        onMapLayoutChange((prev): MapLayout => ({
                             ...prev,
-                            width: Number(event.target.value)
+                            size: {
+                                ...prev.size,
+                                width: Number(event.target.value)
+                            }
                         }))
                     }
                 }}
@@ -106,7 +109,13 @@ export const MapLayoutControls: FC<Props> = ({
                 value={mapLayout.size.height}
                 onChange={(event) => {
                     if (!isNaN(Number(event.target.value))) {
-                        onMapLayoutChange((prev) => ({ ...prev, height: Number(event.target.value) }));
+                        onMapLayoutChange((prev): MapLayout => ({
+                            ...prev,
+                            size: {
+                                ...prev.size,
+                                height: Number(event.target.value)
+                            }
+                        }));
                     }
                 }}
             />
