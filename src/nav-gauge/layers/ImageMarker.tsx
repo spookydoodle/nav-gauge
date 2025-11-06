@@ -1,17 +1,30 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import ReactDOM from 'react-dom';
 import * as styles from './route-layer.module.css';
+import { ImageData } from "../../parsers";
 
-interface Props {
-    element: HTMLDivElement;
-    id: number;
-    data: string;
+export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
+    marker: maplibregl.Marker;
+    markerElement: HTMLDivElement;
 }
 
-export const ImageMarker: FC<Props> = ({ element, data, id }) => {
-    console.log({id, data, element})
+interface Props {
+    map: maplibregl.Map;
+    image: MarkerImageData;
+}
+
+// TODO: If multiple in the same location, render all
+export const ImageMarker: FC<Props> = ({ map, image }) => {
+    useEffect(() => {
+        image.marker.addTo(map);
+
+        return () => {
+            image.marker.remove();
+        };
+    }, [image]);
+
     return ReactDOM.createPortal(
-        <img src={data} alt={`image ${id}`} width={30} height={30} className={styles['image-marker']} />,
-        element
+        <img src={image.data} alt={`image ${image.id}`} width={30} height={30} className={styles['image-marker']} />,
+        image.markerElement
     );
 };

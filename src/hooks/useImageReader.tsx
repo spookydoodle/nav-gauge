@@ -1,4 +1,5 @@
 import { useState } from "react";
+import maplibregl from "maplibre-gl";
 import turfDistance from "@turf/distance";
 import * as turfHelpers from "@turf/helpers";
 import { GeoJson, ImageData, parseImage } from "../parsers";
@@ -45,7 +46,7 @@ export const useImageReader = (
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
 
-                const [id] = !geojson || !lngLat
+                const [featureId] = !geojson || !lngLat
                     ? []
                     : geojson.features.reduce<[number, number]>((acc, val) => {
                         const from = turfHelpers.point([lngLat.lng, lngLat.lat]);
@@ -55,6 +56,8 @@ export const useImageReader = (
                         return distance < acc[1] ? [val.properties.id, distance] : acc;
                     }, [0, Infinity]);
 
+            const feature = (geojson?.features ?? []).find((feature) => feature.properties.id === featureId);
+
                 nextImages[index] = {
                     ...nextImages[index],
                     progress: 100,
@@ -62,8 +65,17 @@ export const useImageReader = (
                     data,
                     exif,
                     error,
-                    featureId: id,
+                    featureId,
                 };
+
+                if (feature) {
+                    const markerElement = document.createElement('div');
+                    markerElement.classList.add("test-marker-to-remove"); // TODO: Remove this;
+                    const featureLngLat = new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]);
+
+                    nextImages[index].markerElement = markerElement;
+                    nextImages[index].marker = new maplibregl.Marker({ element: markerElement, }).setLngLat(featureLngLat);
+                }
 
                 return nextImages;
             });

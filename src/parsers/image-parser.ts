@@ -35,6 +35,8 @@ export interface ImageData {
     exif?: ExifData;
     error?: string;
     featureId?: number;
+    markerElement?: HTMLDivElement;
+    marker?: maplibregl.Marker;
 }
 
 export const parseImage = async (file: File, e: ProgressEvent<FileReader>): Promise<{ data?: string; exif?: ExifData; error?: string; lngLat?: maplibregl.LngLat; }> => {
