@@ -2,7 +2,7 @@ import { useState } from "react";
 import maplibregl from "maplibre-gl";
 import turfDistance from "@turf/distance";
 import * as turfHelpers from "@turf/helpers";
-import { GeoJson, ImageData, parseImage } from "../parsers";
+import { GeoJson, ImageData, parseImage } from "../logic/parsers";
 import { RouteTimes } from "../nav-gauge/layers/RouteLayer";
 
 export const useImageReader = (

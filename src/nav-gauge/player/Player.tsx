@@ -1,7 +1,8 @@
 import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
 import { RouteTimes } from "../layers/RouteLayer";
-import { GeoJson, ImageData } from "../../parsers";
+import { GeoJson, ImageData } from "../../logic/parsers";
 import * as styles from './player.module.css';
+import { formatProgressMs, formatTimestamp } from "../../logic/route-times-utils";
 
 interface Props {
     geojson?: GeoJson;
@@ -153,11 +154,14 @@ export const Player: FC<Props> = ({
             </div>
             <div className={styles.buttons}>
                 <p className={styles.text}>
-                    {progressPercentage !== undefined ? `${progressPercentage.toFixed(0)}%` : '-'}
+                    {formatProgressMs(progressMs)} ({progressPercentage !== undefined ? `${progressPercentage.toFixed(0)}%` : '-'})
                 </p>
                 <button onClick={handlePlayClick}>
                     {isPlaying ? 'Pause' : 'Play'}
                 </button>
+                <p className={styles.text}>
+                    {formatTimestamp(progressMs, routeTimes?.startTimeEpoch)}
+                </p>
             </div>
         </div>
     );

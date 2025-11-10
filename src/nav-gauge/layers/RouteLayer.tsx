@@ -4,7 +4,7 @@ import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
 import { useMap } from "../../map/useMap";
-import { GeoJson, ImageData } from "../../parsers";
+import { GeoJson, ImageData } from "../../logic/parsers";
 import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
 

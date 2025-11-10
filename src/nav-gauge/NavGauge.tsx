@@ -9,8 +9,8 @@ import { GaugeContext } from "../gauge-settings/gauge-settings";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { RouteTimes } from "./layers/RouteLayer";
-import { parsers } from "../parsers";
-import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
+import { parsers } from "../logic/parsers";
+import { FileToGeoJSONParser, ParsingResultWithError } from "../logic/parsers";
 import * as styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
