@@ -1,8 +1,9 @@
 import maplibregl from "maplibre-gl";
+import turfDistance from "@turf/distance";
 import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
-import { GeoJson, ImageData } from "../parsers";
+import { FeatureProperties, GeoJson, ImageData } from "../parsers";
 
 export const clearLayersAndSources = (
     map: maplibregl.Map,
@@ -182,4 +183,35 @@ export const getRouteSourceData = (
             ]
         }
     };
+};
+
+/**
+ * Searches for the closest point to a given coordinate using the turf distance metric (Haversine formula).
+ * @param lngLat Coordinates for which to find the closest feature.
+ * @param geojson Route data to get feature id from.
+ * @returns A tuple where the first element is the ID of the closest feature from `geojson`, and second is the feature.
+ */
+export const getClosestFeature = (
+    lngLat: maplibregl.LngLat,
+    geojson: GeoJson,
+): [number, GeoJSON.Feature<GeoJSON.Point, FeatureProperties>] => {
+    const [feature] = geojson.features.reduce<[GeoJSON.Feature<GeoJSON.Point, FeatureProperties>, number]>((acc, val) => {
+        const from = turfHelpers.point([lngLat.lng, lngLat.lat]);
+        const to = turfHelpers.point(val.geometry.coordinates);
+        const distance = turfDistance(from, to, { units: 'meters' });
+
+        return distance < acc[1] ? [val, distance] : acc;
+    }, [{
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [0, 0]
+        },
+        properties: {
+            id: -1,
+            time: new Date().toISOString()
+        }
+    }, Infinity]);
+
+    return [feature.properties.id, feature];
 };

@@ -1,7 +1,8 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
+import maplibregl from "maplibre-gl";
+import { GeoJson, getClosestFeature, ImageData } from "../../logic";
 import * as styles from './route-layer.module.css';
-import { ImageData } from "../../logic";
 
 export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
     marker: maplibregl.Marker;
@@ -11,18 +12,26 @@ export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
 interface Props {
     map: maplibregl.Map;
     image: MarkerImageData;
+    updateImageFeatureId: (imageId: number, featureId: number) => void;
+    geojson: GeoJson;
 }
 
 // TODO: If multiple in the same location, render all
-export const ImageMarker: FC<Props> = ({ map, image }) => {
+export const ImageMarker: FC<Props> = ({ map, image, geojson, updateImageFeatureId }) => {
+    const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
+
     useEffect(() => {
         const handleDrag = () => {
             const lngLat = image.marker.getLngLat();
-            console.log('drag', lngLat);
+            setClosestFeatureId(getClosestFeature(lngLat, geojson)[0]);
         };
         const handleDragEnd = () => {
             const lngLat = image.marker.getLngLat();
-            console.log('dragend', lngLat);
+            const [id, feature] = getClosestFeature(lngLat, geojson);
+            image.marker.setLngLat(new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]));
+            updateImageFeatureId(image.id, id);
+
+            setClosestFeatureId(null);
         };
 
         image.marker.addTo(map);

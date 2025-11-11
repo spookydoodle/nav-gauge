@@ -13,6 +13,7 @@ interface Props {
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
     images: ImageData[];
+    updateImageFeatureId: (imageId: number, featureId: number) => void;
 }
 
 export const RouteLayer: FC<Props> = ({
@@ -21,7 +22,8 @@ export const RouteLayer: FC<Props> = ({
     routeTimes,
     progressMs,
     onProgressMsChange,
-    images
+    images,
+    updateImageFeatureId
 }) => {
     const { map } = useMap();
     const { showRouteLine, showRoutePoints } = useGaugeContext();
@@ -131,5 +133,13 @@ export const RouteLayer: FC<Props> = ({
         [images]
     );
 
-    return markerImages.map((image) => <ImageMarker key={image.id} map={map} image={image} />);
+    return markerImages.map((image) => (
+        <ImageMarker 
+            key={image.id}
+            map={map}
+            image={image}
+            geojson={geojson}
+            updateImageFeatureId={updateImageFeatureId}
+        />
+    ));
 };

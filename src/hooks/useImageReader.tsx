@@ -1,12 +1,16 @@
 import { useState } from "react";
 import maplibregl from "maplibre-gl";
-import turfDistance from "@turf/distance";
-import * as turfHelpers from "@turf/helpers";
-import { GeoJson, ImageData, parseImage } from "../logic";
+import { GeoJson, getClosestFeature, ImageData, parseImage } from "../logic";
+
+type ImageReaderResult = [
+    ImageData[],
+    (file: File) => void,
+    (imageId: number, featureId: number) => void
+]
 
 export const useImageReader = (
     geojson?: GeoJson
-): [ImageData[], (file: File) => void] => {
+): ImageReaderResult => {
     const [images, setImages] = useState<ImageData[]>([]);
 
     const readImage = (file: File) => {
@@ -44,17 +48,7 @@ export const useImageReader = (
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
 
-                const [featureId] = !geojson || !lngLat
-                    ? []
-                    : geojson.features.reduce<[number, number]>((acc, val) => {
-                        const from = turfHelpers.point([lngLat.lng, lngLat.lat]);
-                        const to = turfHelpers.point(val.geometry.coordinates);
-                        const distance = turfDistance(from, to, { units: 'meters' });
-
-                        return distance < acc[1] ? [val.properties.id, distance] : acc;
-                    }, [0, Infinity]);
-
-            const feature = (geojson?.features ?? []).find((feature) => feature.properties.id === featureId);
+                const [featureId, feature] = geojson && lngLat ? getClosestFeature(lngLat, geojson) : [];
 
                 nextImages[index] = {
                     ...nextImages[index],
@@ -72,7 +66,7 @@ export const useImageReader = (
                     const featureLngLat = new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]);
 
                     nextImages[index].markerElement = markerElement;
-                    nextImages[index].marker = new maplibregl.Marker({ 
+                    nextImages[index].marker = new maplibregl.Marker({
                         element: markerElement,
                         draggable: true,
                     }).setLngLat(featureLngLat);
@@ -95,5 +89,9 @@ export const useImageReader = (
         reader.readAsDataURL(file);
     };
 
-    return [images, readImage];
+    const updateImageFeatureId = (imageId: number, featureId: number) => {
+        setImages((prev) => prev.map((im) => im.id === imageId ? { ...im, featureId } : im))
+    };
+
+    return [images, readImage, updateImageFeatureId];
 };

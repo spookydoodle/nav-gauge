@@ -35,7 +35,7 @@ export const NavGauge: FC = () => {
         [geojson]
     );
 
-    const [images, readImage] = useImageReader(geojson);
+    const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControls>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
@@ -151,6 +151,7 @@ export const NavGauge: FC = () => {
                         geojson={geojson}
                         boundingBox={boundingBox}
                         images={images}
+                        updateImageFeatureId={updateImageFeatureId}
                         routeTimes={routeTimes}
                         progressMs={progressMs}
                         onProgressMsChange={setProgressMs}

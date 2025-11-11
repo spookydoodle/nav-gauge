@@ -9,6 +9,7 @@ interface Props {
     geojson?: GeoJson;
     boundingBox?: GeoJSON.BBox;
     images: ImageData[];
+    updateImageFeatureId: (imageId: number, featureId: number) => void;
     routeTimes?: RouteTimes;
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
@@ -18,6 +19,7 @@ export const MapSection: React.FC<Props> = ({
     geojson,
     boundingBox,
     images,
+    updateImageFeatureId,
     routeTimes,
     progressMs,
     onProgressMsChange,
@@ -45,6 +47,7 @@ export const MapSection: React.FC<Props> = ({
                     progressMs={progressMs}
                     onProgressMsChange={onProgressMsChange}
                     images={images}
+                    updateImageFeatureId={updateImageFeatureId}
                 />
                 : null}
         </MapTools>
