@@ -11,4 +11,4 @@ export const parsers = new Map<string, FileToGeoJSONParser>([
 export { FileToGeoJSONParser } from './file-parser';
 export { GpxParser } from './gpx-parser';
 export { KmlParser } from './kml-parser';
-export type * from './model';
+export * from './model';

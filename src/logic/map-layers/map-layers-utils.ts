@@ -4,6 +4,7 @@ import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
 import { FeatureProperties, GeoJson, ImageData } from "../parsers";
+import { FeatureStateProps } from "./model";
 
 export const clearLayersAndSources = (
     map: maplibregl.Map,
@@ -84,6 +85,8 @@ export const routePointsLayer: maplibregl.CircleLayerSpecification = {
     paint: {
         'circle-color': [
             'case',
+            ["==", ["feature-state", FeatureStateProps.Highlight], true],
+            'red',
             ['==', ['get', 'status'], 'before'],
             colorActive,
             colorInactive

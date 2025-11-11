@@ -35,6 +35,7 @@ export const RouteLayer: FC<Props> = ({
             map.addSource(sourceIds.line, {
                 type: 'geojson',
                 data: lines,
+                promoteId: 'id'
             });
         }
 

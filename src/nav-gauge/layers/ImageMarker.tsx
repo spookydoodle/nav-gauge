@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import maplibregl from "maplibre-gl";
-import { GeoJson, getClosestFeature, ImageData } from "../../logic";
+import { FeatureStateProps, GeoJson, getClosestFeature, ImageData, sourceIds } from "../../logic";
 import * as styles from './route-layer.module.css';
 
 export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
@@ -44,6 +44,23 @@ export const ImageMarker: FC<Props> = ({ map, image, geojson, updateImageFeature
             image.marker.remove();
         };
     }, [image]);
+
+    useEffect(() => {
+        if (closestFeatureId === null) {
+            return;
+        }
+        // TODO: Add another source for all points or closest point and update data here
+        const updateHighlight = (highlight: boolean) => {
+            map.setFeatureState({ source: sourceIds.line, id: closestFeatureId }, {
+                [FeatureStateProps.Highlight]: highlight
+            });
+        }
+        updateHighlight(true);
+        
+        return () => {
+            updateHighlight(false);
+        };
+    }, [closestFeatureId]);
 
     return ReactDOM.createPortal(
         <img src={image.data} alt={`image ${image.id}`} width={30} height={30} className={styles['image-marker']} />,
