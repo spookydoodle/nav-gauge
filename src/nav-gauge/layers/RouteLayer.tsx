@@ -2,7 +2,7 @@ import { FC, useEffect, useMemo, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { useMap } from "../../map/useMap";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
-import { clearLayersAndSources, colorActive, colorInactive, getData, layerIds, sourceIds } from "../../logic/map-layers";
+import { clearLayersAndSources, colorActive, colorInactive, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "../../logic/map-layers";
 import { useGaugeContext } from "../../contexts/useGaugeContext";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
 
@@ -28,7 +28,7 @@ export const RouteLayer: FC<Props> = ({
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     useEffect(() => {
-        const [currentPoint, lines] = getData(geojson, routeTimes.startTimeEpoch, progressMs);
+        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs);
         if (showRouteLine || showRoutePoints) {
             map.addSource(sourceIds.line, {
                 type: 'geojson',
@@ -42,62 +42,14 @@ export const RouteLayer: FC<Props> = ({
         });
 
         if (showRouteLine) {
-            map.addLayer({
-                id: layerIds.line,
-                source: sourceIds.line,
-                type: 'line',
-                paint: {
-                    'line-color': [
-                        'case',
-                        ['==', ['get', 'status'], 'before'],
-                        colorActive,
-                        colorInactive
-                    ],
-                    'line-width': 4,
-                    'line-opacity': .6,
-                },
-                layout: {
-                    'line-cap': 'round',
-                    'line-join': 'round'
-                }
-            });
+            map.addLayer(routeLineLayer);
         }
 
         if (showRoutePoints) {
-            map.addLayer({
-                id: layerIds.points,
-                source: sourceIds.line,
-                type: 'circle',
-                paint: {
-                    'circle-color': [
-                        'case',
-                        ['==', ['get', 'status'], 'before'],
-                        colorActive,
-                        colorInactive
-                    ],
-                    'circle-radius': 3,
-                }
-            });
+            map.addLayer(routePointsLayer);
         }
 
-        map.addLayer({
-            id: layerIds.currentPointOutline,
-            source: sourceIds.currentPoint,
-            type: 'circle',
-            paint: {
-                'circle-color': 'white',
-                'circle-radius': 7,
-            }
-        });
-        map.addLayer({
-            id: layerIds.currentPoint,
-            source: sourceIds.currentPoint,
-            type: 'circle',
-            paint: {
-                'circle-color': colorActive,
-                'circle-radius': 5,
-            }
-        });
+        currentPointLayers.forEach((layer) => map.addLayer(layer));
 
         setIsLayerAdded(true);
 
@@ -120,27 +72,10 @@ export const RouteLayer: FC<Props> = ({
 
         map.addSource(sourceIds.image, {
             type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: loadedImages.map((image): GeoJSON.Feature<GeoJSON.Point> => ({
-                    type: 'Feature',
-                    geometry: geojson.features.find((f) => f.properties.id === image.id)?.geometry!,
-                    properties: {}
-                }))
-                    .filter((el) => !!el.geometry)
-            }
+            data: getImagesSourceData(geojson, loadedImages)
         });
 
-        // TODO: Style fallback for broken images
-        map.addLayer({
-            id: layerIds.images,
-            type: 'circle',
-            source: sourceIds.image,
-            paint: {
-                'circle-color': "red",
-                "circle-radius": 5
-            }
-        });
+        map.addLayer(imagesLayer);
 
         return () => {
             clearLayersAndSources(
@@ -155,8 +90,8 @@ export const RouteLayer: FC<Props> = ({
         if (!isPlaying || !isLayerAdded) {
             return;
         }
-        const { startTimeEpoch, endTimeEpoch } = routeTimes;
         let animation: number | undefined;
+        const { startTimeEpoch, endTimeEpoch } = routeTimes;
         let current = progressMs;
 
         const animate = () => {
@@ -164,7 +99,7 @@ export const RouteLayer: FC<Props> = ({
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
-            const [currentPoint, lines] = getData(geojson, startTimeEpoch, current);
+            const { currentPoint, lines } = getRouteSourceData(geojson, startTimeEpoch, current);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
             // TODO: Calculate % of geometry done based on current progressMs and update paint property line gradient instead of all data.
@@ -186,7 +121,7 @@ export const RouteLayer: FC<Props> = ({
             return;
         }
         const { startTimeEpoch } = routeTimes;
-        const [currentPoint, lines] = getData(geojson, startTimeEpoch, progressMs);
+        const { currentPoint, lines } = getRouteSourceData(geojson, startTimeEpoch, progressMs);
         map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
         map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
     }, [progressMs]);

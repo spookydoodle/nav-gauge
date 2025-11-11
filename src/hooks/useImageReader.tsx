@@ -72,7 +72,10 @@ export const useImageReader = (
                     const featureLngLat = new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]);
 
                     nextImages[index].markerElement = markerElement;
-                    nextImages[index].marker = new maplibregl.Marker({ element: markerElement, }).setLngLat(featureLngLat);
+                    nextImages[index].marker = new maplibregl.Marker({ 
+                        element: markerElement,
+                        draggable: true,
+                    }).setLngLat(featureLngLat);
                 }
 
                 return nextImages;

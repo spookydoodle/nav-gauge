@@ -16,9 +16,22 @@ interface Props {
 // TODO: If multiple in the same location, render all
 export const ImageMarker: FC<Props> = ({ map, image }) => {
     useEffect(() => {
+        const handleDrag = () => {
+            const lngLat = image.marker.getLngLat();
+            console.log('drag', lngLat);
+        };
+        const handleDragEnd = () => {
+            const lngLat = image.marker.getLngLat();
+            console.log('dragend', lngLat);
+        };
+
         image.marker.addTo(map);
+        image.marker.on('drag', handleDrag);
+        image.marker.on('dragend', handleDragEnd);
 
         return () => {
+        image.marker.off('drag', handleDrag);
+        image.marker.off('dragend', handleDragEnd);
             image.marker.remove();
         };
     }, [image]);
