@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import ReactDOM from 'react-dom';
 import * as styles from './route-layer.module.css';
-import { ImageData } from "../../logic/parsers";
+import { ImageData } from "../../logic";
 
 export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
     marker: maplibregl.Marker;

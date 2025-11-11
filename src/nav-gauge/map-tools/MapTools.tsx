@@ -1,7 +1,7 @@
 import { FC, ReactNode, useState, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import classNames from "classnames";
-import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
+import { useGaugeContext } from "../../contexts/useGaugeContext";
 import { map, MapContext } from "../../map/map-context";
 import findIcon from '../../icons/find.svg';
 import * as styles from './map-tools.module.css';
@@ -45,7 +45,7 @@ export const MapTools: FC<Props> = ({
     toolsLeft,
     children,
 }) => {
-    const { showZoom, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeSettings();
+    const { showZoom, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeContext();
     const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
     const [cssLoaded, setCssLoaded] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);

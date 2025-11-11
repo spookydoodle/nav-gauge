@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { MapTools } from "./map-tools/MapTools";
-import { RouteLayer, RouteTimes } from "./layers/RouteLayer";
+import { RouteLayer } from "./layers/RouteLayer";
 import { RouteLayerFitBounds } from "./layers/RouteLayerFitBounds";
 import { Player } from "./player/Player";
-import { GeoJson, ImageData } from "../logic/parsers";
+import { RouteTimes, GeoJson, ImageData } from "../logic";
 
 interface Props {
     geojson?: GeoJson;

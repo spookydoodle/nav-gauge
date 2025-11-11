@@ -1,7 +1,5 @@
-import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
-import { RouteTimes } from "../layers/RouteLayer";
-import { GeoJson, ImageData } from "../../logic/parsers";
-import { formatProgressMs, formatTimestamp } from "../../logic/route-times-utils";
+import { CSSProperties, FC, useCallback } from "react";
+import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../logic";
 import * as styles from './player.module.css';
 
 interface Props {
@@ -24,16 +22,7 @@ export const Player: FC<Props> = ({
     onIsPlayingChange,
 }) => {
     const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
-
-    const progressPercentage = useMemo(
-        (): number | undefined => {
-            if (!routeTimes) {
-                return;
-            }
-            return (progressMs / routeTimes.duration * 100);
-        },
-        [progressMs, routeTimes?.duration]
-    );
+    const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
     const handleProgressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!routeTimes || isNaN(Number(event.target.value))) {
@@ -70,12 +59,12 @@ export const Player: FC<Props> = ({
                 // TODO: Fix styles for all browsers
                 // className={styles['progress-slider']}
                 style={{
-                    '--track-complete': `${progressPercentage ?? 0}%`
+                    '--track-complete': `${progressPercentage}%`
                 } as CSSProperties}
             />
             <div className={styles.buttons}>
                 <p className={styles.text}>
-                    {formatProgressMs(progressMs)} ({progressPercentage !== undefined ? `${progressPercentage.toFixed(0)}%` : '-'})
+                    {formatProgressMs(progressMs)} ({progressPercentage.toFixed(0)}%)
                 </p>
                 <button onClick={handlePlayClick}>
                     {isPlaying ? 'Pause' : 'Play'}

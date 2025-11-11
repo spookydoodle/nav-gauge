@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import { ControlPlacement, defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { defaultMapLayout, racingGameMapLayout, MapLayout } from "./MapLayoutControls";
-import { validateGaugeControls, validateMapLayout } from "../../logic/validation/controls";
+import { validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
 
 export type Preset = 'default' | 'racing-game' | 'test1' | '';

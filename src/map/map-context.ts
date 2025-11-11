@@ -1,6 +1,6 @@
 import { createContext, } from "react";
 import maplibregl from "maplibre-gl";
-import { osmStyle } from "../logic/map-styles/osm";
+import osmStyle from "../logic/map-styles/osm.json";
 
 export interface MapContext {
     map: maplibregl.Map;
