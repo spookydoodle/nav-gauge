@@ -1,14 +1,15 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { MapTools } from "./map-tools/MapTools";
-import { RouteLayer, RouteTimes } from "./layers/RouteLayer";
+import { RouteLayer } from "./layers/RouteLayer";
 import { RouteLayerFitBounds } from "./layers/RouteLayerFitBounds";
 import { Player } from "./player/Player";
-import { GeoJson, ImageData } from "../parsers";
+import { RouteTimes, GeoJson, ImageData } from "../logic";
 
 interface Props {
     geojson?: GeoJson;
     boundingBox?: GeoJSON.BBox;
     images: ImageData[];
+    updateImageFeatureId: (imageId: number, featureId: number) => void;
     routeTimes?: RouteTimes;
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
@@ -18,6 +19,7 @@ export const MapSection: React.FC<Props> = ({
     geojson,
     boundingBox,
     images,
+    updateImageFeatureId,
     routeTimes,
     progressMs,
     onProgressMsChange,
@@ -45,6 +47,7 @@ export const MapSection: React.FC<Props> = ({
                     progressMs={progressMs}
                     onProgressMsChange={onProgressMsChange}
                     images={images}
+                    updateImageFeatureId={updateImageFeatureId}
                 />
                 : null}
         </MapTools>

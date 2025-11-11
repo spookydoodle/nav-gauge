@@ -1,111 +1,10 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import maplibregl from "maplibre-gl";
-import turfAlong from "@turf/along";
-import * as turfHelpers from "@turf/helpers";
-import turfLength from "@turf/length";
 import { useMap } from "../../map/useMap";
-import { GeoJson, ImageData } from "../../parsers";
-import { useGaugeSettings } from "../../gauge-settings/use-gauge-settings";
+import { RouteTimes, GeoJson, ImageData } from "../../logic";
+import { clearLayersAndSources, colorActive, colorInactive, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "../../logic/map-layers";
+import { useGaugeContext } from "../../contexts/useGaugeContext";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
-
-const clearLayersAndSources = (
-    map: maplibregl.Map,
-    layerIds: string[],
-    sourceIds: string[]
-) => {
-
-    for (const id of layerIds) {
-        if (map.getLayer(id)) {
-            map.removeLayer(id);
-        }
-    }
-    for (const id of sourceIds) {
-        if (map.getSource(id)) {
-            map.removeSource(id);
-        }
-    }
-};
-export interface RouteTimes {
-    startTime: string;
-    endTime: string;
-    startTimeEpoch: number;
-    endTimeEpoch: number;
-    duration: number;
-}
-
-const colorActive = '#003161';
-const colorInactive = 'grey';
-
-const sourceId = 'route';
-
-const sourceIds = {
-    currentPoint: sourceId + '-current-point',
-    line: sourceId + '-line',
-    image: sourceId + '-image',
-}
-
-const layerIds = {
-    currentPointOutline: 'route-current-point-outline',
-    currentPoint: 'route-current-point',
-    points: 'route-points',
-    line: 'route-line',
-    images: 'route-image',
-}
-
-const getCurrentPoint = (
-    geojson: GeoJson,
-    splitIndex: number,
-    currentTime: number
-) => {
-    const currentLineStart = geojson.features[Math.max(0, splitIndex - 1)];
-    const currentLineEnd = geojson.features[splitIndex];
-    const currentLineStartTime = new Date(currentLineStart.properties.time).valueOf();
-    const currentLineEndTime = new Date(currentLineEnd.properties.time).valueOf();
-
-    const fraction = Number(((currentTime - currentLineStartTime) / (currentLineEndTime - currentLineStartTime)).toFixed(2));
-    const currentLineStartPos = currentLineStart.geometry.coordinates;
-    const currentLineEndPos = currentLineEnd.geometry.coordinates;
-    const line = turfHelpers.lineString([currentLineStartPos, currentLineEndPos]);
-    const totalDistance = turfLength(line, { units: 'meters' });
-
-    return turfAlong(line, totalDistance * fraction, { units: 'meters' });
-};
-
-const getData = (
-    geojson: GeoJson,
-    startTimeEpoch: number,
-    progressMs: number,
-): [GeoJSON.Feature<GeoJSON.Point>, GeoJSON.GeoJSON] => {
-    const currentTime = startTimeEpoch + progressMs;
-    const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf());
-    const currentPoint = getCurrentPoint(geojson, splitIndex, currentTime);
-
-    return [currentPoint, {
-        ...geojson,
-        features: [
-            {
-                type: 'Feature',
-                geometry: {
-                    type: 'LineString',
-                    coordinates: geojson.features.slice(0, splitIndex).map((f) => f.geometry.coordinates).concat([currentPoint.geometry.coordinates])
-                },
-                properties: {
-                    status: 'before',
-                }
-            },
-            {
-                type: 'Feature',
-                geometry: {
-                    type: 'LineString',
-                    coordinates: [currentPoint.geometry.coordinates].concat(geojson.features.slice(splitIndex).map((f) => f.geometry.coordinates))
-                },
-                properties: {
-                    status: 'after',
-                }
-            },
-        ]
-    }];
-};
 
 interface Props {
     isPlaying: boolean;
@@ -114,6 +13,7 @@ interface Props {
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
     images: ImageData[];
+    updateImageFeatureId: (imageId: number, featureId: number) => void;
 }
 
 export const RouteLayer: FC<Props> = ({
@@ -122,18 +22,20 @@ export const RouteLayer: FC<Props> = ({
     routeTimes,
     progressMs,
     onProgressMsChange,
-    images
+    images,
+    updateImageFeatureId
 }) => {
     const { map } = useMap();
-    const { showRouteLine, showRoutePoints } = useGaugeSettings();
+    const { showRouteLine, showRoutePoints } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     useEffect(() => {
-        const [currentPoint, lines] = getData(geojson, routeTimes.startTimeEpoch, progressMs);
+        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs);
         if (showRouteLine || showRoutePoints) {
             map.addSource(sourceIds.line, {
                 type: 'geojson',
                 data: lines,
+                promoteId: 'id'
             });
         }
 
@@ -143,62 +45,14 @@ export const RouteLayer: FC<Props> = ({
         });
 
         if (showRouteLine) {
-            map.addLayer({
-                id: layerIds.line,
-                source: sourceIds.line,
-                type: 'line',
-                paint: {
-                    'line-color': [
-                        'case',
-                        ['==', ['get', 'status'], 'before'],
-                        colorActive,
-                        colorInactive
-                    ],
-                    'line-width': 4,
-                    'line-opacity': .6,
-                },
-                layout: {
-                    'line-cap': 'round',
-                    'line-join': 'round'
-                }
-            });
+            map.addLayer(routeLineLayer);
         }
 
         if (showRoutePoints) {
-            map.addLayer({
-                id: layerIds.points,
-                source: sourceIds.line,
-                type: 'circle',
-                paint: {
-                    'circle-color': [
-                        'case',
-                        ['==', ['get', 'status'], 'before'],
-                        colorActive,
-                        colorInactive
-                    ],
-                    'circle-radius': 3,
-                }
-            });
+            map.addLayer(routePointsLayer);
         }
 
-        map.addLayer({
-            id: layerIds.currentPointOutline,
-            source: sourceIds.currentPoint,
-            type: 'circle',
-            paint: {
-                'circle-color': 'white',
-                'circle-radius': 7,
-            }
-        });
-        map.addLayer({
-            id: layerIds.currentPoint,
-            source: sourceIds.currentPoint,
-            type: 'circle',
-            paint: {
-                'circle-color': colorActive,
-                'circle-radius': 5,
-            }
-        });
+        currentPointLayers.forEach((layer) => map.addLayer(layer));
 
         setIsLayerAdded(true);
 
@@ -221,27 +75,10 @@ export const RouteLayer: FC<Props> = ({
 
         map.addSource(sourceIds.image, {
             type: 'geojson',
-            data: {
-                type: 'FeatureCollection',
-                features: loadedImages.map((image): GeoJSON.Feature<GeoJSON.Point> => ({
-                    type: 'Feature',
-                    geometry: geojson.features.find((f) => f.properties.id === image.id)?.geometry!,
-                    properties: {}
-                }))
-                    .filter((el) => !!el.geometry)
-            }
+            data: getImagesSourceData(geojson, loadedImages)
         });
 
-        // TODO: Style fallback for broken images
-        map.addLayer({
-            id: layerIds.images,
-            type: 'circle',
-            source: sourceIds.image,
-            paint: {
-                'circle-color': "red",
-                "circle-radius": 5
-            }
-        });
+        map.addLayer(imagesLayer);
 
         return () => {
             clearLayersAndSources(
@@ -256,8 +93,8 @@ export const RouteLayer: FC<Props> = ({
         if (!isPlaying || !isLayerAdded) {
             return;
         }
-        const { startTimeEpoch, endTimeEpoch } = routeTimes;
         let animation: number | undefined;
+        const { startTimeEpoch, endTimeEpoch } = routeTimes;
         let current = progressMs;
 
         const animate = () => {
@@ -265,7 +102,7 @@ export const RouteLayer: FC<Props> = ({
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
-            const [currentPoint, lines] = getData(geojson, startTimeEpoch, current);
+            const { currentPoint, lines } = getRouteSourceData(geojson, startTimeEpoch, current);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
             // TODO: Calculate % of geometry done based on current progressMs and update paint property line gradient instead of all data.
@@ -287,7 +124,7 @@ export const RouteLayer: FC<Props> = ({
             return;
         }
         const { startTimeEpoch } = routeTimes;
-        const [currentPoint, lines] = getData(geojson, startTimeEpoch, progressMs);
+        const { currentPoint, lines } = getRouteSourceData(geojson, startTimeEpoch, progressMs);
         map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
         map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
     }, [progressMs]);
@@ -297,5 +134,13 @@ export const RouteLayer: FC<Props> = ({
         [images]
     );
 
-    return markerImages.map((image) => <ImageMarker key={image.id} map={map} image={image} />);
+    return markerImages.map((image) => (
+        <ImageMarker 
+            key={image.id}
+            map={map}
+            image={image}
+            geojson={geojson}
+            updateImageFeatureId={updateImageFeatureId}
+        />
+    ));
 };

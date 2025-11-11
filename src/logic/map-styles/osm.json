@@ -1,6 +1,4 @@
-import maplibregl from "maplibre-gl";
-
-export const osmStyle: maplibregl.StyleSpecification = {
+{
     "version": 8,
     "sources": {
         "osm": {

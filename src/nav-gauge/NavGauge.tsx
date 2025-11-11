@@ -5,12 +5,10 @@ import { detectPreset, Preset, Presets } from "./controls/Presets";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLayoutControls";
 import { defaultGaugeControls, GaugeControls } from "./controls/GaugeControls";
 import { MapSection } from "./MapSection";
-import { GaugeContext } from "../gauge-settings/gauge-settings";
+import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
-import { RouteTimes } from "./layers/RouteLayer";
-import { parsers } from "../parsers";
-import { FileToGeoJSONParser, ParsingResultWithError } from "../parsers";
+import { parsers, RouteTimes, FileToGeoJSONParser, ParsingResultWithError } from "../logic";
 import * as styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
@@ -37,7 +35,7 @@ export const NavGauge: FC = () => {
         [geojson]
     );
 
-    const [images, readImage] = useImageReader(geojson, routeTimes);
+    const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControls>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
@@ -153,6 +151,7 @@ export const NavGauge: FC = () => {
                         geojson={geojson}
                         boundingBox={boundingBox}
                         images={images}
+                        updateImageFeatureId={updateImageFeatureId}
                         routeTimes={routeTimes}
                         progressMs={progressMs}
                         onProgressMsChange={setProgressMs}

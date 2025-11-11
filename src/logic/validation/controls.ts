@@ -1,5 +1,5 @@
-import { GaugeControls } from "./GaugeControls";
-import { MapLayout } from "./MapLayoutControls";
+import { GaugeControls } from "../../nav-gauge/controls/GaugeControls";
+import { MapLayout } from "../../nav-gauge/controls/MapLayoutControls";
 
 export const validateMapLayout = (mapLayout: Partial<MapLayout>) => {
     if (mapLayout.borderColor && typeof mapLayout.borderColor !== 'string') {
