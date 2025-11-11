@@ -19,6 +19,52 @@
     background-color: red;
 }
 
+/* TODO: Fix for chromium and edge */
+input[type=range].progress-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+
+    --thumb-width: 8px;
+    --thumb-height: calc(var(--thumb-width) / 4 * 3);
+}
+
+input[type=range].progress-slider:focus {
+    outline: none;
+}
+
+input[type=range].progress-slider::-moz-range-track {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: lightgreen;
+    opacity: .5;
+    cursor: pointer;
+}
+
+input[type=range].progress-slider::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    width: 0;
+    height: 0;
+    border-radius: 0;
+    border-style: solid;
+    border-width: var(--thumb-height) var(--thumb-width);
+    border-color: transparent;
+    border-left-color: lightgreen;
+    cursor: pointer;
+    transition: transform .2s ease-in-out;
+    transform: translateX(calc(var(--thumb-width) / 2));
+    transform-origin: 25%;
+    transition: transform .1s ease-in;
+}
+
+input[type=range].progress-slider:hover::-moz-range-thumb {
+    transform: translateX(calc(var(--thumb-width) / 2)) scale(1.5);
+    transition: transform .1s ease-out;
+}
+
 .slider {
     position: relative;
     height: 2px;
