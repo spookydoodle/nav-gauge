@@ -3,13 +3,14 @@ import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components";
 import { detectPreset, Preset, Presets } from "./controls/Presets";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLayoutControls";
-import { defaultGaugeControls, GaugeControls } from "./controls/GaugeControls";
+import { defaultGaugeControls, GaugeControlsType } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, FileToGeoJSONParser, ParsingResultWithError } from "../logic";
 import * as styles from './nav-gauge.module.css';
+import { GaugeControls } from "./controls/GaugeControls";
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
@@ -36,7 +37,7 @@ export const NavGauge: FC = () => {
     );
 
     const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
-    const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControls>('gauge-controls', defaultGaugeControls);
+    const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
     // TODO: Change to progress percentage of time duration and derive ms for current geojson
@@ -57,7 +58,7 @@ export const NavGauge: FC = () => {
         }
     }, [gaugeControls.confirmBeforeLeave, images, geojson]);
 
-    const handlePresetChange = (preset: Preset, presetMapLayout?: MapLayout, presetGaugeControls?: GaugeControls) => {
+    const handlePresetChange = (preset: Preset, presetMapLayout?: MapLayout, presetGaugeControls?: GaugeControlsType) => {
         setPreset(preset);
         if (presetMapLayout) {
             setMapLayout(presetMapLayout);

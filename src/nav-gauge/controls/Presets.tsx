@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
-import { ControlPlacement, defaultGaugeControls, GaugeControls } from "./GaugeControls";
 import { defaultMapLayout, racingGameMapLayout, MapLayout } from "./MapLayoutControls";
-import { validateGaugeControls, validateMapLayout } from "../../logic";
+import { ControlPlacement, defaultGaugeControls, GaugeControlsType, validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
 
 export type Preset = 'default' | 'racing-game' | 'test1' | '';
@@ -10,7 +9,7 @@ export interface PresetOption {
     value: Preset;
     label: string;
     mapLayout: MapLayout;
-    gaugeControls: GaugeControls;
+    gaugeControls: GaugeControlsType;
 }
 
 const options: PresetOption[] = [
@@ -30,20 +29,20 @@ const options: PresetOption[] = [
 
 export const detectPreset = (
     mapLayout: MapLayout,
-    { controlPlacement, ...gaugeControls }: GaugeControls,
+    { controlPlacement, ...gaugeControls }: GaugeControlsType,
 ): Preset => {
     return options.find((option) => (
         Object.entries(mapLayout).every(([key, value]) => option.mapLayout[key as keyof MapLayout] === value) &&
-        Object.entries(gaugeControls).every(([key, value]) => option.gaugeControls[key as keyof GaugeControls] === value) &&
+        Object.entries(gaugeControls).every(([key, value]) => option.gaugeControls[key as keyof GaugeControlsType] === value) &&
         Object.entries(controlPlacement).every(([key, value]) => option.gaugeControls.controlPlacement[key as keyof ControlPlacement] === value)
     ))?.value ?? "";
 };
 
 interface Props {
     preset: Preset;
-    onPresetChange: (preset: Preset, mapLayout?: MapLayout, gaugeControls?: GaugeControls) => void;
+    onPresetChange: (preset: Preset, mapLayout?: MapLayout, gaugeControls?: GaugeControlsType) => void;
     mapLayout: MapLayout;
-    gaugeControls: GaugeControls;
+    gaugeControls: GaugeControlsType;
 }
 
 export const Presets: FC<Props> = ({
@@ -91,7 +90,7 @@ export const Presets: FC<Props> = ({
                 try {
                     const result = JSON.parse(text);
                     const possibleMapLayout = { defaultMapLayout, ...(result.mapLayout as MapLayout) };
-                    const possibleGaugeControls = { defaultGaugeControls, ...(result.gaugeControls as GaugeControls) };
+                    const possibleGaugeControls = { defaultGaugeControls, ...(result.gaugeControls as GaugeControlsType) };
                     validateMapLayout(possibleMapLayout);
                     validateGaugeControls(possibleGaugeControls);
                     onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), possibleMapLayout, possibleGaugeControls);
