@@ -1,42 +1,6 @@
 import { FC, useEffect } from "react";
-import { defaultMapLayout, racingGameMapLayout, MapLayout } from "./MapLayoutControls";
-import { ControlPlacement, defaultGaugeControls, GaugeControlsType, validateGaugeControls, validateMapLayout } from "../../logic";
+import { defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, racingGameMapLayout, validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
-
-export type Preset = 'default' | 'racing-game' | 'test1' | '';
-
-export interface PresetOption {
-    value: Preset;
-    label: string;
-    mapLayout: MapLayout;
-    gaugeControls: GaugeControlsType;
-}
-
-const options: PresetOption[] = [
-    {
-        value: 'default',
-        label: 'Default',
-        mapLayout: defaultMapLayout,
-        gaugeControls: defaultGaugeControls,
-    },
-    {
-        value: 'racing-game',
-        label: 'Racing game',
-        mapLayout: racingGameMapLayout,
-        gaugeControls: defaultGaugeControls,
-    },
-];
-
-export const detectPreset = (
-    mapLayout: MapLayout,
-    { controlPlacement, ...gaugeControls }: GaugeControlsType,
-): Preset => {
-    return options.find((option) => (
-        Object.entries(mapLayout).every(([key, value]) => option.mapLayout[key as keyof MapLayout] === value) &&
-        Object.entries(gaugeControls).every(([key, value]) => option.gaugeControls[key as keyof GaugeControlsType] === value) &&
-        Object.entries(controlPlacement).every(([key, value]) => option.gaugeControls.controlPlacement[key as keyof ControlPlacement] === value)
-    ))?.value ?? "";
-};
 
 interface Props {
     preset: Preset;
@@ -59,7 +23,7 @@ export const Presets: FC<Props> = ({
 
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const nextPreset = event.target.value as Preset;
-        const option = options.find((option) => option.value === nextPreset);
+        const option = presetOptions.find((option) => option.value === nextPreset);
         onPresetChange(nextPreset, option?.mapLayout, option?.gaugeControls);
     };
 
@@ -107,7 +71,7 @@ export const Presets: FC<Props> = ({
                 <label htmlFor="presets">Preset</label>
                 <select name="presets" id="presets" value={preset} onChange={handleChange}>
                     <option value="" disabled defaultValue="">Custom</option>
-                    {options.map((option) => (
+                    {presetOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.label}
                         </option>

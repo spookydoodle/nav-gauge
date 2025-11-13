@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 import { validateGaugeControls, validateMapLayout } from "../../src/logic/validation/controls.js";
-import { MapLayout } from "../../src/nav-gauge/controls/MapLayoutControls.js";
-import { GaugeControlsType } from "../../src/logic/index.js";
+import { GaugeControlsType, MapLayout } from "../../src/logic/index.js";
 
 describe("Preset", () => {
     describe("File upload validation", () => {

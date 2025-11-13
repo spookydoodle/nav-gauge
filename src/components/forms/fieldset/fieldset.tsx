@@ -16,7 +16,7 @@ export const Fieldset: FC<Props> = ({
 
     return (
         <fieldset className={classNames(styles.fieldset, className)}>
-            <legend>{label}</legend>
+            <legend className={styles.legend}>{label}</legend>
             {children}
         </fieldset>
     );

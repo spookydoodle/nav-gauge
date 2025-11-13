@@ -1,17 +1,17 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components/forms";
-import { detectPreset, Preset, Presets } from "./controls/Presets";
-import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLayoutControls";
-import { ApplicationSettingsType, defaultApplicationSettings, defaultGaugeControls, GaugeControlsType } from "../logic";
+import { Presets } from "./controls/Presets";
+import { MapLayoutControls } from "./controls/MapLayoutControls";
+import { ApplicationSettingsType, defaultApplicationSettings, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, FileToGeoJSONParser, ParsingResultWithError } from "../logic";
 import { GaugeControls } from "./controls/GaugeControls";
-import * as styles from './nav-gauge.module.css';
 import { ApplicationSettings } from "./controls/ApplicationSettings";
+import * as styles from './nav-gauge.module.css';
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
@@ -131,7 +131,7 @@ export const NavGauge: FC = () => {
     };
 
     return (
-        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout }}>
+        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...applicationSettings }}>
             <div className={styles.layout} style={{
                 ...controlsCssStyle,
                 ...mapLayoutCssStyle,
