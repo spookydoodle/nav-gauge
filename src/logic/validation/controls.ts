@@ -1,5 +1,4 @@
-import { GaugeControls } from "../../nav-gauge/controls/GaugeControls";
-import { MapLayout } from "../../nav-gauge/controls/MapLayoutControls";
+import { GaugeControlsType, MapLayout } from "../controls";
 
 export const validateMapLayout = (mapLayout: Partial<MapLayout>) => {
     if (mapLayout.borderColor && typeof mapLayout.borderColor !== 'string') {
@@ -34,7 +33,7 @@ export const validateMapLayout = (mapLayout: Partial<MapLayout>) => {
     }
 };
 
-export const validateGaugeControls = (gaugeControls: Partial<GaugeControls>) => {
+export const validateGaugeControls = (gaugeControls: Partial<GaugeControlsType>) => {
     if (gaugeControls.controlPlacement && (
         typeof gaugeControls.controlPlacement.top !== 'number' ||
         typeof gaugeControls.controlPlacement.bottom !== 'number' ||

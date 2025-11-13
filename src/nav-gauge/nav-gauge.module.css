@@ -14,7 +14,7 @@
     grid-area: side-panel;
     height: var(--side-panel-height-sm);
     column-gap: 10px;
-    row-gap: 10px;
+    row-gap: 15px;
     grid-template-columns: 1fr;
     align-content: start;
     box-sizing: border-box;

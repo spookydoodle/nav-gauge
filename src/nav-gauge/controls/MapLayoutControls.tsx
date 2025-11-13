@@ -1,51 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Input, TextArea } from "../../components";
+import { Fieldset, Input, TextArea } from "../../components";
+import { MapLayout } from "../../logic";
 import * as styles from './controls.module.css';
-
-export interface MapLayout {
-    size: {
-        type: 'manual' | 'full-screen',
-        width: number;
-        height: number;
-    };
-    borderWidth: number;
-    borderColor: string;
-    innerBorderWidth: number;
-    innerBorderColor: string;
-    borderRadius: string;
-    boxShadow: string;
-    innerBoxShadow: string;
-};
-
-export const defaultMapLayout: MapLayout = {
-    size: {
-        type: 'full-screen',
-        width: 400,
-        height: 400
-    },
-    borderWidth: 0,
-    borderColor: '#000',
-    borderRadius: '0',
-    innerBorderWidth: 0,
-    innerBorderColor: '#000000',
-    boxShadow: '',
-    innerBoxShadow: '',
-};
-
-export const racingGameMapLayout: MapLayout = {
-    size: {
-        type: 'manual',
-        width: 400,
-        height: 400
-    },
-    borderWidth: 5,
-    borderColor: '#ff0000',
-    borderRadius: '50%',
-    innerBorderWidth: 0,
-    innerBorderColor: '#000000',
-    boxShadow: '0px 0px 16px #ff0000, 0px 0px 16px #ff0000',
-    innerBoxShadow: '',
-};
 
 interface Props {
     mapLayout: MapLayout;
@@ -57,7 +13,7 @@ export const MapLayoutControls: FC<Props> = ({
     onMapLayoutChange,
 }) => {
     return (
-        <div className={styles["section"]}>
+        <Fieldset label="Map layout" className={styles["section"]}>
             <Input
                 id="map-size"
                 name="map-size"
@@ -203,6 +159,6 @@ export const MapLayoutControls: FC<Props> = ({
                 }}
                 className={styles["color"]}
             />
-        </div>
+        </Fieldset>
     );
 };

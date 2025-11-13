@@ -1,0 +1,12 @@
+:root {
+  --divider-color: rgb(128, 128, 128);
+}
+
+body[data-theme="theme-light"] {
+    /* TODO: Update */
+  --divider-color: red;
+}
+
+body[data-theme="theme-dark"] {
+  --divider-color: rgb(128, 128, 128);
+}

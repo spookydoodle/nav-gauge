@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 import { validateGaugeControls, validateMapLayout } from "../../src/logic/validation/controls.js";
-import { MapLayout } from "../../src/nav-gauge/controls/MapLayoutControls.js";
-import { GaugeControls } from "../../src/nav-gauge/controls/GaugeControls.js";
+import { GaugeControlsType, MapLayout } from "../../src/logic/index.js";
 
 describe("Preset", () => {
     describe("File upload validation", () => {
@@ -58,35 +57,35 @@ describe("Preset", () => {
             });
             it("should throw if controlPlacement incorrect", () => {
                 expect(() => validateGaugeControls({ controlPlacement: { top: 0, bottom: 0, left: 0, right: 0 } })).to.not.throw();
-                expect(() => validateGaugeControls({ controlPlacement: true } as unknown as GaugeControls)).to.throw("Control placement incorrect");
+                expect(() => validateGaugeControls({ controlPlacement: true } as unknown as GaugeControlsType)).to.throw("Control placement incorrect");
             });
             it("should throw if controlPosition incorrect", () => {
                 expect(() => validateGaugeControls({ controlPosition: "bottom-left" })).to.not.throw();
-                expect(() => validateGaugeControls({ controlPosition: {} } as unknown as GaugeControls)).to.throw("Control position incorrect");
+                expect(() => validateGaugeControls({ controlPosition: {} } as unknown as GaugeControlsType)).to.throw("Control position incorrect");
             });
             it("should throw if globeProjection incorrect", () => {
                 expect(() => validateGaugeControls({ globeProjection: false })).to.not.throw();
-                expect(() => validateGaugeControls({ globeProjection: {} } as unknown as GaugeControls)).to.throw("Globe projection incorrect");
+                expect(() => validateGaugeControls({ globeProjection: {} } as unknown as GaugeControlsType)).to.throw("Globe projection incorrect");
             });
             it("should throw if showCompass incorrect", () => {
                 expect(() => validateGaugeControls({ showCompass: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showCompass: "" } as unknown as GaugeControls)).to.throw("Show compass incorrect");
+                expect(() => validateGaugeControls({ showCompass: "" } as unknown as GaugeControlsType)).to.throw("Show compass incorrect");
             });
             it("should throw if showGreenScreen incorrect", () => {
                 expect(() => validateGaugeControls({ showGreenScreen: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showGreenScreen: "" } as unknown as GaugeControls)).to.throw("Show green screen incorrect");
+                expect(() => validateGaugeControls({ showGreenScreen: "" } as unknown as GaugeControlsType)).to.throw("Show green screen incorrect");
             });
             it("should throw if showRouteLine incorrect", () => {
                 expect(() => validateGaugeControls({ showRouteLine: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showRouteLine: "" } as unknown as GaugeControls)).to.throw("Show route line incorrect");
+                expect(() => validateGaugeControls({ showRouteLine: "" } as unknown as GaugeControlsType)).to.throw("Show route line incorrect");
             });
             it("should throw if showRoutePoints incorrect", () => {
                 expect(() => validateGaugeControls({ showRoutePoints: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showRoutePoints: "" } as unknown as GaugeControls)).to.throw("Show route points incorrect");
+                expect(() => validateGaugeControls({ showRoutePoints: "" } as unknown as GaugeControlsType)).to.throw("Show route points incorrect");
             });
             it("should throw if showZoom incorrect", () => {
                 expect(() => validateGaugeControls({ showZoom: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showZoom: "" } as unknown as GaugeControls)).to.throw("Show zoom incorrect");
+                expect(() => validateGaugeControls({ showZoom: "" } as unknown as GaugeControlsType)).to.throw("Show zoom incorrect");
             });
         });
     });
