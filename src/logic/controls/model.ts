@@ -5,7 +5,6 @@ export interface ControlPlacement {
     right: number;
 }
 
-// TODO: Rename
 export interface GaugeControlsType {
     globeProjection: boolean;
     showZoom: boolean;
@@ -15,6 +14,8 @@ export interface GaugeControlsType {
     controlPlacement: ControlPlacement;
     showRouteLine: boolean;
     showRoutePoints: boolean;
-    // TODO: Move to another settings section
+}
+
+export interface ApplicationSettingsType {
     confirmBeforeLeave: boolean;
 }

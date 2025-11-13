@@ -1,16 +1,17 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
-import { FileInputStatus } from "../components";
+import { FileInputStatus } from "../components/forms";
 import { detectPreset, Preset, Presets } from "./controls/Presets";
 import { defaultMapLayout, MapLayout, MapLayoutControls } from "./controls/MapLayoutControls";
-import { defaultGaugeControls, GaugeControlsType } from "../logic";
+import { ApplicationSettingsType, defaultApplicationSettings, defaultGaugeControls, GaugeControlsType } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, FileToGeoJSONParser, ParsingResultWithError } from "../logic";
-import * as styles from './nav-gauge.module.css';
 import { GaugeControls } from "./controls/GaugeControls";
+import * as styles from './nav-gauge.module.css';
+import { ApplicationSettings } from "./controls/ApplicationSettings";
 
 export const NavGauge: FC = () => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
@@ -37,6 +38,7 @@ export const NavGauge: FC = () => {
     );
 
     const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
+    const [applicationSettings, setApplicationSettings] = useLocalStorageState<ApplicationSettingsType>('application-settings', defaultApplicationSettings);
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
@@ -44,7 +46,7 @@ export const NavGauge: FC = () => {
     const [progressMs, setProgressMs] = useState(0);
 
     useEffect(() => {
-        if (!gaugeControls.confirmBeforeLeave || (!geojson && images.length === 0)) {
+        if (!applicationSettings.confirmBeforeLeave || (!geojson && images.length === 0)) {
             return;
         }
         const confirmationHandler = (event: BeforeUnloadEvent) => {
@@ -56,7 +58,7 @@ export const NavGauge: FC = () => {
         return () => {
             window.removeEventListener('beforeunload', confirmationHandler);
         }
-    }, [gaugeControls.confirmBeforeLeave, images, geojson]);
+    }, [applicationSettings.confirmBeforeLeave, images, geojson]);
 
     const handlePresetChange = (preset: Preset, presetMapLayout?: MapLayout, presetGaugeControls?: GaugeControlsType) => {
         setPreset(preset);
@@ -135,18 +137,17 @@ export const NavGauge: FC = () => {
                 ...mapLayoutCssStyle,
                 '--side-panel-height-sm': "240px",
             } as unknown as CSSProperties}>
-                <div className={styles["side-panel"]}>
+                <form className={styles["side-panel"]}>
                     <div>
                         <input id="files" type="file" multiple accept={[...parsers.keys(), "image/png", "image/jpeg", "image/jpg"].join(', ')} onChange={handleInput} />
                         <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
                     </div>
                     <hr className={styles.divider} />
                     <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
-                    <hr className={styles.divider} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
-                    <hr className={styles.divider} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
-                </div>
+                    <ApplicationSettings applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
+                </form>
                 <div className={styles["main-area"]}>
                     <MapSection
                         geojson={geojson}

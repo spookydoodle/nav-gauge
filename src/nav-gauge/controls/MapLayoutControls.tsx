@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Input, TextArea } from "../../components";
+import { Fieldset, Input, TextArea } from "../../components";
 import * as styles from './controls.module.css';
 
 export interface MapLayout {
@@ -57,7 +57,7 @@ export const MapLayoutControls: FC<Props> = ({
     onMapLayoutChange,
 }) => {
     return (
-        <div className={styles["section"]}>
+        <Fieldset label="Map layout" className={styles["section"]}>
             <Input
                 id="map-size"
                 name="map-size"
@@ -203,6 +203,6 @@ export const MapLayoutControls: FC<Props> = ({
                 }}
                 className={styles["color"]}
             />
-        </div>
+        </Fieldset>
     );
 };

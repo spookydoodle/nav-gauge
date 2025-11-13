@@ -2,10 +2,6 @@ import { FC, DetailedHTMLProps, TextareaHTMLAttributes, MouseEvent } from "react
 
 interface Props {
     label: string;
-    /**
-     * Defaults to `before`.
-     */
-    labelPlacement?: 'before' | 'after';
     name: string;
     autoSelect?: boolean;
     onContainerClick?: (event: MouseEvent<HTMLDivElement>) => void;
@@ -14,7 +10,6 @@ interface Props {
 
 export const TextArea: FC<Props & Omit<DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>, 'name'>> = ({
     label,
-    labelPlacement = 'before',
     autoSelect,
     name,
     onClick,
@@ -29,13 +24,10 @@ export const TextArea: FC<Props & Omit<DetailedHTMLProps<TextareaHTMLAttributes<
         onClick?.(event);
     };
 
-    const labelComponent = <label htmlFor={name}>{label}</label>;
-
     return (
         <div onClick={onContainerClick} className={containerClassName}>
-            {labelPlacement === 'before' ? labelComponent : null}
+            <label htmlFor={name}>{label}</label>
             <textarea  {...props} name={name} onClick={handleClick} />
-            {labelPlacement === 'after' ? labelComponent : null}
         </div>
     );
 };

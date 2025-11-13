@@ -1,4 +1,4 @@
-import { GaugeControlsType } from "./model";
+import { ApplicationSettingsType, GaugeControlsType } from "./model";
 
 export const controlsPositions: maplibregl.ControlPosition[] = [
     "top-left",
@@ -16,5 +16,11 @@ export const defaultGaugeControls: GaugeControlsType = {
     controlPlacement: { top: 0, bottom: 0, left: 0, right: 0 },
     showRouteLine: true,
     showRoutePoints: true,
+}
+
+export const defaultApplicationSettings: ApplicationSettingsType = {
+    /**
+     * When set to true, user will be shown a confirmation popup on page close or reload.
+     */
     confirmBeforeLeave: false,
 }

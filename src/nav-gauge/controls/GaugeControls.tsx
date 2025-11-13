@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import maplibregl from "maplibre-gl";
-import { Input } from "../../components";
+import { Input, Fieldset } from "../../components";
 import { ControlPlacement, controlsPositions, GaugeControlsType } from "../../logic";
 import * as styles from './controls.module.css';
 
@@ -19,10 +19,9 @@ export const GaugeControls: FC<Props> = ({
         showCompass,
         showGreenScreen,
         controlPosition,
-        controlPlacement,       
+        controlPlacement,
         showRouteLine,
         showRoutePoints,
-        confirmBeforeLeave,
     } = gaugeControls;
 
     const placements = useMemo(
@@ -38,7 +37,7 @@ export const GaugeControls: FC<Props> = ({
     );
 
     return (
-        <>
+        <Fieldset label="Gauge controls settings">
             <div>
                 <label htmlFor="controls-position">Controls position</label>
                 <select
@@ -82,7 +81,7 @@ export const GaugeControls: FC<Props> = ({
                 labelPlacement="after"
                 type='checkbox'
                 checked={globeProjection}
-                onChange={() => {}}
+                onChange={() => { }}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, globeProjection: !prev.globeProjection }))}
                 containerClassName={styles["checkbox"]}
             />
@@ -93,7 +92,7 @@ export const GaugeControls: FC<Props> = ({
                 labelPlacement="after"
                 type='checkbox'
                 checked={showZoom}
-                onChange={() => {}}
+                onChange={() => { }}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showZoom: !prev.showZoom }))}
                 containerClassName={styles["checkbox"]}
             />
@@ -104,7 +103,7 @@ export const GaugeControls: FC<Props> = ({
                 labelPlacement="after"
                 type='checkbox'
                 checked={showCompass}
-                onChange={() => {}}
+                onChange={() => { }}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showCompass: !prev.showCompass }))}
                 containerClassName={styles["checkbox"]}
             />
@@ -115,7 +114,7 @@ export const GaugeControls: FC<Props> = ({
                 labelPlacement="after"
                 type='checkbox'
                 checked={showGreenScreen}
-                onChange={() => {}}
+                onChange={() => { }}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showGreenScreen: !prev.showGreenScreen }))}
                 containerClassName={styles["checkbox"]}
             />
@@ -126,7 +125,7 @@ export const GaugeControls: FC<Props> = ({
                 labelPlacement="after"
                 type='checkbox'
                 checked={showRouteLine}
-                onChange={() => {}}
+                onChange={() => { }}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRouteLine: !prev.showRouteLine }))}
                 containerClassName={styles["checkbox"]}
             />
@@ -137,21 +136,10 @@ export const GaugeControls: FC<Props> = ({
                 labelPlacement="after"
                 type='checkbox'
                 checked={showRoutePoints}
-                onChange={() => {}}
+                onChange={() => { }}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showRoutePoints: !prev.showRoutePoints }))}
                 containerClassName={styles["checkbox"]}
             />
-            <Input
-                id="confirm-before-leave"
-                name="confirm-before-leave"
-                label="Confirm before leave"
-                labelPlacement="after"
-                type='checkbox'
-                checked={confirmBeforeLeave}
-                onChange={() => {}}
-                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, confirmBeforeLeave: !prev.confirmBeforeLeave }))}
-                containerClassName={styles["checkbox"]}
-            />
-        </>
+        </Fieldset>
     );
 };
