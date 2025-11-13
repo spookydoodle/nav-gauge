@@ -1,3 +1,5 @@
+import { Theme } from "../../components";
+
 export interface MapLayout {
     size: MapLayoutSize;
     borderWidth: number;
@@ -34,6 +36,7 @@ export interface GaugeControlsType {
 }
 
 export interface ApplicationSettingsType {
+    theme: Theme;
     confirmBeforeLeave: boolean;
 }
 

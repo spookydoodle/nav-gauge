@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Fieldset, Input } from "../../components";
+import { Fieldset, Input, Theme, themeOptions } from "../../components";
 import { ApplicationSettingsType } from "../../logic";
 import * as styles from './controls.module.css';
 
@@ -14,6 +14,10 @@ export const ApplicationSettings: FC<Props> = ({
 }) => {
     const { confirmBeforeLeave } = applicationSettings;
 
+    const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        onApplicationSettingsChange((prev) => ({ ...prev, theme: event.target.value as Theme }));
+    };
+
     return (
         <Fieldset label="Application settings">
             <Input
@@ -27,6 +31,18 @@ export const ApplicationSettings: FC<Props> = ({
                 onContainerClick={() => onApplicationSettingsChange((prev) => ({ ...prev, confirmBeforeLeave: !prev.confirmBeforeLeave }))}
                 containerClassName={styles["checkbox"]}
             />
+
+            {/* TODO: Move to reusable component */}
+            <div>
+                <label htmlFor="presets">Theme</label>
+                <select name="presets" id="presets" value={applicationSettings.theme} onChange={handleThemeChange}>
+                    {themeOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            </div>
         </Fieldset>
     );
 };

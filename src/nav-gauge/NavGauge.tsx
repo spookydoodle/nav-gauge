@@ -1,9 +1,9 @@
-import { CSSProperties, FC, useEffect, useMemo, useState } from "react";
+import { CSSProperties, Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components/forms";
 import { Presets } from "./controls/Presets";
 import { MapLayoutControls } from "./controls/MapLayoutControls";
-import { ApplicationSettingsType, defaultApplicationSettings, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset } from "../logic";
+import { ApplicationSettingsType, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
@@ -13,7 +13,15 @@ import { GaugeControls } from "./controls/GaugeControls";
 import { ApplicationSettings } from "./controls/ApplicationSettings";
 import * as styles from './nav-gauge.module.css';
 
-export const NavGauge: FC = () => {
+interface Props {
+    applicationSettings: ApplicationSettingsType;
+    onApplicationSettingsChange: Dispatch<SetStateAction<ApplicationSettingsType>>;
+}
+
+export const NavGauge: FC<Props> = ({
+    applicationSettings,
+    onApplicationSettingsChange
+}) => {
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
 
     const routeTimes = useMemo(
@@ -38,7 +46,6 @@ export const NavGauge: FC = () => {
     );
 
     const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
-    const [applicationSettings, setApplicationSettings] = useLocalStorageState<ApplicationSettingsType>('application-settings', defaultApplicationSettings);
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
@@ -146,7 +153,7 @@ export const NavGauge: FC = () => {
                     <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
-                    <ApplicationSettings applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
+                    <ApplicationSettings applicationSettings={applicationSettings} onApplicationSettingsChange={onApplicationSettingsChange} />
                 </form>
                 <div className={styles["main-area"]}>
                     <MapSection

@@ -1,3 +1,4 @@
+import { Theme } from "../../components";
 import { ApplicationSettingsType, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
 
 export const controlsPositions: maplibregl.ControlPosition[] = [
@@ -19,6 +20,7 @@ export const defaultGaugeControls: GaugeControlsType = {
 }
 
 export const defaultApplicationSettings: ApplicationSettingsType = {
+    theme: Theme.Dark,
     /**
      * When set to true, user will be shown a confirmation popup on page close or reload.
      */

@@ -3,6 +3,7 @@
     grid-template-columns: 1fr;
     row-gap: 10px;
     column-gap: 10px;
+    border-color: var(--divider-color);
     border-left: none;
     border-right: none;
     border-bottom: none;

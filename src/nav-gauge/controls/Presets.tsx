@@ -67,6 +67,7 @@ export const Presets: FC<Props> = ({
 
     return (
         <div className={styles['presets']}>
+            {/* TODO: Move to reusable component */}
             <div>
                 <label htmlFor="presets">Preset</label>
                 <select name="presets" id="presets" value={preset} onChange={handleChange}>
