@@ -24,6 +24,7 @@ export const Input: FC<Props & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLIn
     onClick,
     onContainerClick,
     containerClassName,
+    className,
     ...props
 }) => {
     const handleClick = (event: MouseEvent<HTMLInputElement>) => {
@@ -45,7 +46,7 @@ export const Input: FC<Props & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLIn
             className={classNames(styles.container, containerClassName)}
         >
             {labelPlacement === 'before' ? labelComponent : null}
-            <input {...props} id={id} name={name} onClick={handleClick} className={styles.input} />
+            <input {...props} id={id} name={name} onClick={handleClick} className={classNames(styles.input, className)} />
             {labelPlacement === 'after' ? labelComponent : null}
         </div>
     );
