@@ -69,7 +69,7 @@ export const Presets: FC<Props> = ({
         <div className={styles['presets']}>
             {/* TODO: Move to reusable component */}
             <div>
-                <label htmlFor="presets">Preset</label>
+                <label htmlFor="presets" style={{ fontSize: "12px" }}>Preset</label>
                 <select name="presets" id="presets" value={preset} onChange={handleChange}>
                     <option value="" disabled defaultValue="">Custom</option>
                     {presetOptions.map((option) => (

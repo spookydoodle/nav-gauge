@@ -16,6 +16,8 @@ export const GaugeControls: FC<Props> = ({
     const {
         globeProjection,
         showZoom,
+        // TODO: Implement
+        showCurrentZoom,
         showCompass,
         showGreenScreen,
         controlPosition,
@@ -37,9 +39,10 @@ export const GaugeControls: FC<Props> = ({
     );
 
     return (
-        <Fieldset label="Gauge controls settings">
+        <Fieldset label="Gauge controls">
+            {/* TODO: move select  */}
             <div>
-                <label htmlFor="controls-position">Controls position</label>
+                <label htmlFor="controls-position" style={{ fontSize: "12px" }}>Controls position</label>
                 <select
                     id="controls-position"
                     name="controls-position"
@@ -55,6 +58,7 @@ export const GaugeControls: FC<Props> = ({
             <div className={styles["section"]}>
                 {placements.map((el) => {
                     const reverseFactor = ['top', 'right'].includes(el) ? -1 : 1;
+
                     return (
                         <Input
                             key={el}
@@ -94,6 +98,17 @@ export const GaugeControls: FC<Props> = ({
                 checked={showZoom}
                 onChange={() => { }}
                 onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showZoom: !prev.showZoom }))}
+                containerClassName={styles["checkbox"]}
+            />
+            <Input
+                id="controls-show-current-zoom"
+                name="controls-show-current-zoom"
+                label="Show current zoom"
+                labelPlacement="after"
+                type='checkbox'
+                checked={showCurrentZoom}
+                onChange={() => { }}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showCurrentZoom: !prev.showCurrentZoom }))}
                 containerClassName={styles["checkbox"]}
             />
             <Input

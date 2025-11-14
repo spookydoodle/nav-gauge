@@ -1,5 +1,5 @@
 import { Theme } from "../../components";
-import { ApplicationSettingsType, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
+import { AnimationControlsType, ApplicationSettingsType, CameraAngle, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
 
 export const controlsPositions: maplibregl.ControlPosition[] = [
     "top-left",
@@ -11,6 +11,7 @@ export const controlsPositions: maplibregl.ControlPosition[] = [
 export const defaultGaugeControls: GaugeControlsType = {
     globeProjection: true,
     showZoom: false,
+    showCurrentZoom: true,
     showCompass: true,
     showGreenScreen: false,
     controlPosition: 'top-right',
@@ -82,3 +83,32 @@ export const detectPreset = (
         Object.entries(controlPlacement).every(([key, value]) => option.gaugeControls.controlPlacement[key as keyof ControlPlacement] === value)
     ))?.value ?? "";
 };
+
+export const defaultZoomInToImages = 15;
+
+export const defaultAnimationControls: AnimationControlsType = {
+    cameraAngle: CameraAngle.Rear,
+    followCurrentPoint: true,
+    autoRotate: true,
+    pitch: 30, // TODO:
+    zoom: 10,
+    zoomInToImages: defaultZoomInToImages,
+}
+
+export const pitchRange: [number, number] = [0, 85];
+
+export const cameraAngles: { value: CameraAngle; label: string; }[] = [
+    { value: CameraAngle.Top, label: CameraAngle.Top },
+    { value: CameraAngle.Right, label: CameraAngle.Right },
+    { value: CameraAngle.Front, label: CameraAngle.Front },
+    { value: CameraAngle.Right, label: CameraAngle.Right },
+    { value: CameraAngle.Rear, label: CameraAngle.Rear },
+];
+
+export const clamp = (value: number, range: [number, number]) => {
+    const [min, max] = range;
+
+    return Math.max(min, Math.min(max, value));
+}
+
+export const zoomRange: [number, number] = [0, 20];

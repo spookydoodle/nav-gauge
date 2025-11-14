@@ -1,4 +1,6 @@
 import { DetailedHTMLProps, FC, InputHTMLAttributes, MouseEvent } from "react";
+import classNames from "classnames";
+import * as styles from './input.module.css';
 
 interface Props {
     label: string;
@@ -31,15 +33,19 @@ export const Input: FC<Props & Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLIn
         onClick?.(event);
     };
 
-    const labelComponent = <label htmlFor={id} onClick={(e) => e.stopPropagation()}>{label}</label>;
+    const labelComponent = (
+        <label htmlFor={id} onClick={(e) => e.stopPropagation()} className={styles.label}>
+            {label}
+        </label>
+    );
 
     return (
         <div
             onClick={onContainerClick}
-            className={containerClassName}
+            className={classNames(styles.container, containerClassName)}
         >
             {labelPlacement === 'before' ? labelComponent : null}
-            <input {...props} id={id} name={name} onClick={handleClick} />
+            <input {...props} id={id} name={name} onClick={handleClick} className={styles.input} />
             {labelPlacement === 'after' ? labelComponent : null}
         </div>
     );
