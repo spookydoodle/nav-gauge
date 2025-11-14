@@ -2,15 +2,16 @@ import { CSSProperties, Dispatch, FC, SetStateAction, useEffect, useMemo, useSta
 import bbox from "@turf/bbox";
 import { FileInputStatus } from "../components/forms";
 import { Presets } from "./controls/Presets";
+import { AnimationControls } from "./controls/AnimationControls";
 import { MapLayoutControls } from "./controls/MapLayoutControls";
-import { ApplicationSettingsType, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset } from "../logic";
+import { ApplicationSettings } from "./controls/ApplicationSettings";
+import { GaugeControls } from "./controls/GaugeControls";
+import { AnimationControlsType, ApplicationSettingsType, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, FileToGeoJSONParser, ParsingResultWithError } from "../logic";
-import { GaugeControls } from "./controls/GaugeControls";
-import { ApplicationSettings } from "./controls/ApplicationSettings";
 import * as styles from './nav-gauge.module.css';
 
 interface Props {
@@ -48,6 +49,7 @@ export const NavGauge: FC<Props> = ({
     const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
+    const [animationControls, setAnimationControls] = useLocalStorageState<AnimationControlsType>('animation-controls', defaultAnimationControls);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
     // TODO: Change to progress percentage of time duration and derive ms for current geojson
     const [progressMs, setProgressMs] = useState(0);
@@ -153,6 +155,7 @@ export const NavGauge: FC<Props> = ({
                     <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
+                    <AnimationControls animationControls={animationControls} onAnimationConrolsChange={setAnimationControls} />
                     <ApplicationSettings applicationSettings={applicationSettings} onApplicationSettingsChange={onApplicationSettingsChange} />
                 </form>
                 <div className={styles["main-area"]}>

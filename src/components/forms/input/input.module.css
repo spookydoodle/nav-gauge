@@ -1,0 +1,14 @@
+.container {
+    display: grid;
+    row-gap: 4px;
+}
+
+.label {
+    font-size: 12px;
+    display: block;
+}
+
+.input {
+    width: 100%;
+    box-sizing: border-box;
+}

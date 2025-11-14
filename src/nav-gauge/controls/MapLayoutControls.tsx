@@ -112,7 +112,7 @@ export const MapLayoutControls: FC<Props> = ({
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, borderColor: event.target.value }));
                 }}
-                className={styles["color"]}
+                className={styles["input-color"]}
             />
             <Input
                 id="map-inner-border-color"
@@ -123,7 +123,7 @@ export const MapLayoutControls: FC<Props> = ({
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, innerBorderColor: event.target.value }));
                 }}
-                className={styles["color"]}
+                className={styles["input-color"]}
             />
             <TextArea
                 id="map-border-box-shadow"
@@ -157,7 +157,7 @@ export const MapLayoutControls: FC<Props> = ({
                 onChange={(event) => {
                     onMapLayoutChange((prev) => ({ ...prev, borderRadius: event.target.value }));
                 }}
-                className={styles["color"]}
+                className={styles["input-color"]}
             />
         </Fieldset>
     );

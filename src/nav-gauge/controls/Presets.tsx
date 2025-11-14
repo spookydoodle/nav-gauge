@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, racingGameMapLayout, validateGaugeControls, validateMapLayout } from "../../logic";
+import { defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -57,6 +57,7 @@ export const Presets: FC<Props> = ({
                     const possibleGaugeControls = { defaultGaugeControls, ...(result.gaugeControls as GaugeControlsType) };
                     validateMapLayout(possibleMapLayout);
                     validateGaugeControls(possibleGaugeControls);
+                    // TODO: Add validation and allow upload animation controls
                     onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), possibleMapLayout, possibleGaugeControls);
                 } catch (e) {
                     console.error(e);
@@ -69,7 +70,7 @@ export const Presets: FC<Props> = ({
         <div className={styles['presets']}>
             {/* TODO: Move to reusable component */}
             <div>
-                <label htmlFor="presets">Preset</label>
+                <label htmlFor="presets" style={{ fontSize: "12px" }}>Preset</label>
                 <select name="presets" id="presets" value={preset} onChange={handleChange}>
                     <option value="" disabled defaultValue="">Custom</option>
                     {presetOptions.map((option) => (
