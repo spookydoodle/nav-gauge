@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, racingGameMapLayout, validateGaugeControls, validateMapLayout } from "../../logic";
+import { defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -57,6 +57,7 @@ export const Presets: FC<Props> = ({
                     const possibleGaugeControls = { defaultGaugeControls, ...(result.gaugeControls as GaugeControlsType) };
                     validateMapLayout(possibleMapLayout);
                     validateGaugeControls(possibleGaugeControls);
+                    // TODO: Add validation and allow upload animation controls
                     onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), possibleMapLayout, possibleGaugeControls);
                 } catch (e) {
                     console.error(e);
