@@ -1,4 +1,4 @@
-name: Build and push
+name: Test build deploy
 
 on:
   push:
@@ -94,13 +94,15 @@ jobs:
             if [ -n "$CONTAINER_ID" ]; then
               echo "Stopping container..."
               docker stop $CONTAINER_ID
-
-              echo "Removing container..."
-              docker rm $CONTAINER_ID
             fi
 
             echo "Starting new container..."
             docker run -d --restart=always $PORTS $IMAGE
+
+            if [ -n "$CONTAINER_ID" ]; then
+              echo "Removing previous container..."
+              docker rm $CONTAINER_ID
+            fi
             
             echo "Pruning images..."
             docker image prune -f
