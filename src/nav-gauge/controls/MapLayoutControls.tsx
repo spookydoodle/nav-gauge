@@ -17,7 +17,7 @@ export const MapLayoutControls: FC<Props> = ({
             <Input
                 id="map-size"
                 name="map-size"
-                label="Full screen"
+                label="Full screeeeen"
                 labelPlacement="after"
                 type='checkbox'
                 checked={mapLayout.size.type === 'full-screen'}
