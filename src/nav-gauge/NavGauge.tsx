@@ -1,6 +1,5 @@
 import { CSSProperties, Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
-import { FileInputStatus } from "../components/forms";
 import { Presets } from "./controls/Presets";
 import { AnimationControls } from "./controls/AnimationControls";
 import { MapLayoutControls } from "./controls/MapLayoutControls";
@@ -11,7 +10,8 @@ import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
-import { parsers, RouteTimes, FileToGeoJSONParser, ParsingResultWithError } from "../logic";
+import { parsers, RouteTimes, ParsingResultWithError } from "../logic";
+import { FileInput } from "./controls/FileInput";
 import * as styles from './nav-gauge.module.css';
 
 interface Props {
@@ -101,27 +101,6 @@ export const NavGauge: FC<Props> = ({
             } : {}));
     }, []);
 
-    const handleInput = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { files } = event.target;
-        if (!files || files.length === 0) {
-            return;
-        }
-        for (let i = 0; i < files.length; i++) {
-            const file = files.item(i)!;
-            if (file.type.includes('image')) {
-                readImage(file);
-                continue;
-            }
-            setGeoJson({});
-            // setProgressMs(0);
-            parsers
-                .get(FileToGeoJSONParser.getFileExtension(file))
-                ?.parse(file)
-                .then((result => setGeoJson(result ?? { error: new Error('No parser found for file.') })));
-
-        }
-    };
-
     return (
         <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...applicationSettings }}>
             <div className={styles.layout} style={{
@@ -138,10 +117,13 @@ export const NavGauge: FC<Props> = ({
                 '--side-panel-height-sm': "240px",
             } as unknown as CSSProperties}>
                 <div className={styles["side-panel"]}>
-                    <div>
-                        <input id="files" type="file" multiple accept={[...parsers.keys(), "image/png", "image/jpeg", "image/jpg"].join(', ')} onChange={handleInput} />
-                        <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
-                    </div>
+                    <FileInput
+                        routeName={routeName}
+                        error={error}
+                        geojson={geojson}
+                        onGeojsonChange={setGeoJson}
+                        readImage={readImage}
+                    />
                     <hr className={styles.divider} />
                     <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
