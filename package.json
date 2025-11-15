@@ -77,7 +77,6 @@
         "react-refresh": "^0.17.0",
         "style-loader": "^4.0.0",
         "ts-checker-rspack-plugin": "^1.1.5",
-        "ts-node": "^10.9.2",
         "tsx": "^4.20.6",
         "typescript": "5.8.3",
         "webpack-bundle-analyzer": "^4.10.2",
