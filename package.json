@@ -54,6 +54,9 @@
         "react-dom": "^19.2.0"
     },
     "devDependencies": {
+        "@babel/core": "^7.28.5",
+        "@babel/plugin-syntax-jsx": "^7.27.1",
+        "@babel/plugin-syntax-typescript": "^7.27.1",
         "@rspack/cli": "^1.6.3",
         "@rspack/core": "^1.6.3",
         "@rspack/plugin-react-refresh": "^1.5.3",
@@ -70,6 +73,8 @@
         "@types/react-dom": "^19.2.3",
         "@typescript-eslint/eslint-plugin": "^8.46.4",
         "@typescript-eslint/parser": "^8.46.4",
+        "babel-loader": "^10.0.0",
+        "babel-plugin-react-compiler": "^1.0.0",
         "chai": "^6.2.0",
         "css-loader": "^7.1.2",
         "cypress": "^15.6.0",

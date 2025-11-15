@@ -11,7 +11,7 @@ module.exports = () => ({
     module: {
         rules: [
             {
-                test: /\.[jt]sx?$/,
+                test: /\.[jt]s?$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'builtin:swc-loader',
@@ -29,6 +29,31 @@ module.exports = () => ({
                         },
                     },
                 },
+            },
+            {
+                test: /\.[jt]sx?$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'builtin:swc-loader',
+                        options: {
+                            jsc: {
+                                parser: {
+                                    syntax: 'typescript',
+                                    tsx: true,
+                                },
+                                transform: {
+                                    react: {
+                                        runtime: 'automatic',
+                                    },
+                                },
+                            },
+                        }
+                    },
+                    {
+                        loader: 'babel-loader'
+                    }
+                ],
             },
             {
                 test: /\.(json|xml|ttf|woff|woff2|otf|eot)$/,
