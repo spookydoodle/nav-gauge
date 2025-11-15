@@ -15,17 +15,21 @@
         ],
         "typeRoots": [
             "@types",
-            "node_modules/@types"
+            "node_modules/@types",
         ],
+        "types": [
+            "cypress",
+            "node"
+        ]
     },
     "include": [
         "@types",
         "src",
-        "test"
+        "test",
+        "cypress"
     ],
     "exclude": [
         "node_modules",
-        "build",
-        "dist",
+        "dist"
     ]
 }
