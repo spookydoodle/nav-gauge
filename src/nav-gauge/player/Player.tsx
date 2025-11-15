@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useCallback, useEffect } from "react";
+import { CSSProperties, FC } from "react";
 import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../logic";
 import * as styles from './player.module.css';
 
