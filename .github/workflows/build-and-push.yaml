@@ -82,12 +82,14 @@ jobs:
             set -e
 
             IMAGE="ghcr.io/spookydoodle/nav-gauge"
-            PORTS="-p 8084:8080"
+            PORT="8084"
+            PORTS="-p $PORT:8080"
 
             echo "Pulling new image..."
             docker pull $IMAGE:latest
 
-            CONTAINER_ID=$(docker ps -q --filter ancestor=$IMAGE)
+            CONTAINER_ID=$(docker ps --filter "publish=$PORT" --format "{{.ID}}")
+            echo "Current container $CONTAINER_ID"
 
             if [ -n "$CONTAINER_ID" ]; then
               echo "Stopping container..."
