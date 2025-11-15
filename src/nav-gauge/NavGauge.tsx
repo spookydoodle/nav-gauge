@@ -51,8 +51,6 @@ export const NavGauge: FC<Props> = ({
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [animationControls, setAnimationControls] = useLocalStorageState<AnimationControlsType>('animation-controls', defaultAnimationControls);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
-    // TODO: Change to progress percentage of time duration and derive ms for current geojson
-    const [progressMs, setProgressMs] = useState(0);
 
     useEffect(() => {
         if (!applicationSettings.confirmBeforeLeave || (!geojson && images.length === 0)) {
@@ -93,21 +91,6 @@ export const NavGauge: FC<Props> = ({
         [gaugeControls]
     );
 
-    const mapLayoutCssStyle = useMemo(
-        () => ({
-            '--map-width': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.width}px`,
-            '--map-height': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.height}px`,
-            '--map-border-width': mapLayout.borderWidth + 'px',
-            '--map-border-color': mapLayout.borderColor,
-            '--map-inner-border-width': mapLayout.innerBorderWidth + 'px',
-            '--map-inner-border-color': mapLayout.innerBorderColor,
-            '--map-radius': mapLayout.borderRadius,
-            '--map-box-shadow': mapLayout.boxShadow,
-            '--map-inner-box-shadow': mapLayout.innerBoxShadow,
-        }),
-        [mapLayout]
-    );
-
     useEffect(() => {
         fetch('/example.gpx')
             .then((file) => file.text())
@@ -130,7 +113,7 @@ export const NavGauge: FC<Props> = ({
                 continue;
             }
             setGeoJson({});
-            setProgressMs(0);
+            // setProgressMs(0);
             parsers
                 .get(FileToGeoJSONParser.getFileExtension(file))
                 ?.parse(file)
@@ -143,7 +126,15 @@ export const NavGauge: FC<Props> = ({
         <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...applicationSettings }}>
             <div className={styles.layout} style={{
                 ...controlsCssStyle,
-                ...mapLayoutCssStyle,
+                '--map-width': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.width}px`,
+                '--map-height': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.height}px`,
+                '--map-border-width': mapLayout.borderWidth + 'px',
+                '--map-border-color': mapLayout.borderColor,
+                '--map-inner-border-width': mapLayout.innerBorderWidth + 'px',
+                '--map-inner-border-color': mapLayout.innerBorderColor,
+                '--map-radius': mapLayout.borderRadius,
+                '--map-box-shadow': mapLayout.boxShadow,
+                '--map-inner-box-shadow': mapLayout.innerBoxShadow,
                 '--side-panel-height-sm': "240px",
             } as unknown as CSSProperties}>
                 <div className={styles["side-panel"]}>
@@ -165,8 +156,6 @@ export const NavGauge: FC<Props> = ({
                         images={images}
                         updateImageFeatureId={updateImageFeatureId}
                         routeTimes={routeTimes}
-                        progressMs={progressMs}
-                        onProgressMsChange={setProgressMs}
                     />
                 </div>
             </div>

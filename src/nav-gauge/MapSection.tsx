@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapTools } from "./map-tools/MapTools";
 import { RouteLayer } from "./layers/RouteLayer";
 import { RouteLayerFitBounds } from "./layers/RouteLayerFitBounds";
@@ -11,8 +11,6 @@ interface Props {
     images: ImageData[];
     updateImageFeatureId: (imageId: number, featureId: number) => void;
     routeTimes?: RouteTimes;
-    progressMs: number;
-    onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const MapSection: React.FC<Props> = ({
@@ -21,10 +19,11 @@ export const MapSection: React.FC<Props> = ({
     images,
     updateImageFeatureId,
     routeTimes,
-    progressMs,
-    onProgressMsChange,
 }) => {
     const [isPlaying, setIsPlaying] = useState(false);
+    const [progressMs, setProgressMs] = useState(0);
+    
+    useEffect(() => setProgressMs(0), [geojson]);
 
     return (
         <MapTools
@@ -34,7 +33,7 @@ export const MapSection: React.FC<Props> = ({
                 images={images}
                 routeTimes={routeTimes}
                 progressMs={progressMs}
-                onProgressMsChange={onProgressMsChange}
+                onProgressMsChange={setProgressMs}
                 isPlaying={isPlaying}
                 onIsPlayingChange={setIsPlaying}
             />}
@@ -45,7 +44,7 @@ export const MapSection: React.FC<Props> = ({
                     geojson={geojson}
                     routeTimes={routeTimes}
                     progressMs={progressMs}
-                    onProgressMsChange={onProgressMsChange}
+                    onProgressMsChange={setProgressMs}
                     images={images}
                     updateImageFeatureId={updateImageFeatureId}
                 />

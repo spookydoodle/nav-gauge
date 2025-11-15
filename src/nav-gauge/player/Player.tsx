@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useCallback } from "react";
+import { CSSProperties, FC, useCallback, useEffect } from "react";
 import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../logic";
 import * as styles from './player.module.css';
 
@@ -31,14 +31,13 @@ export const Player: FC<Props> = ({
         onProgressMsChange(Number(event.target.value));
     }
 
-    const getPosition = useCallback(
-        (featureId: number) => {
-            const feature = geojson?.features.find((feature) => feature.properties.id === featureId);
-            if (!feature || !routeTimes) {
-                return 0;
-            }
-            return (new Date(feature.properties.time).valueOf() - new Date(routeTimes.startTime).valueOf()) / routeTimes.duration * 100;
-        }, [geojson]);
+    const getPosition = (featureId: number) => {
+        const feature = geojson?.features.find((feature) => feature.properties.id === featureId);
+        if (!feature || !routeTimes) {
+            return 0;
+        }
+        return (new Date(feature.properties.time).valueOf() - new Date(routeTimes.startTime).valueOf()) / routeTimes.duration * 100;
+    };
 
     return (
         <div className={styles.player}>

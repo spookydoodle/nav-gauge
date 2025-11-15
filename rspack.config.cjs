@@ -103,7 +103,7 @@ module.exports = () => ({
         }),
         new rspack.CopyRspackPlugin({
             patterns: [
-                { from: "./public" },
+                { from: "./public", to: './public' },
             ],
         }),
     ],
