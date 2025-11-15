@@ -42,6 +42,7 @@ jobs:
 
   push:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' 
     permissions:
       packages: write
       contents: read
@@ -53,18 +54,13 @@ jobs:
 
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        #
+        
       - name: Push image
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-
-          # This changes all uppercase characters to lowercase.
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          # This strips the git ref prefix from the version.
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # This strips the "v" prefix from the tag name.
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # This uses the Docker `latest` tag convention.
           [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
@@ -73,7 +69,7 @@ jobs:
   
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/main' 
+    if: github.ref == 'refs/heads/main' 
     needs: push
     steps:
       - name: Deploy
@@ -85,11 +81,11 @@ jobs:
           script: |
             set -e
 
-            IMAGE="ghcr.io/spookydoodle/nav-gauge:latest"
+            IMAGE="ghcr.io/spookydoodle/nav-gauge"
             PORTS="-p 8084:8080"
 
             echo "Pulling new image..."
-            docker pull $IMAGE
+            docker pull $IMAGE:latest
 
             CONTAINER_ID=$(docker ps -q --filter ancestor=$IMAGE)
 
