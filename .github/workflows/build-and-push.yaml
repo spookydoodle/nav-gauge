@@ -28,6 +28,7 @@ jobs:
 
       - name: Run tests
         run: yarn test
+
   push:
     runs-on: ubuntu-latest
     permissions:
@@ -58,3 +59,13 @@ jobs:
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+  test-e2e-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests e2e prod
+        continue-on-error: true
+        run: yarn test:e2e:prod
+
