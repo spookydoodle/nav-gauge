@@ -28,7 +28,7 @@ export const Player: FC<Props> = ({
         if (!routeTimes || isNaN(Number(event.target.value))) {
             return;
         }
-        onProgressMsChange(Number(event.target.value) / 100 * routeTimes.duration);
+        onProgressMsChange(Number(event.target.value));
     }
 
     const getPosition = useCallback(

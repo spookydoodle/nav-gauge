@@ -133,7 +133,7 @@ export const getCurrentPoint = (
     currentTime: number
 ) => {
     const currentLineStart = geojson.features[Math.max(0, splitIndex - 1)];
-    const currentLineEnd = geojson.features[splitIndex];
+    const currentLineEnd = geojson.features[Math.max(1, splitIndex)];
     const currentLineStartTime = new Date(currentLineStart.properties.time).valueOf();
     const currentLineEndTime = new Date(currentLineEnd.properties.time).valueOf();
 
