@@ -42,6 +42,7 @@ jobs:
 
   push:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' 
     permissions:
       packages: write
       contents: read
@@ -53,28 +54,59 @@ jobs:
 
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        #
+        
       - name: Push image
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-
-          # This changes all uppercase characters to lowercase.
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          # This strips the git ref prefix from the version.
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # This strips the "v" prefix from the tag name.
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          # This uses the Docker `latest` tag convention.
           [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+  
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' 
+    needs: push
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
 
-  # TODO: Set up deployment to prod and changen needs   
+            IMAGE="ghcr.io/spookydoodle/nav-gauge"
+            PORTS="-p 8084:8080"
+
+            echo "Pulling new image..."
+            docker pull $IMAGE:latest
+
+            CONTAINER_ID=$(docker ps -q --filter ancestor=$IMAGE)
+
+            if [ -n "$CONTAINER_ID" ]; then
+              echo "Stopping container..."
+              docker stop $CONTAINER_ID
+
+              echo "Removing container..."
+              docker rm $CONTAINER_ID
+            fi
+
+            echo "Starting new container..."
+            docker run -d --restart=always $PORTS $IMAGE
+            
+            echo "Pruning images..."
+            docker image prune -f
+ 
   test-e2e-prod:
     runs-on: ubuntu-latest
-    needs: push
+    if: github.ref == 'refs/heads/main'
+    needs: deploy
     steps:
       - uses: actions/checkout@v4
 
