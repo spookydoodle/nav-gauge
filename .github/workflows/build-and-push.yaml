@@ -70,7 +70,12 @@ jobs:
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
-
+  
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main' 
+    needs: push
+    steps:
       - name: Deploy
         uses: appleboy/ssh-action@v1
         with:
@@ -101,12 +106,11 @@ jobs:
             
             echo "Pruning images..."
             docker image prune -f
-
-  # TODO: Set up deployment to prod and changen needs   
+ 
   test-e2e-prod:
     runs-on: ubuntu-latest
-    needs: push
     if: github.ref == 'refs/heads/main'
+    needs: deploy
     steps:
       - uses: actions/checkout@v4
 
