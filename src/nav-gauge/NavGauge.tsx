@@ -92,7 +92,7 @@ export const NavGauge: FC<Props> = ({
     );
 
     useEffect(() => {
-        fetch('/example.gpx')
+        fetch('/public/example.gpx')
             .then((file) => file.text())
             .then((text) => parsers.get('.gpx')?.parseTextToGeoJson(text))
             .then((result) => setGeoJson(result ? {

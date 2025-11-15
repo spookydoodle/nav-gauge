@@ -97,9 +97,6 @@ module.exports = (env, argv) => merge(config(env, argv), {
         new BundleAnalyzerPlugin({
             analyzerMode: 'static',
             openAnalyzer: false,
-        }),
-        new rspack.CopyRspackPlugin({
-            from: '/public'
         })
     ],
     output: {
