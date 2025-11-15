@@ -1,8 +1,8 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { useMap } from "../../map/useMap";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
-import { clearLayersAndSources, colorActive, colorInactive, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "../../logic/map-layers";
+import { clearLayersAndSources, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "../../logic/map-layers";
 import { useGaugeContext } from "../../contexts/useGaugeContext";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
 
@@ -65,11 +65,11 @@ export const RouteLayer: FC<Props> = ({
             );
         };
     }, [map, geojson, showRouteLine, showRoutePoints]);
-    
+
     useEffect(() => {
         const loadedImages = images.filter((image) => image.progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !image.error);
 
-        if (loadedImages.length === 0 ) {
+        if (loadedImages.length === 0) {
             return;
         }
 
@@ -129,13 +129,10 @@ export const RouteLayer: FC<Props> = ({
         map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
     }, [progressMs]);
 
-    const markerImages = useMemo(
-        (): MarkerImageData[] => images.filter((image) => !!image.marker && !!image.markerElement) as MarkerImageData[],
-        [images]
-    );
+    const markerImages = images.filter((image) => !!image.marker && !!image.markerElement) as MarkerImageData[];
 
     return markerImages.map((image) => (
-        <ImageMarker 
+        <ImageMarker
             key={image.id}
             map={map}
             image={image}

@@ -32,10 +32,14 @@ export const RouteLayerFitBounds: FC<Props> = ({
             return;
         }
 
-        map.fitBounds(
-            [boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3]],
-            { animate, padding }
-        );
+        try {
+            map.fitBounds(
+                [boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3]],
+                { animate, padding }
+            );
+        } catch (err) {
+            // TODO: Push notification
+        }
     };
 
     return (

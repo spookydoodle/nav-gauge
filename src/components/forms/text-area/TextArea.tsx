@@ -1,4 +1,5 @@
 import { FC, DetailedHTMLProps, TextareaHTMLAttributes, MouseEvent } from "react";
+import * as styles from './text-area.module.css';
 
 interface Props {
     label: string;
@@ -26,7 +27,7 @@ export const TextArea: FC<Props & Omit<DetailedHTMLProps<TextareaHTMLAttributes<
 
     return (
         <div onClick={onContainerClick} className={containerClassName}>
-            <label htmlFor={name}>{label}</label>
+            <label htmlFor={name} className={styles.label}>{label}</label>
             <textarea  {...props} name={name} onClick={handleClick} />
         </div>
     );

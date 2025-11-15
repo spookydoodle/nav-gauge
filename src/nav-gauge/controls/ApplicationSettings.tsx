@@ -32,9 +32,9 @@ export const ApplicationSettings: FC<Props> = ({
                 containerClassName={styles["checkbox"]}
             />
 
-            {/* TODO: Move to reusable component */}
+            {/* TODO: Move to reusable component and remove style */}
             <div>
-                <label htmlFor="presets">Theme</label>
+                <label htmlFor="presets" style={{ fontSize: "12px" }}>Theme</label>
                 <select name="presets" id="presets" value={applicationSettings.theme} onChange={handleThemeChange}>
                     {themeOptions.map((option) => (
                         <option key={option.value} value={option.value}>
