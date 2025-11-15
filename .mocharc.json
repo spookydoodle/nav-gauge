@@ -1,5 +1,6 @@
 {
   "extension": ["ts", "tsx"],
   "spec": ["test/**/*.test.ts"],
-  "require": ["ts-node/register", "jsdom-global/register"]
+  "$schema": "https://json.schemastore.org/mocharc.json",
+  "require": "tsx"
 }
