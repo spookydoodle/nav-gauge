@@ -146,7 +146,7 @@ export const NavGauge: FC<Props> = ({
                 ...mapLayoutCssStyle,
                 '--side-panel-height-sm': "240px",
             } as unknown as CSSProperties}>
-                <form className={styles["side-panel"]}>
+                <div className={styles["side-panel"]}>
                     <div>
                         <input id="files" type="file" multiple accept={[...parsers.keys(), "image/png", "image/jpeg", "image/jpg"].join(', ')} onChange={handleInput} />
                         <FileInputStatus ok={!!geojson && !error} error={error} routeName={routeName} />
@@ -157,7 +157,7 @@ export const NavGauge: FC<Props> = ({
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                     <AnimationControls animationControls={animationControls} onAnimationConrolsChange={setAnimationControls} />
                     <ApplicationSettings applicationSettings={applicationSettings} onApplicationSettingsChange={onApplicationSettingsChange} />
-                </form>
+                </div>
                 <div className={styles["main-area"]}>
                     <MapSection
                         geojson={geojson}
