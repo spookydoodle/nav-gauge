@@ -71,6 +71,37 @@ jobs:
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
 
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          run: |
+            set -e
+
+            IMAGE="ghcr.io/spookydoodle/nav-gauge:latest"
+            PORTS="-p 8084:8080"
+
+            echo "Pulling new image..."
+            docker pull $IMAGE
+
+            CONTAINER_ID=$(docker ps -q --filter ancestor=$IMAGE)
+
+            if [ -n "$CONTAINER_ID" ]; then
+              echo "Stopping container..."
+              docker stop $CONTAINER_ID
+
+              echo "Removing container..."
+              docker rm $CONTAINER_ID
+            fi
+
+            echo "Starting new container..."
+            docker run -d --restart=always $PORTS $IMAGE
+            
+            echo "Pruning images..."
+            docker image prune -f
+
   # TODO: Set up deployment to prod and changen needs   
   test-e2e-prod:
     runs-on: ubuntu-latest
