@@ -99,9 +99,9 @@ export const pitchRange: [number, number] = [0, 85];
 
 export const cameraAngles: { value: CameraAngle; label: string; }[] = [
     { value: CameraAngle.Top, label: CameraAngle.Top },
-    { value: CameraAngle.Right, label: CameraAngle.Right },
-    { value: CameraAngle.Front, label: CameraAngle.Front },
     { value: CameraAngle.Left, label: CameraAngle.Left },
+    { value: CameraAngle.Front, label: CameraAngle.Front },
+    { value: CameraAngle.Right, label: CameraAngle.Right },
     { value: CameraAngle.Rear, label: CameraAngle.Rear },
 ];
 
