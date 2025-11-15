@@ -1,16 +1,17 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "lib": [
-            "es5",
+            "es6",
             "dom"
         ],
+        "sourceMap": true,
         "types": [
             "cypress",
             "node"
         ]
     },
     "include": [
-        "**/*.cy.ts"
+        "**/*.ts"
     ]
 }
