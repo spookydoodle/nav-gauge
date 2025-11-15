@@ -16,10 +16,15 @@
     "scripts": {
         "analyze": "source-map-explorer 'build/static/js/*.js'",
         "dev": "rspack serve --mode development --config rspack.config.development.cjs",
+        "start": "rspack serve --mode production --config rspack.config.production.cjs",
         "build": "tsc --noEmit && rspack --mode production --config rspack.config.production.cjs",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "clean": "npx shx rm -rf node_modules/",
-        "test": "mocha"
+        "test": "mocha",
+        "test:e2e": "cypress run",
+        "test:e2e:dev": "cypress run --config baseUrl=http://localhost:3000",
+        "test:e2e:prod": "cypress run --config baseUrl=https://gauge.spookydoodle.com",
+        "cypress": "cypress open"
     },
     "browserslist": {
         "production": [
@@ -66,6 +71,7 @@
         "@typescript-eslint/parser": "^8.38.0",
         "chai": "^6.2.0",
         "css-loader": "^7.1.2",
+        "cypress": "^15.6.0",
         "eslint": "^9.32.0",
         "eslint-plugin-react": "^7.37.5",
         "global-jsdom": "^27.0.0",
