@@ -84,8 +84,8 @@ describe("Preset", () => {
                 expect(() => validateGaugeControls({ showRoutePoints: "" } as unknown as GaugeControlsType)).to.throw("Show route points incorrect");
             });
             it("should throw if showZoom incorrect", () => {
-                expect(() => validateGaugeControls({ showZoom: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showZoom: "" } as unknown as GaugeControlsType)).to.throw("Show zoom incorrect");
+                expect(() => validateGaugeControls({ showZoomButtons: false })).to.not.throw();
+                expect(() => validateGaugeControls({ showZoomButtons: "" } as unknown as GaugeControlsType)).to.throw("Show zoom incorrect");
             });
         });
     });

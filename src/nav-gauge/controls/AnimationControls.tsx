@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import classNames from "classnames";
 import { Fieldset, Input } from "../../components";
-import { AnimationControlsType, CameraAngle, cameraAngles, clamp, defaultZoomInToImages, pitchRange, zoomRange } from "../../logic";
+import { AnimationControlsType, CameraAngle, cameraAngleOptions, clamp, defaultZoomInToImages, pitchRange, zoomRange } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -24,21 +24,6 @@ export const AnimationControls: FC<Props> = ({
 
     return (
         <Fieldset label="Animation controls">
-            {/* TODO: Move select to its own component and remove style */}
-            <div>
-                <label htmlFor="controls-position" style={{ fontSize: '12px' }}>Camera angle</label>
-                <select
-                    id="animation-controls-camera-angle"
-                    name="animation-controls-camera-angle"
-                    value={cameraAngle}
-                    onChange={(event) => onAnimationConrolsChange((prev) => ({
-                        ...prev,
-                        cameraAngle: event.target.value as CameraAngle
-                    }))}
-                >
-                    {cameraAngles.map((el) => <option key={el.value} {...el}>{el.label}</option>)}
-                </select>
-            </div>
             <Input
                 id="animation-controls-follow-current-point"
                 name="animation-controls-follow-current-point"
@@ -61,6 +46,47 @@ export const AnimationControls: FC<Props> = ({
                 onContainerClick={() => onAnimationConrolsChange((prev) => ({ ...prev, autoRotate: !prev.autoRotate }))}
                 containerClassName={styles["checkbox"]}
             />
+            {/* TODO: Move select to its own component and remove style */}
+            <div>
+                <label htmlFor="controls-position" style={{ fontSize: '12px' }}>Camera angle</label>
+                <select
+                    id="animation-controls-camera-angle"
+                    name="animation-controls-camera-angle"
+                    value={cameraAngle}
+                    onChange={(event) => onAnimationConrolsChange((prev) => ({
+                        ...prev,
+                        cameraAngle: event.target.value as CameraAngle
+                    }))}
+                >
+                    {cameraAngleOptions.map((el) => <option key={el.value} {...el}>{el.label}</option>)}
+                </select>
+            </div>
+            <div className={styles["section"]}>
+                <Input
+                    id="animation-controls-pitch"
+                    name="animation-controls-pitch"
+                    label="Pitch"
+                    type='number'
+                    value={pitch}
+                    min={pitchRange[0]}
+                    max={pitchRange[1]}
+                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        ? { ...prev, pitch: clamp(Number(event.target.value), pitchRange) }
+                        : prev)}
+                />
+                <Input
+                    id="animation-controls-zoom"
+                    name="animation-controls-zoom"
+                    label="Zoom"
+                    type='number'
+                    value={zoom}
+                    min={zoomRange[0]}
+                    max={zoomRange[1]}
+                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        ? { ...prev, zoom: clamp(Number(event.target.value), zoomRange) }
+                        : prev)}
+                />
+            </div>
             <div className={styles["section"]}>
                 <Input
                     id="animation-controls-zoom-in-to-images"
@@ -88,32 +114,6 @@ export const AnimationControls: FC<Props> = ({
                         ? { ...prev, zoom: clamp(Number(event.target.value), zoomRange) }
                         : prev)}
                     disabled={zoomInToImages === false}
-                />
-            </div>
-            <div className={styles["section"]}>
-                <Input
-                    id="animation-controls-pitch"
-                    name="animation-controls-pitch"
-                    label="Pitch"
-                    type='number'
-                    value={pitch}
-                    min={pitchRange[0]}
-                    max={pitchRange[1]}
-                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
-                        ? { ...prev, pitch: clamp(Number(event.target.value), pitchRange) }
-                        : prev)}
-                />
-                <Input
-                    id="animation-controls-zoom"
-                    name="animation-controls-zoom"
-                    label="Zoom"
-                    type='number'
-                    value={zoom}
-                    min={zoomRange[0]}
-                    max={zoomRange[1]}
-                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
-                        ? { ...prev, zoom: clamp(Number(event.target.value), zoomRange) }
-                        : prev)}
                 />
             </div>
         </Fieldset>

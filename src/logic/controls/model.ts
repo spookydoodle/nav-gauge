@@ -26,7 +26,7 @@ export interface ControlPlacement {
 
 export interface GaugeControlsType {
     globeProjection: boolean;
-    showZoom: boolean;
+    showZoomButtons: boolean;
     showCurrentZoom: boolean;
     showCompass: boolean;
     showGreenScreen: boolean;
@@ -88,4 +88,11 @@ export interface PresetOption {
     label: string;
     mapLayout: MapLayout;
     gaugeControls: GaugeControlsType;
+    animationControls: AnimationControlsType;
+}
+
+export interface PresetValues {
+    presetMapLayout?: MapLayout;
+    presetGaugeControls?: GaugeControlsType;
+    presetAnimationControls?: AnimationControlsType;
 }
