@@ -7,6 +7,7 @@ interface Props {
     onPresetChange: (preset: Preset, presetValues?: PresetValues) => void;
     mapLayout: MapLayout;
     gaugeControls: GaugeControlsType;
+    animationControls: AnimationControlsType;
 }
 
 export const Presets: FC<Props> = ({
@@ -14,6 +15,7 @@ export const Presets: FC<Props> = ({
     onPresetChange,
     mapLayout,
     gaugeControls,
+    animationControls,
 }) => {
     useEffect(() => {
         if (preset && !detectPreset(mapLayout, gaugeControls)) {
@@ -33,7 +35,7 @@ export const Presets: FC<Props> = ({
     };
 
     const handleExport = () => {
-        const jsonString = JSON.stringify({ mapLayout, gaugeControls }, null, 2);
+        const jsonString = JSON.stringify({ mapLayout, gaugeControls, animationControls }, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
@@ -60,7 +62,7 @@ export const Presets: FC<Props> = ({
                     const result = JSON.parse(text);
                     const possibleMapLayout: MapLayout = { ...defaultMapLayout, ...(result.mapLayout as MapLayout) };
                     validateMapLayout(possibleMapLayout);
-                    
+
                     const possibleGaugeControls: GaugeControlsType = { ...defaultGaugeControls, ...(result.gaugeControls as GaugeControlsType) };
                     validateGaugeControls(possibleGaugeControls);
 

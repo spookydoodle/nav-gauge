@@ -132,7 +132,7 @@ export const NavGauge: FC<Props> = ({
                         readImage={readImage}
                     />
                     <hr className={styles.divider} />
-                    <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
+                    <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} animationControls={animationControls} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                     <AnimationControls animationControls={animationControls} onAnimationConrolsChange={setAnimationControls} />
