@@ -111,7 +111,7 @@ export const AnimationControls: FC<Props> = ({
                     min={zoomRange[0]}
                     max={zoomRange[1]}
                     onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
-                        ? { ...prev, zoom: clamp(Number(event.target.value), zoomRange) }
+                        ? { ...prev, zoomInToImages: clamp(Number(event.target.value), zoomRange) }
                         : prev)}
                     disabled={zoomInToImages === false}
                 />
