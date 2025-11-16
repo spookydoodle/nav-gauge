@@ -1,4 +1,4 @@
-import { Theme, ThemeOption } from "./model";
+import { Theme, ThemeOption } from "../logic";
 
 export const themeOptions: ThemeOption[] = [
     { value: Theme.Dark, label: 'Dark' },

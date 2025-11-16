@@ -1,4 +1,4 @@
-import { Theme } from "../../components";
+import { Theme } from "../theme";
 import { AnimationControlsType, ApplicationSettingsType, CameraAngle, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
 
 export const controlsPositions: maplibregl.ControlPosition[] = [

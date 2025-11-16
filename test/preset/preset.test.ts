@@ -41,7 +41,7 @@ describe("Preset", () => {
                 expect(() => validateMapLayout({ innerBorderWidth: 5 })).to.not.throw();
                 expect(() => validateMapLayout({ innerBorderWidth: true } as unknown as MapLayout)).to.throw("Inner border width should be of type number");
             });
-            it("should throw if inner border width incorrect", () => {
+            it("should throw if inner box shadow incorrect", () => {
                 expect(() => validateMapLayout({ innerBoxShadow: "1px 1px yellow" })).to.not.throw();
                 expect(() => validateMapLayout({ innerBoxShadow: true } as unknown as MapLayout)).to.throw("Inner box shadow should be of type string");
             });
@@ -58,6 +58,7 @@ describe("Preset", () => {
             it("should throw if controlPlacement incorrect", () => {
                 expect(() => validateGaugeControls({ controlPlacement: { top: 0, bottom: 0, left: 0, right: 0 } })).to.not.throw();
                 expect(() => validateGaugeControls({ controlPlacement: true } as unknown as GaugeControlsType)).to.throw("Control placement incorrect");
+                expect(() => validateGaugeControls({ controlPlacement: { foo: 'bar' } } as unknown as GaugeControlsType)).to.throw("Control placement missing required keys: top, left, right, bottom");
             });
             it("should throw if controlPosition incorrect", () => {
                 expect(() => validateGaugeControls({ controlPosition: "bottom-left" })).to.not.throw();
@@ -83,9 +84,9 @@ describe("Preset", () => {
                 expect(() => validateGaugeControls({ showRoutePoints: false })).to.not.throw();
                 expect(() => validateGaugeControls({ showRoutePoints: "" } as unknown as GaugeControlsType)).to.throw("Show route points should be of type boolean");
             });
-            it("should throw if showZoom incorrect", () => {
+            it("should throw if showZoomButtons incorrect", () => {
                 expect(() => validateGaugeControls({ showZoomButtons: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showZoomButtons: "" } as unknown as GaugeControlsType)).to.throw("Show zoom should be of type boolean");
+                expect(() => validateGaugeControls({ showZoomButtons: "" } as unknown as GaugeControlsType)).to.throw("Show zoom buttons should be of type boolean");
             });
         });
         
@@ -113,9 +114,11 @@ describe("Preset", () => {
                 expect(() => validateAnimationControls({ zoom: "" } as unknown as AnimationControlsType)).to.throw("Zoom should be of type number");
             });
             it("should throw if zoomInToImages incorrect", () => {
+                expect(() => validateAnimationControls({ zoomInToImages: false })).to.not.throw();
                 expect(() => validateAnimationControls({ zoomInToImages: 15 })).to.not.throw();
+                expect(() => validateAnimationControls({ zoomInToImages: true } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be either false or of type number within range [0, 20]");
                 expect(() => validateAnimationControls({ zoomInToImages: 200 } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be within range [0, 20]");
-                expect(() => validateAnimationControls({ zoomInToImages: "" } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be of type number");
+                expect(() => validateAnimationControls({ zoomInToImages: "" } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be either false or of type number within range [0, 20]");
             });
         });
     });

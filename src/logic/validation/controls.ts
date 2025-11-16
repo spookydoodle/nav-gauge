@@ -30,13 +30,14 @@ const validateBoolean = (value: unknown, name: string) => {
 export const validateMapLayout = (mapLayout: Partial<MapLayout>) => {
     validateString(mapLayout.borderColor, 'Border color');
     validateString(mapLayout.borderRadius, 'Border radius');
-    validateString(mapLayout.borderWidth, 'Border width');
+    validateNumber(mapLayout.borderWidth, 'Border width');
     validateString(mapLayout.boxShadow, 'Box shadow');
     validateStringEnum(mapLayout.size?.type, 'Size type', ['full-screen', 'manual']);
     validateNumber(mapLayout.size?.height, 'Height');
     validateNumber(mapLayout.size?.width, 'Width');
     validateString(mapLayout.innerBorderColor, 'Inner border color');
     validateNumber(mapLayout.innerBorderWidth, 'Inner border width');
+    validateString(mapLayout.innerBoxShadow, 'Inner box shadow');
 };
 
 export const validateGaugeControls = (gaugeControls: Partial<GaugeControlsType>) => {
@@ -49,7 +50,7 @@ export const validateGaugeControls = (gaugeControls: Partial<GaugeControlsType>)
         'right' in gaugeControls.controlPlacement ||
         'bottom' in gaugeControls.controlPlacement
     )) {
-        throw new Error('Control placement incorrect');
+        throw new Error('Control placement missing required keys: top, left, right, bottom');
     }
     validateNumber(gaugeControls.controlPlacement?.left, 'Control placement left');
     validateNumber(gaugeControls.controlPlacement?.top, 'Control placement top');
@@ -72,10 +73,10 @@ export const validateAnimationControls = (animationControls: Partial<AnimationCo
     validateNumber(animationControls.pitch, 'Pitch', pitchRange);
     validateNumber(animationControls.zoom, 'Zoom', zoomRange);
     if (animationControls.zoomInToImages !== undefined && animationControls.zoomInToImages !== false && typeof animationControls.zoomInToImages !== 'number') {
-        throw new Error(`Zoom in to images should be either false or of type number within range ${zoomRange.join(', ')}.`);
+        throw new Error(`Zoom in to images should be either false or of type number within range [${zoomRange.join(', ')}]`);
     }
     if (animationControls.zoomInToImages && typeof animationControls.zoomInToImages === 'number') {
-        validateNumber(animationControls, 'Zoom in to images', zoomRange);
+        validateNumber(animationControls.zoomInToImages, 'Zoom in to images', zoomRange);
     }
 };
 
