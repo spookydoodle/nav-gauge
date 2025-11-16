@@ -1,26 +1,29 @@
-import { AnimationControlsType, cameraAngles, GaugeControlsType, MapLayout } from "../controls";
+import { AnimationControlsType, cameraAngles, GaugeControlsType, MapLayout, pitchRange, zoomRange } from "../controls";
 
 const validateString = (value: unknown, name: string) => {
     if (value !== undefined && typeof value !== 'string') {
-        throw new Error(`${name} should be of type string.`);
+        throw new Error(`${name} should be of type string`);
     }
 };
 
-const validateNumber = (value: unknown, name: string) => {
+const validateNumber = (value: unknown, name: string, range?: [number, number]) => {
     if (value !== undefined && typeof value !== 'number') {
-        throw new Error(`${name} should be a number.`);
+        throw new Error(`${name} should be of type number`);
+    }
+    if (range && value !== undefined && (value < range[0] || value > range[1])) {
+        throw new Error(`${name} should be within range [${range.join(', ')}]`);
     }
 };
 
 const validateStringEnum = (value: unknown, name: string, allowedValues: string[]) => {
     if (value !== undefined && !allowedValues.includes(value as string)) {
-        throw new Error(`${name} should be one of: ${allowedValues.join(', ')}.`);
+        throw new Error(`${name} should be one of: ${allowedValues.join(', ')}`);
     }
 };
 
 const validateBoolean = (value: unknown, name: string) => {
     if (value !== undefined && typeof value !== 'boolean') {
-        throw new Error(`${name} should be of type boolean.`);
+        throw new Error(`${name} should be of type boolean`);
     }
 };
 
@@ -37,6 +40,17 @@ export const validateMapLayout = (mapLayout: Partial<MapLayout>) => {
 };
 
 export const validateGaugeControls = (gaugeControls: Partial<GaugeControlsType>) => {
+    if (gaugeControls.controlPlacement && typeof gaugeControls.controlPlacement !== 'object') {
+        throw new Error('Control placement incorrect');
+    }
+    if (gaugeControls.controlPlacement && !(
+        'left' in gaugeControls.controlPlacement ||
+        'top' in gaugeControls.controlPlacement ||
+        'right' in gaugeControls.controlPlacement ||
+        'bottom' in gaugeControls.controlPlacement
+    )) {
+        throw new Error('Control placement incorrect');
+    }
     validateNumber(gaugeControls.controlPlacement?.left, 'Control placement left');
     validateNumber(gaugeControls.controlPlacement?.top, 'Control placement top');
     validateNumber(gaugeControls.controlPlacement?.right, 'Control placement right');
@@ -55,9 +69,24 @@ export const validateAnimationControls = (animationControls: Partial<AnimationCo
     validateBoolean(animationControls.autoRotate, "Auto rotate");
     validateStringEnum(animationControls.cameraAngle, 'Camera angle', cameraAngles);
     validateBoolean(animationControls.followCurrentPoint, 'Follow current point');
-    validateNumber(animationControls.pitch, 'Pitch');
-    validateNumber(animationControls.zoom, 'Zoom');
+    validateNumber(animationControls.pitch, 'Pitch', pitchRange);
+    validateNumber(animationControls.zoom, 'Zoom', zoomRange);
     if (animationControls.zoomInToImages !== undefined && animationControls.zoomInToImages !== false && typeof animationControls.zoomInToImages !== 'number') {
-        throw new Error('Zoom in to images should be either false or of type number.');
+        throw new Error(`Zoom in to images should be either false or of type number within range ${zoomRange.join(', ')}.`);
     }
+    if (animationControls.zoomInToImages && typeof animationControls.zoomInToImages === 'number') {
+        validateNumber(animationControls, 'Zoom in to images', zoomRange);
+    }
+};
+
+export const applyGaugeControls = (possibleGaugeControls: GaugeControlsType): GaugeControlsType => {
+    return {
+        ...possibleGaugeControls,
+        controlPlacement: {
+            left: possibleGaugeControls.controlPlacement.left,
+            top: possibleGaugeControls.controlPlacement.top,
+            right: possibleGaugeControls.controlPlacement.right,
+            bottom: possibleGaugeControls.controlPlacement.bottom,
+        }
+    };
 };

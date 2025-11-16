@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { AnimationControlsType, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, PresetValues, validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../logic";
+import { AnimationControlsType, applyGaugeControls, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, PresetValues, validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -69,7 +69,7 @@ export const Presets: FC<Props> = ({
 
                     onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), {
                         presetMapLayout: possibleMapLayout,
-                        presetGaugeControls: possibleGaugeControls,
+                        presetGaugeControls: applyGaugeControls(possibleGaugeControls),
                         presetAnimationControls: possibleAnimationControls
                     });
                 } catch (e) {

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
-import { validateGaugeControls, validateMapLayout } from "../../src/logic/validation/controls.js";
-import { GaugeControlsType, MapLayout } from "../../src/logic/index.js";
+import { validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../src/logic/validation/controls.js";
+import { AnimationControlsType, CameraAngle, GaugeControlsType, MapLayout } from "../../src/logic/index.js";
 
 describe("Preset", () => {
     describe("File upload validation", () => {
@@ -27,7 +27,7 @@ describe("Preset", () => {
             });
             it("should throw if map size type incorrect", () => {
                 expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
-                expect(() => validateMapLayout({ size: { type: 'boo' } } as unknown as MapLayout)).to.throw("Size type should be of type full-screen or manual");
+                expect(() => validateMapLayout({ size: { type: 'boo' } } as unknown as MapLayout)).to.throw("Size type should be one of: full-screen, manual");
             });
             it("should throw if height incorrect", () => {
                 expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
@@ -61,31 +61,61 @@ describe("Preset", () => {
             });
             it("should throw if controlPosition incorrect", () => {
                 expect(() => validateGaugeControls({ controlPosition: "bottom-left" })).to.not.throw();
-                expect(() => validateGaugeControls({ controlPosition: {} } as unknown as GaugeControlsType)).to.throw("Control position incorrect");
+                expect(() => validateGaugeControls({ controlPosition: {} } as unknown as GaugeControlsType)).to.throw("Control position should be one of: top-left, top-right, bottom-left, bottom-right");
             });
             it("should throw if globeProjection incorrect", () => {
                 expect(() => validateGaugeControls({ globeProjection: false })).to.not.throw();
-                expect(() => validateGaugeControls({ globeProjection: {} } as unknown as GaugeControlsType)).to.throw("Globe projection incorrect");
+                expect(() => validateGaugeControls({ globeProjection: {} } as unknown as GaugeControlsType)).to.throw("Globe projection should be of type boolean");
             });
             it("should throw if showCompass incorrect", () => {
                 expect(() => validateGaugeControls({ showCompass: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showCompass: "" } as unknown as GaugeControlsType)).to.throw("Show compass incorrect");
+                expect(() => validateGaugeControls({ showCompass: "" } as unknown as GaugeControlsType)).to.throw("Show compass should be of type boolean");
             });
             it("should throw if showGreenScreen incorrect", () => {
                 expect(() => validateGaugeControls({ showGreenScreen: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showGreenScreen: "" } as unknown as GaugeControlsType)).to.throw("Show green screen incorrect");
+                expect(() => validateGaugeControls({ showGreenScreen: "" } as unknown as GaugeControlsType)).to.throw("Show green screen should be of type boolean");
             });
             it("should throw if showRouteLine incorrect", () => {
                 expect(() => validateGaugeControls({ showRouteLine: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showRouteLine: "" } as unknown as GaugeControlsType)).to.throw("Show route line incorrect");
+                expect(() => validateGaugeControls({ showRouteLine: "" } as unknown as GaugeControlsType)).to.throw("Show route line should be of type boolean");
             });
             it("should throw if showRoutePoints incorrect", () => {
                 expect(() => validateGaugeControls({ showRoutePoints: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showRoutePoints: "" } as unknown as GaugeControlsType)).to.throw("Show route points incorrect");
+                expect(() => validateGaugeControls({ showRoutePoints: "" } as unknown as GaugeControlsType)).to.throw("Show route points should be of type boolean");
             });
             it("should throw if showZoom incorrect", () => {
                 expect(() => validateGaugeControls({ showZoomButtons: false })).to.not.throw();
-                expect(() => validateGaugeControls({ showZoomButtons: "" } as unknown as GaugeControlsType)).to.throw("Show zoom incorrect");
+                expect(() => validateGaugeControls({ showZoomButtons: "" } as unknown as GaugeControlsType)).to.throw("Show zoom should be of type boolean");
+            });
+        });
+        
+        describe("Animation controls", () => {
+            it("should throw if autoRotate incorrect", () => {
+                expect(() => validateAnimationControls({ autoRotate: false })).to.not.throw();
+                expect(() => validateAnimationControls({ autoRotate: "" } as unknown as AnimationControlsType)).to.throw("Auto rotate should be of type boolean");
+            });
+            it("should throw if cameraAngle incorrect", () => {
+                expect(() => validateAnimationControls({ cameraAngle: CameraAngle.Rear })).to.not.throw();
+                expect(() => validateAnimationControls({ cameraAngle: "" } as unknown as AnimationControlsType)).to.throw("Camera angle should be one of: Top, Left, Front, Right, Rear");
+            });
+            it("should throw if followCurrentPoint incorrect", () => {
+                expect(() => validateAnimationControls({ followCurrentPoint: false })).to.not.throw();
+                expect(() => validateAnimationControls({ followCurrentPoint: "" } as unknown as AnimationControlsType)).to.throw("Follow current point should be of type boolean");
+            });
+            it("should throw if pitch incorrect", () => {
+                expect(() => validateAnimationControls({ pitch: 20 })).to.not.throw();
+                expect(() => validateAnimationControls({ pitch: 200 } as unknown as AnimationControlsType)).to.throw("Pitch should be within range [0, 85]");
+                expect(() => validateAnimationControls({ pitch: "" } as unknown as AnimationControlsType)).to.throw("Pitch should be of type number");
+            });
+            it("should throw if showZoom incorrect", () => {
+                expect(() => validateAnimationControls({ zoom: 13 })).to.not.throw();
+                expect(() => validateAnimationControls({ zoom: 200 } as unknown as AnimationControlsType)).to.throw("Zoom should be within range [0, 20]");
+                expect(() => validateAnimationControls({ zoom: "" } as unknown as AnimationControlsType)).to.throw("Zoom should be of type number");
+            });
+            it("should throw if zoomInToImages incorrect", () => {
+                expect(() => validateAnimationControls({ zoomInToImages: 15 })).to.not.throw();
+                expect(() => validateAnimationControls({ zoomInToImages: 200 } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be within range [0, 20]");
+                expect(() => validateAnimationControls({ zoomInToImages: "" } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be of type number");
             });
         });
     });
