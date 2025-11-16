@@ -46,15 +46,20 @@ export enum CameraAngle {
 
 export interface AnimationControlsType {
     /**
-     * From which side should the camera look at current point on the route.
-     */
-    cameraAngle: CameraAngle;
-    /**
      * Whether the camera should move to keep current point in the center of the map.
      * When set to `true`, `zoom` will be applied according to the user setting.
      * When set to `false`, zoom will be chosen automatically to fit the whole route on the map.
      */
     followCurrentPoint: boolean;
+    /**
+     * From which side should the camera look at current point on the route. Map beaering.
+     * If `followCurrentPoint` is enabled, will be offset by the current point bearing.
+     */
+    cameraAngle: number;
+    /**
+     * Camera roll in degrees
+     */
+    cameraRoll: number;
     /**
      * If set to `true`, will apply rotation according to the direction where current point is heading to.
      */
@@ -72,9 +77,13 @@ export interface AnimationControlsType {
      */
     zoomInToImages: false | number;
     /**
-     * Value in ms by with to move current point (relates to timestamp) on the route.
+     * Value in seconds by which to move current point on the route (relates to timestamp).
      */
-    speed: number;
+    speedMultiplier: number;
+    /**
+     * Easing duration in milliseconds given to animation function.
+     */
+    easeDuration: number;
 }
 
 export interface ApplicationSettingsType {

@@ -1,4 +1,5 @@
 import maplibregl from "maplibre-gl";
+import turfBearing from "@turf/bearing";
 import turfDistance from "@turf/distance";
 import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
@@ -127,11 +128,18 @@ export const imagesLayer: maplibregl.CircleLayerSpecification = {
     }
 };
 
-export const getCurrentPoint = (
+/**
+ * @returns current point feature with its bearing and speed calculated out of a line where start/end point are the first points before//after the current point at least 10 meter distance away.
+ */
+const getCurrentPoint = (
     geojson: GeoJson,
     splitIndex: number,
     currentTime: number
-) => {
+): {
+    currentPoint: GeoJSON.Feature<GeoJSON.Point>;
+    currentPointBearing: number;
+    currentPointSpeed: number;
+} => {
     const currentLineStart = geojson.features[Math.max(0, splitIndex - 1)];
     const currentLineEnd = geojson.features[Math.max(1, splitIndex)];
     const currentLineStartTime = new Date(currentLineStart.properties.time).valueOf();
@@ -141,9 +149,51 @@ export const getCurrentPoint = (
     const currentLineStartPos = currentLineStart.geometry.coordinates;
     const currentLineEndPos = currentLineEnd.geometry.coordinates;
     const line = turfHelpers.lineString([currentLineStartPos, currentLineEndPos]);
-    const totalDistance = turfLength(line, { units: 'meters' });
+    const totalDistanceMeters = turfLength(line, { units: 'meters' });
+    const totalTimeMs = (new Date(currentLineEnd.properties.time).valueOf() - new Date(currentLineStart.properties.time).valueOf());
+    const currentPoint = turfAlong(line, totalDistanceMeters * fraction, { units: 'meters' });
 
-    return turfAlong(line, totalDistance * fraction, { units: 'meters' });
+    return {
+        currentPoint,
+        currentPointBearing: getCurrentPointBearing(currentPoint, geojson, splitIndex),
+        currentPointSpeed: (totalDistanceMeters / 1000) / (totalTimeMs / 3600000)
+    };
+};
+
+/**
+ * Gets bearing of a line created by the first points before/after current point at least `minDistanceInMeters` away. Defaults to 10m.
+ */
+const getCurrentPointBearing = (
+    currentPoint: GeoJSON.Feature<GeoJSON.Point>,
+    geojson: GeoJson,
+    splitIndex: number,
+    minDistanceInMeters = 250
+): number => {
+    const before = geojson.features.slice(0, splitIndex);
+    const after = geojson.features.slice(splitIndex);
+    const p1 = getFirstPointInDistance(currentPoint, after.concat(before).toReversed(), minDistanceInMeters);
+    const p2 = getFirstPointInDistance(currentPoint, after.concat(before), minDistanceInMeters);
+
+    if (!p1 || !p2) {
+        return 0;
+    }
+
+    return turfBearing(turfHelpers.point(p1), turfHelpers.point(p2));
+};
+
+const getFirstPointInDistance = (
+    currentPoint: GeoJSON.Feature<GeoJSON.Point>,
+    features: GeoJSON.Feature<GeoJSON.Point>[],
+    minDistanceInMeters = 10
+): GeoJSON.Position | undefined => {
+    let p: GeoJSON.Position | undefined;
+    for (const { geometry } of features) {
+        if (turfDistance(currentPoint, geometry.coordinates, { units: 'meters' }) > minDistanceInMeters) {
+            p = geometry.coordinates
+            break;
+        }
+    }
+    return p;
 };
 
 export const getRouteSourceData = (
@@ -151,15 +201,19 @@ export const getRouteSourceData = (
     startTimeEpoch: number,
     progressMs: number,
 ): {
-    currentPoint: GeoJSON.Feature<GeoJSON.Point>;
     lines: GeoJSON.GeoJSON;
+    currentPoint: GeoJSON.Feature<GeoJSON.Point>;
+    currentPointBearing: number;
+    currentPointSpeed: number;
 } => {
     const currentTime = startTimeEpoch + progressMs;
     const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf());
-    const currentPoint = getCurrentPoint(geojson, splitIndex, currentTime);
+    const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime);
 
     return {
         currentPoint,
+        currentPointBearing,
+        currentPointSpeed,
         lines: {
             ...geojson,
             features: [

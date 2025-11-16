@@ -4,7 +4,6 @@ import { useMap } from "../../map/useMap";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
 import { clearLayersAndSources, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "../../logic/map-layers";
 import { useGaugeContext } from "../../contexts/useGaugeContext";
-import { ImageMarker, MarkerImageData } from "./ImageMarker";
 
 interface Props {
     isPlaying: boolean;
@@ -13,7 +12,6 @@ interface Props {
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
     images: ImageData[];
-    updateImageFeatureId: (imageId: number, featureId: number) => void;
 }
 
 export const RouteLayer: FC<Props> = ({
@@ -23,10 +21,9 @@ export const RouteLayer: FC<Props> = ({
     progressMs,
     onProgressMsChange,
     images,
-    updateImageFeatureId
 }) => {
     const { map } = useMap();
-    const { showRouteLine, showRoutePoints, followCurrentPoint, cameraAngle, autoRotate, pitch, zoom, zoomInToImages, speed } = useGaugeContext();
+    const { showRouteLine, showRoutePoints, followCurrentPoint, cameraAngle, autoRotate, pitch, zoom, zoomInToImages, cameraRoll, speedMultiplier, easeDuration } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     useEffect(() => {
@@ -95,31 +92,40 @@ export const RouteLayer: FC<Props> = ({
         }
         let animation: number | undefined;
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
+        let last = performance.now();
         let current = progressMs;
 
         const animate = () => {
-            current += speed;
+            const now = performance.now();
+            const dt = now - last;
+            last = now;
+            current += dt + speedMultiplier;
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
-            const { currentPoint, lines } = getRouteSourceData(geojson, startTimeEpoch, current);
-            if (followCurrentPoint) {
-                const lngLat = new maplibregl.LngLat(currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]);
-                map.easeTo({
-                    animate: true,
-                    center: lngLat,
-                    easeId: 'follow-current-point',
-                    essential: true,
-                    zoom,
-                    pitch,
-                    // TODO: 
-                    bearing: autoRotate && cameraAngle ? 120 : undefined,
-                    roll:5
-                })
-            }
+            const { currentPoint, currentPointBearing, lines } = getRouteSourceData(geojson, startTimeEpoch, current);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
             map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
             
+            if (followCurrentPoint) {
+                const lngLat = new maplibregl.LngLat(currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]);
+                const currentBearing = map.getBearing();
+                const nextBearing = (cameraAngle + (autoRotate ? (currentPointBearing) : 0));
+                const bearingDiff = ((nextBearing - currentBearing + 540) % 360) - 180;
+                const maxDiff = 5;
+
+                map.easeTo({
+                    easeId: 'follow-current-point',
+                    animate: true,
+                    center: lngLat,
+                    essential: true,
+                    duration: easeDuration,
+                    zoom,
+                    pitch,
+                    bearing: currentBearing + Math.max(-maxDiff, Math.min(maxDiff, bearingDiff)),
+                    roll: cameraRoll,
+                });
+            }
             // TODO: Calculate % of geometry done based on current progressMs and update paint property line gradient instead of all data.
             onProgressMsChange(current);
             animation = requestAnimationFrame(animate);
@@ -132,27 +138,7 @@ export const RouteLayer: FC<Props> = ({
                 cancelAnimationFrame(animation);
             }
         };
-    }, [isPlaying, isLayerAdded, followCurrentPoint, cameraAngle, autoRotate, pitch, zoom, zoomInToImages, speed]);
+    }, [isPlaying, isLayerAdded, followCurrentPoint, cameraAngle, cameraRoll, autoRotate, pitch, zoom, zoomInToImages, speedMultiplier, easeDuration]);
 
-    // useEffect(() => {
-    //     if (isPlaying) {
-    //         return;
-    //     }
-    //     const { startTimeEpoch } = routeTimes;
-    //     const { currentPoint, lines } = getRouteSourceData(geojson, startTimeEpoch, progressMs);
-    //     map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
-    //     map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
-    // }, [progressMs]);
-
-    const markerImages = images.filter((image) => !!image.marker && !!image.markerElement) as MarkerImageData[];
-
-    return markerImages.map((image) => (
-        <ImageMarker
-            key={image.id}
-            map={map}
-            image={image}
-            geojson={geojson}
-            updateImageFeatureId={updateImageFeatureId}
-        />
-    ));
+    return null;
 };

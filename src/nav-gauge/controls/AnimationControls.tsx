@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import classNames from "classnames";
 import { Fieldset, Input } from "../../components";
-import { AnimationControlsType, CameraAngle, cameraAngleOptions, clamp, defaultZoomInToImages, pitchRange, speedRange, zoomRange } from "../../logic";
+import { AnimationControlsType, clamp, defaultZoomInToImages, easeDurationRange, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -20,7 +20,9 @@ export const AnimationControls: FC<Props> = ({
         pitch,
         zoom,
         zoomInToImages,
-        speed
+        cameraRoll,
+        speedMultiplier,
+        easeDuration
     } = animationControls;
 
     return (
@@ -36,100 +38,121 @@ export const AnimationControls: FC<Props> = ({
                 onContainerClick={() => onAnimationConrolsChange((prev) => ({ ...prev, followCurrentPoint: !prev.followCurrentPoint }))}
                 containerClassName={styles["checkbox"]}
             />
-            <Input
-                id="animation-controls-auto-rotate"
-                name="animation-controls-auto-rotate"
-                label="Auto rotate"
-                labelPlacement="after"
-                type='checkbox'
-                checked={autoRotate}
-                onChange={() => { }}
-                onContainerClick={() => onAnimationConrolsChange((prev) => ({ ...prev, autoRotate: !prev.autoRotate }))}
-                containerClassName={styles["checkbox"]}
-            />
-            
-            <div className={styles["section"]}>
-                {/* TODO: Move select to its own component and remove style */}
-                <div>
-                    <label htmlFor="controls-position" style={{ fontSize: '12px' }}>Camera angle</label>
-                    <select
+            {followCurrentPoint ? (
+                <div className={styles["section"]}>
+                    <Input
+                        id="animation-controls-auto-rotate"
+                        name="animation-controls-auto-rotate"
+                        label="Auto rotate"
+                        labelPlacement="after"
+                        type='checkbox'
+                        checked={autoRotate}
+                        onChange={() => { }}
+                        onContainerClick={() => onAnimationConrolsChange((prev) => ({ ...prev, autoRotate: !prev.autoRotate }))}
+                        containerClassName={classNames(styles["checkbox"], styles["top-margin"])}
+                    />
+                    <div />
+                    <Input
                         id="animation-controls-camera-angle"
                         name="animation-controls-camera-angle"
+                        label="Camera angle"
+                        type='number'
                         value={cameraAngle}
-                        onChange={(event) => onAnimationConrolsChange((prev) => ({
+                        min={cameraAngleRange[0]}
+                        max={cameraAngleRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, cameraAngle: clamp(Number(event.target.value), cameraAngleRange) }
+                            : prev)}
+                    />
+                    <Input
+                        id="animation-controls-camera-roll"
+                        name="animation-controls-camera-roll"
+                        label="Camera roll"
+                        type='number'
+                        value={cameraRoll}
+                        min={cameraRollRange[0]}
+                        max={cameraRollRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, cameraRoll: clamp(Number(event.target.value), cameraRollRange) }
+                            : prev)}
+                    />
+                    <Input
+                        id="animation-controls-pitch"
+                        name="animation-controls-pitch"
+                        label="Pitch"
+                        type='number'
+                        value={pitch}
+                        min={pitchRange[0]}
+                        max={pitchRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, pitch: clamp(Number(event.target.value), pitchRange) }
+                            : prev)}
+                    />
+                    <Input
+                        id="animation-controls-zoom"
+                        name="animation-controls-zoom"
+                        label="Zoom"
+                        type='number'
+                        value={zoom}
+                        min={zoomRange[0]}
+                        max={zoomRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, zoom: clamp(Number(event.target.value), zoomRange) }
+                            : prev)}
+                    />
+                    <Input
+                        id="animation-controls-zoom-in-to-images"
+                        name="animation-controls-zoom-in-to-images"
+                        label="Zoom in to images"
+                        labelPlacement="after"
+                        type='checkbox'
+                        checked={zoomInToImages !== false}
+                        onChange={() => { }}
+                        onContainerClick={() => onAnimationConrolsChange((prev) => ({
                             ...prev,
-                            cameraAngle: event.target.value as CameraAngle
+                            zoomInToImages: prev.zoomInToImages === false ? defaultZoomInToImages : false
                         }))}
-                    >
-                        {cameraAngleOptions.map((el) => <option key={el.value} {...el}>{el.label}</option>)}
-                    </select>
+                        containerClassName={classNames(styles["checkbox"], styles["top-margin"])}
+                    />
+                    <Input
+                        id="animation-controls-zoom-in-to-images-value"
+                        name="animation-controls-zoom-in-to-images-value"
+                        label="Zoom in to images"
+                        type='number'
+                        value={zoomInToImages || zoom}
+                        min={zoomRange[0]}
+                        max={zoomRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, zoomInToImages: clamp(Number(event.target.value), zoomRange) }
+                            : prev)}
+                        disabled={zoomInToImages === false}
+                    />
+                    <Input
+                        id="animation-controls-speed-multiplier"
+                        name="animation-controls-speed-multiplier"
+                        label="Speed multiplier"
+                        type='number'
+                        value={speedMultiplier}
+                        min={speedMultiplierRange[0]}
+                        max={speedMultiplierRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, speedMultiplier: clamp(Number(event.target.value), speedMultiplierRange) }
+                            : prev)}
+                    />
+                    <Input
+                        id="animation-controls-ease-duration"
+                        name="animation-controls-ease-duration"
+                        label="Ease duration"
+                        type='number'
+                        value={easeDuration}
+                        min={easeDurationRange[0]}
+                        max={easeDurationRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, easeDuration: clamp(Number(event.target.value), easeDurationRange) }
+                            : prev)}
+                    />
                 </div>
-                <Input
-                    id="animation-controls-speed"
-                    name="animation-controls-speed"
-                    label="Speed"
-                    type='number'
-                    value={speed}
-                    min={speedRange[0]}
-                    max={speedRange[1]}
-                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
-                        ? { ...prev, speed: clamp(Number(event.target.value), speedRange) }
-                        : prev)}
-                />
-                <Input
-                    id="animation-controls-pitch"
-                    name="animation-controls-pitch"
-                    label="Pitch"
-                    type='number'
-                    value={pitch}
-                    min={pitchRange[0]}
-                    max={pitchRange[1]}
-                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
-                        ? { ...prev, pitch: clamp(Number(event.target.value), pitchRange) }
-                        : prev)}
-                />
-                <Input
-                    id="animation-controls-zoom"
-                    name="animation-controls-zoom"
-                    label="Zoom"
-                    type='number'
-                    value={zoom}
-                    min={zoomRange[0]}
-                    max={zoomRange[1]}
-                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
-                        ? { ...prev, zoom: clamp(Number(event.target.value), zoomRange) }
-                        : prev)}
-                />
-            </div>
-            <div className={styles["section"]}>
-                <Input
-                    id="animation-controls-zoom-in-to-images"
-                    name="animation-controls-zoom-in-to-images"
-                    label="Zoom in to images"
-                    labelPlacement="after"
-                    type='checkbox'
-                    checked={zoomInToImages !== false}
-                    onChange={() => { }}
-                    onContainerClick={() => onAnimationConrolsChange((prev) => ({
-                        ...prev,
-                        zoomInToImages: prev.zoomInToImages === false ? defaultZoomInToImages : false
-                    }))}
-                    containerClassName={classNames(styles["checkbox"], styles["top-margin"])}
-                />
-                <Input
-                    id="animation-controls-zoom-in-to-images-value"
-                    name="animation-controls-zoom-in-to-images-value"
-                    label="Zoom in to images"
-                    type='number'
-                    value={zoomInToImages || zoom}
-                    min={zoomRange[0]}
-                    max={zoomRange[1]}
-                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
-                        ? { ...prev, zoomInToImages: clamp(Number(event.target.value), zoomRange) }
-                        : prev)}
-                    disabled={zoomInToImages === false}
-                />
-            </div>
+            ) : null}
         </Fieldset>
     );
 };

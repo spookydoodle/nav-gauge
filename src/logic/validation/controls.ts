@@ -1,4 +1,4 @@
-import { AnimationControlsType, cameraAngles, GaugeControlsType, MapLayout, pitchRange, speedRange, zoomRange } from "../controls";
+import { AnimationControlsType, easeDurationRange, GaugeControlsType, MapLayout, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, defaultAnimationControls } from "../controls";
 
 const validateString = (value: unknown, name: string) => {
     if (value !== undefined && typeof value !== 'string') {
@@ -68,7 +68,8 @@ export const validateGaugeControls = (gaugeControls: Partial<GaugeControlsType>)
 
 export const validateAnimationControls = (animationControls: Partial<AnimationControlsType>) => {
     validateBoolean(animationControls.autoRotate, "Auto rotate");
-    validateStringEnum(animationControls.cameraAngle, 'Camera angle', cameraAngles);
+    validateNumber(animationControls.cameraAngle, 'Camera angle', cameraAngleRange);
+    validateNumber(animationControls.cameraRoll, 'Camera roll', cameraRollRange);
     validateBoolean(animationControls.followCurrentPoint, 'Follow current point');
     validateNumber(animationControls.pitch, 'Pitch', pitchRange);
     validateNumber(animationControls.zoom, 'Zoom', zoomRange);
@@ -78,7 +79,8 @@ export const validateAnimationControls = (animationControls: Partial<AnimationCo
     if (animationControls.zoomInToImages && typeof animationControls.zoomInToImages === 'number') {
         validateNumber(animationControls.zoomInToImages, 'Zoom in to images', zoomRange);
     }
-    validateNumber(animationControls.speed, 'Speed', speedRange);
+    validateNumber(animationControls.speedMultiplier, 'Speed in seconds per frame', speedMultiplierRange);
+    validateNumber(animationControls.easeDuration, 'Ease duration', easeDurationRange);
 };
 
 export const applyGaugeControls = (possibleGaugeControls: GaugeControlsType): GaugeControlsType => {
@@ -90,5 +92,18 @@ export const applyGaugeControls = (possibleGaugeControls: GaugeControlsType): Ga
             right: possibleGaugeControls.controlPlacement.right,
             bottom: possibleGaugeControls.controlPlacement.bottom,
         }
+    };
+};
+
+/**
+ * TODO: Implement
+ * @param state 
+ * @returns 
+ */
+export const cleanUpAnimationControls = (state: unknown): Partial<AnimationControlsType> => {
+    const { cameraAngle, ...controls } = state as AnimationControlsType;
+    return {
+        cameraAngle: typeof cameraAngle === 'number' ? cameraAngle : defaultAnimationControls.cameraAngle,
+        ...controls
     };
 };

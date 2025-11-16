@@ -6,10 +6,14 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
  */
 export function useLocalStorageState<T extends Object>(
     id: string,
-    defaultState: T
+    defaultState: T,
+    cleanUp: (state: unknown) => Partial<T> = ((state) => state as Partial<T>)
 ): [T, Dispatch<SetStateAction<T>>] {
     const [state, setState] = useState<T>(localStorage.getItem(id)
-        ? { ...defaultState, ...(JSON.parse(localStorage.getItem(id)!) as T)}
+        ? {
+            ...defaultState,
+            ...cleanUp(JSON.parse(localStorage.getItem(id)!) as T)
+        }
         : defaultState);
 
     useEffect(() => {

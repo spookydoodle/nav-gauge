@@ -96,8 +96,14 @@ describe("Preset", () => {
                 expect(() => validateAnimationControls({ autoRotate: "" } as unknown as AnimationControlsType)).to.throw("Auto rotate should be of type boolean");
             });
             it("should throw if cameraAngle incorrect", () => {
-                expect(() => validateAnimationControls({ cameraAngle: CameraAngle.Rear })).to.not.throw();
-                expect(() => validateAnimationControls({ cameraAngle: "" } as unknown as AnimationControlsType)).to.throw("Camera angle should be one of: Top, Left, Front, Right, Rear");
+                expect(() => validateAnimationControls({ cameraAngle: -90 })).to.not.throw();
+                expect(() => validateAnimationControls({ cameraAngle: 2000000 } as unknown as AnimationControlsType)).to.throw("Camera angle should be within range [-360, 360]");
+                expect(() => validateAnimationControls({ cameraAngle: "" } as unknown as AnimationControlsType)).to.throw("Camera angle should be of type number");
+            });
+            it("should throw if cameraRoll incorrect", () => {
+                expect(() => validateAnimationControls({ cameraRoll: -90 })).to.not.throw();
+                expect(() => validateAnimationControls({ cameraRoll: 2000000 } as unknown as AnimationControlsType)).to.throw("Camera roll should be within range [-360, 360]");
+                expect(() => validateAnimationControls({ cameraRoll: "" } as unknown as AnimationControlsType)).to.throw("Camera roll should be of type number");
             });
             it("should throw if followCurrentPoint incorrect", () => {
                 expect(() => validateAnimationControls({ followCurrentPoint: false })).to.not.throw();
@@ -121,9 +127,15 @@ describe("Preset", () => {
                 expect(() => validateAnimationControls({ zoomInToImages: "" } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be either false or of type number within range [0, 20]");
             });
             it("should throw if speed incorrect", () => {
-                expect(() => validateAnimationControls({ speed: 1000 })).to.not.throw();
-                expect(() => validateAnimationControls({ speed: 2000000 } as unknown as AnimationControlsType)).to.throw("Speed should be within range [0, 100000]");
-                expect(() => validateAnimationControls({ speed: "" } as unknown as AnimationControlsType)).to.throw("Speed should be of type number");
+                expect(() => validateAnimationControls({ speedMultiplier: 120 })).to.not.throw();
+                expect(() => validateAnimationControls({ speedMultiplier: 2000000 } as unknown as AnimationControlsType)).to.throw("Speed in seconds per frame should be within range [0, 1000000]");
+                expect(() => validateAnimationControls({ speedMultiplier: "" } as unknown as AnimationControlsType)).to.throw("Speed in seconds per frame should be of type number");
+            });
+            it("should throw if easeDuration incorrect", () => {
+                expect(() => validateAnimationControls({ easeDuration: 200 })).to.not.throw();
+                expect(() => validateAnimationControls({ easeDuration: 1234 } as unknown as AnimationControlsType)).to.throw("Ease duration should be within range [0, 1000]");
+                expect(() => validateAnimationControls({ easeDuration: -10 } as unknown as AnimationControlsType)).to.throw("Ease duration should be within range [0, 1000]");
+                expect(() => validateAnimationControls({ easeDuration: "" } as unknown as AnimationControlsType)).to.throw("Ease duration should be of type number");
             });
         });
     });
