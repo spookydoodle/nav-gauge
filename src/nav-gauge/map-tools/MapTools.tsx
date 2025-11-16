@@ -86,12 +86,18 @@ export const MapTools: FC<Props> = ({
         if (!isInitialized || !showControls) {
             return;
         }
+        const resizeHandler =  () => {
+            map.resize();
+        };
+        // TODO: Observer parent
+        window.addEventListener('resize', resizeHandler);
         const control = new maplibregl.NavigationControl({ showZoom: showZoomButtons, showCompass, visualizePitch: true });
         map.addControl(control, controlPosition);
         map.resize();
 
         return () => {
             map.removeControl(control);
+            window.removeEventListener('resize', resizeHandler);
         };
     }, [isInitialized, showZoomButtons, showCompass, controlPosition]);
 

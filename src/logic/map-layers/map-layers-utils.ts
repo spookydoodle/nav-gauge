@@ -1,10 +1,11 @@
 import maplibregl from "maplibre-gl";
+import turfBearing from "@turf/bearing";
 import turfDistance from "@turf/distance";
 import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
 import { FeatureProperties, GeoJson, ImageData } from "../parsers";
-import { FeatureStateProps } from "./model";
+import { CurrentPointData, FeatureStateProps } from "./model";
 
 export const clearLayersAndSources = (
     map: maplibregl.Map,
@@ -69,7 +70,7 @@ export const routeLineLayer: maplibregl.LineLayerSpecification = {
             colorActive,
             colorInactive
         ],
-        'line-width': 4,
+        'line-width': 2,
         'line-opacity': .6,
     },
     layout: {
@@ -91,7 +92,7 @@ export const routePointsLayer: maplibregl.CircleLayerSpecification = {
             colorActive,
             colorInactive
         ],
-        'circle-radius': 3,
+        'circle-radius': 2,
     }
 };
 
@@ -123,15 +124,38 @@ export const imagesLayer: maplibregl.CircleLayerSpecification = {
     source: sourceIds.image,
     paint: {
         'circle-color': "red",
-        "circle-radius": 5
+        "circle-radius": 3
     }
 };
 
-export const getCurrentPoint = (
+/**
+ * Gets current point data, updates map sources, and returns it.
+ */
+export const updateRouteLayer = (
+    map: maplibregl.Map,
+    geojson: GeoJson,
+    startTimeEpoch: number,
+    progressMs: number,
+): CurrentPointData => {
+    const { currentPoint, lines, ...rest } = getRouteSourceData(geojson, startTimeEpoch, progressMs);
+    map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
+    map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
+
+    return { currentPoint, lines, ...rest };
+};
+
+/**
+ * @returns current point feature with its bearing and speed calculated out of a line where start/end point are the first points before//after the current point at least 10 meter distance away.
+ */
+const getCurrentPoint = (
     geojson: GeoJson,
     splitIndex: number,
     currentTime: number
-) => {
+): {
+    currentPoint: GeoJSON.Feature<GeoJSON.Point>;
+    currentPointBearing: number;
+    currentPointSpeed: number;
+} => {
     const currentLineStart = geojson.features[Math.max(0, splitIndex - 1)];
     const currentLineEnd = geojson.features[Math.max(1, splitIndex)];
     const currentLineStartTime = new Date(currentLineStart.properties.time).valueOf();
@@ -141,25 +165,67 @@ export const getCurrentPoint = (
     const currentLineStartPos = currentLineStart.geometry.coordinates;
     const currentLineEndPos = currentLineEnd.geometry.coordinates;
     const line = turfHelpers.lineString([currentLineStartPos, currentLineEndPos]);
-    const totalDistance = turfLength(line, { units: 'meters' });
+    const totalDistanceMeters = turfLength(line, { units: 'meters' });
+    const totalTimeMs = (new Date(currentLineEnd.properties.time).valueOf() - new Date(currentLineStart.properties.time).valueOf());
+    const currentPoint = turfAlong(line, totalDistanceMeters * fraction, { units: 'meters' });
+    const currentPointSpeed = (totalDistanceMeters) / (totalTimeMs / 3600);
 
-    return turfAlong(line, totalDistance * fraction, { units: 'meters' });
+    return {
+        currentPoint,
+        currentPointBearing: getCurrentPointBearing(currentPoint, geojson, splitIndex),
+        currentPointSpeed
+    };
+};
+
+/**
+ * Gets bearing of a line created by the first points before/after current point at least `minDistanceInMeters` away. Defaults to 10m.
+ */
+const getCurrentPointBearing = (
+    currentPoint: GeoJSON.Feature<GeoJSON.Point>,
+    geojson: GeoJson,
+    splitIndex: number,
+    minDistanceInMeters = 250
+): number => {
+    const before = geojson.features.slice(0, splitIndex);
+    const after = geojson.features.slice(splitIndex);
+    const p1 = getFirstPointInDistance(currentPoint, after.concat(before).toReversed(), minDistanceInMeters);
+    const p2 = getFirstPointInDistance(currentPoint, after.concat(before), minDistanceInMeters);
+
+    if (!p1 || !p2) {
+        return 0;
+    }
+
+    return turfBearing(turfHelpers.point(p1), turfHelpers.point(p2));
+};
+
+const getFirstPointInDistance = (
+    currentPoint: GeoJSON.Feature<GeoJSON.Point>,
+    features: GeoJSON.Feature<GeoJSON.Point>[],
+    minDistanceInMeters = 10
+): GeoJSON.Position | undefined => {
+    let p: GeoJSON.Position | undefined;
+    for (const { geometry } of features) {
+        if (turfDistance(currentPoint, geometry.coordinates, { units: 'meters' }) > minDistanceInMeters) {
+            p = geometry.coordinates
+            break;
+        }
+    }
+    return p;
 };
 
 export const getRouteSourceData = (
     geojson: GeoJson,
     startTimeEpoch: number,
     progressMs: number,
-): {
-    currentPoint: GeoJSON.Feature<GeoJSON.Point>;
-    lines: GeoJSON.GeoJSON;
-} => {
+): CurrentPointData => {
     const currentTime = startTimeEpoch + progressMs;
     const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf());
-    const currentPoint = getCurrentPoint(geojson, splitIndex, currentTime);
+    const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime);
 
     return {
         currentPoint,
+        currentPointBearing,
+        currentPointSpeed,
         lines: {
             ...geojson,
             features: [

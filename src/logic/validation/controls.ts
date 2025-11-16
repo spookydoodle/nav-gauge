@@ -1,4 +1,4 @@
-import { AnimationControlsType, cameraAngles, GaugeControlsType, MapLayout, pitchRange, zoomRange } from "../controls";
+import { AnimationControlsType, easeDurationRange, GaugeControlsType, MapLayout, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, defaultAnimationControls, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../controls";
 
 const validateString = (value: unknown, name: string) => {
     if (value !== undefined && typeof value !== 'string') {
@@ -67,9 +67,12 @@ export const validateGaugeControls = (gaugeControls: Partial<GaugeControlsType>)
 };
 
 export const validateAnimationControls = (animationControls: Partial<AnimationControlsType>) => {
-    validateBoolean(animationControls.autoRotate, "Auto rotate");
-    validateStringEnum(animationControls.cameraAngle, 'Camera angle', cameraAngles);
     validateBoolean(animationControls.followCurrentPoint, 'Follow current point');
+    validateBoolean(animationControls.autoRotate, "Auto rotate");
+    validateNumber(animationControls.bearingLineLengthInMeters, "Bearing line length in meters", bearingLineLengthInMetersRange);
+    validateNumber(animationControls.maxBearingDiffPerFrame, "Max bearing diff per frame", maxBearingDiffPerFrameRange);
+    validateNumber(animationControls.cameraAngle, 'Camera angle', cameraAngleRange);
+    validateNumber(animationControls.cameraRoll, 'Camera roll', cameraRollRange);
     validateNumber(animationControls.pitch, 'Pitch', pitchRange);
     validateNumber(animationControls.zoom, 'Zoom', zoomRange);
     if (animationControls.zoomInToImages !== undefined && animationControls.zoomInToImages !== false && typeof animationControls.zoomInToImages !== 'number') {
@@ -78,6 +81,8 @@ export const validateAnimationControls = (animationControls: Partial<AnimationCo
     if (animationControls.zoomInToImages && typeof animationControls.zoomInToImages === 'number') {
         validateNumber(animationControls.zoomInToImages, 'Zoom in to images', zoomRange);
     }
+    validateNumber(animationControls.speedMultiplier, 'Speed in seconds per frame', speedMultiplierRange);
+    validateNumber(animationControls.easeDuration, 'Ease duration', easeDurationRange);
 };
 
 export const applyGaugeControls = (possibleGaugeControls: GaugeControlsType): GaugeControlsType => {
@@ -89,5 +94,18 @@ export const applyGaugeControls = (possibleGaugeControls: GaugeControlsType): Ga
             right: possibleGaugeControls.controlPlacement.right,
             bottom: possibleGaugeControls.controlPlacement.bottom,
         }
+    };
+};
+
+/**
+ * TODO: Implement
+ * @param state 
+ * @returns 
+ */
+export const cleanUpAnimationControls = (state: unknown): Partial<AnimationControlsType> => {
+    const { cameraAngle, ...controls } = state as AnimationControlsType;
+    return {
+        cameraAngle: typeof cameraAngle === 'number' ? cameraAngle : defaultAnimationControls.cameraAngle,
+        ...controls
     };
 };

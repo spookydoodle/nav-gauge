@@ -5,7 +5,7 @@ import { AnimationControls } from "./controls/AnimationControls";
 import { MapLayoutControls } from "./controls/MapLayoutControls";
 import { ApplicationSettings } from "./controls/ApplicationSettings";
 import { GaugeControls } from "./controls/GaugeControls";
-import { AnimationControlsType, ApplicationSettingsType, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
+import { AnimationControlsType, ApplicationSettingsType, cleanUpAnimationControls, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
@@ -49,7 +49,7 @@ export const NavGauge: FC<Props> = ({
     const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
-    const [animationControls, setAnimationControls] = useLocalStorageState<AnimationControlsType>('animation-controls', defaultAnimationControls);
+    const [animationControls, setAnimationControls] = useLocalStorageState<AnimationControlsType>('animation-controls', defaultAnimationControls, cleanUpAnimationControls);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
 
     useEffect(() => {
@@ -109,7 +109,7 @@ export const NavGauge: FC<Props> = ({
     }, []);
 
     return (
-        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...applicationSettings }}>
+        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...animationControls, ...applicationSettings }}>
             <div className={styles.layout} style={{
                 ...controlsCssStyle,
                 '--map-width': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.width}px`,

@@ -61,12 +61,17 @@ export const racingGameMapLayout: MapLayout = {
 export const defaultZoomInToImages = 15;
 
 export const defaultAnimationControls: AnimationControlsType = {
-    cameraAngle: CameraAngle.Rear,
     followCurrentPoint: true,
     autoRotate: true,
-    pitch: 30, // TODO:
-    zoom: 10,
-    zoomInToImages: defaultZoomInToImages,
+    bearingLineLengthInMeters: 500,
+    maxBearingDiffPerFrame: 5,
+    cameraAngle: 0,
+    pitch: 0,
+    zoom: 12,
+    zoomInToImages: false,
+    cameraRoll: 0,
+    speedMultiplier: 5000,
+    easeDuration: 100,
 };
 
 export const presetOptions: PresetOption[] = [
@@ -97,22 +102,17 @@ export const detectPreset = (
     ))?.value ?? "";
 };
 
-export const pitchRange: [number, number] = [0, 85];
-
-export const cameraAngles: CameraAngle[] = [
-    CameraAngle.Top,
-    CameraAngle.Left,
-    CameraAngle.Front,
-    CameraAngle.Right,
-    CameraAngle.Rear
-];
-
-export const cameraAngleOptions: { value: CameraAngle; label: string; }[] = cameraAngles.map((value) => ({ value, label: value }));
-
 export const clamp = (value: number, range: [number, number]) => {
     const [min, max] = range;
 
     return Math.max(min, Math.min(max, value));
 }
 
+export const pitchRange: [number, number] = [0, 85];
 export const zoomRange: [number, number] = [0, 20];
+export const bearingLineLengthInMetersRange: [number, number] = [0, 100000];
+export const maxBearingDiffPerFrameRange: [number, number] = [0, 360];
+export const cameraAngleRange: [number, number] = [-360, 360];
+export const cameraRollRange: [number, number] = [-360, 360];
+export const speedMultiplierRange: [number, number] = [0, 1000000];
+export const easeDurationRange: [number, number] = [0, 1000];

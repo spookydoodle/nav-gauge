@@ -1,6 +1,7 @@
 import { CSSProperties, FC } from "react";
-import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../logic";
+import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage, getRouteSourceData, updateRouteLayer } from "../../logic";
 import * as styles from './player.module.css';
+import { useMap } from "../../map/useMap";
 
 interface Props {
     geojson?: GeoJson;
@@ -21,6 +22,7 @@ export const Player: FC<Props> = ({
     isPlaying,
     onIsPlayingChange,
 }) => {
+    const { map } = useMap();
     const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
@@ -29,6 +31,9 @@ export const Player: FC<Props> = ({
             return;
         }
         onProgressMsChange(Number(event.target.value));
+        if (geojson) {
+            updateRouteLayer(map, geojson, routeTimes.startTimeEpoch,Number(event.target.value));
+        }
     }
 
     const getPosition = (featureId: number) => {
