@@ -120,6 +120,11 @@ describe("Preset", () => {
                 expect(() => validateAnimationControls({ zoomInToImages: 200 } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be within range [0, 20]");
                 expect(() => validateAnimationControls({ zoomInToImages: "" } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be either false or of type number within range [0, 20]");
             });
+            it("should throw if speed incorrect", () => {
+                expect(() => validateAnimationControls({ speed: 1000 })).to.not.throw();
+                expect(() => validateAnimationControls({ speed: 2000000 } as unknown as AnimationControlsType)).to.throw("Speed should be within range [0, 100000]");
+                expect(() => validateAnimationControls({ speed: "" } as unknown as AnimationControlsType)).to.throw("Speed should be of type number");
+            });
         });
     });
 });

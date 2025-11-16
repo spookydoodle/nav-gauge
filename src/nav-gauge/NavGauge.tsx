@@ -109,7 +109,7 @@ export const NavGauge: FC<Props> = ({
     }, []);
 
     return (
-        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...applicationSettings }}>
+        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...animationControls, ...applicationSettings }}>
             <div className={styles.layout} style={{
                 ...controlsCssStyle,
                 '--map-width': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.width}px`,

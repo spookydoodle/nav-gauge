@@ -1,10 +1,11 @@
 import { createContext, } from "react";
-import { ApplicationSettingsType, defaultApplicationSettings, defaultGaugeControls, defaultMapLayout, GaugeControlsType, MapLayout } from "../logic";
+import { AnimationControlsType, ApplicationSettingsType, defaultAnimationControls, defaultApplicationSettings, defaultGaugeControls, defaultMapLayout, GaugeControlsType, MapLayout } from "../logic";
 
-export type GaugeContext = GaugeControlsType & MapLayout & ApplicationSettingsType;
+export type GaugeContext = GaugeControlsType & MapLayout & AnimationControlsType & ApplicationSettingsType;
 
 export const GaugeContext = createContext<GaugeContext>({
     ...defaultGaugeControls,
     ...defaultMapLayout,
+    ...defaultAnimationControls,
     ...defaultApplicationSettings
 });

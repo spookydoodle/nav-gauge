@@ -67,6 +67,7 @@ export const defaultAnimationControls: AnimationControlsType = {
     pitch: 30, // TODO:
     zoom: 10,
     zoomInToImages: defaultZoomInToImages,
+    speed: 1000,
 };
 
 export const presetOptions: PresetOption[] = [
@@ -116,3 +117,4 @@ export const clamp = (value: number, range: [number, number]) => {
 }
 
 export const zoomRange: [number, number] = [0, 20];
+export const speedRange: [number, number] = [0, 100000]

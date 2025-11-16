@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import classNames from "classnames";
 import { Fieldset, Input } from "../../components";
-import { AnimationControlsType, CameraAngle, cameraAngleOptions, clamp, defaultZoomInToImages, pitchRange, zoomRange } from "../../logic";
+import { AnimationControlsType, CameraAngle, cameraAngleOptions, clamp, defaultZoomInToImages, pitchRange, speedRange, zoomRange } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -19,7 +19,8 @@ export const AnimationControls: FC<Props> = ({
         autoRotate,
         pitch,
         zoom,
-        zoomInToImages
+        zoomInToImages,
+        speed
     } = animationControls;
 
     return (
@@ -46,22 +47,35 @@ export const AnimationControls: FC<Props> = ({
                 onContainerClick={() => onAnimationConrolsChange((prev) => ({ ...prev, autoRotate: !prev.autoRotate }))}
                 containerClassName={styles["checkbox"]}
             />
-            {/* TODO: Move select to its own component and remove style */}
-            <div>
-                <label htmlFor="controls-position" style={{ fontSize: '12px' }}>Camera angle</label>
-                <select
-                    id="animation-controls-camera-angle"
-                    name="animation-controls-camera-angle"
-                    value={cameraAngle}
-                    onChange={(event) => onAnimationConrolsChange((prev) => ({
-                        ...prev,
-                        cameraAngle: event.target.value as CameraAngle
-                    }))}
-                >
-                    {cameraAngleOptions.map((el) => <option key={el.value} {...el}>{el.label}</option>)}
-                </select>
-            </div>
+            
             <div className={styles["section"]}>
+                {/* TODO: Move select to its own component and remove style */}
+                <div>
+                    <label htmlFor="controls-position" style={{ fontSize: '12px' }}>Camera angle</label>
+                    <select
+                        id="animation-controls-camera-angle"
+                        name="animation-controls-camera-angle"
+                        value={cameraAngle}
+                        onChange={(event) => onAnimationConrolsChange((prev) => ({
+                            ...prev,
+                            cameraAngle: event.target.value as CameraAngle
+                        }))}
+                    >
+                        {cameraAngleOptions.map((el) => <option key={el.value} {...el}>{el.label}</option>)}
+                    </select>
+                </div>
+                <Input
+                    id="animation-controls-speed"
+                    name="animation-controls-speed"
+                    label="Speed"
+                    type='number'
+                    value={speed}
+                    min={speedRange[0]}
+                    max={speedRange[1]}
+                    onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        ? { ...prev, speed: clamp(Number(event.target.value), speedRange) }
+                        : prev)}
+                />
                 <Input
                     id="animation-controls-pitch"
                     name="animation-controls-pitch"

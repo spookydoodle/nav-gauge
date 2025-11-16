@@ -1,4 +1,4 @@
-import { AnimationControlsType, cameraAngles, GaugeControlsType, MapLayout, pitchRange, zoomRange } from "../controls";
+import { AnimationControlsType, cameraAngles, GaugeControlsType, MapLayout, pitchRange, speedRange, zoomRange } from "../controls";
 
 const validateString = (value: unknown, name: string) => {
     if (value !== undefined && typeof value !== 'string') {
@@ -78,6 +78,7 @@ export const validateAnimationControls = (animationControls: Partial<AnimationCo
     if (animationControls.zoomInToImages && typeof animationControls.zoomInToImages === 'number') {
         validateNumber(animationControls.zoomInToImages, 'Zoom in to images', zoomRange);
     }
+    validateNumber(animationControls.speed, 'Speed', speedRange);
 };
 
 export const applyGaugeControls = (possibleGaugeControls: GaugeControlsType): GaugeControlsType => {

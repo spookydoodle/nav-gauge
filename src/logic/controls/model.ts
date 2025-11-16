@@ -71,6 +71,10 @@ export interface AnimationControlsType {
      * If set to a number, will apply it to the map zoom when route animation pauses to show the images.
      */
     zoomInToImages: false | number;
+    /**
+     * Value in ms by with to move current point (relates to timestamp) on the route.
+     */
+    speed: number;
 }
 
 export interface ApplicationSettingsType {
