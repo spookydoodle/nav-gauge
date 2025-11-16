@@ -1,4 +1,4 @@
-import { AnimationControlsType, easeDurationRange, GaugeControlsType, MapLayout, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, defaultAnimationControls } from "../controls";
+import { AnimationControlsType, easeDurationRange, GaugeControlsType, MapLayout, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, defaultAnimationControls, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../controls";
 
 const validateString = (value: unknown, name: string) => {
     if (value !== undefined && typeof value !== 'string') {
@@ -67,10 +67,12 @@ export const validateGaugeControls = (gaugeControls: Partial<GaugeControlsType>)
 };
 
 export const validateAnimationControls = (animationControls: Partial<AnimationControlsType>) => {
+    validateBoolean(animationControls.followCurrentPoint, 'Follow current point');
     validateBoolean(animationControls.autoRotate, "Auto rotate");
+    validateNumber(animationControls.bearingLineLengthInMeters, "Bearing line length in meters", bearingLineLengthInMetersRange);
+    validateNumber(animationControls.maxBearingDiffPerFrame, "Max bearing diff per frame", maxBearingDiffPerFrameRange);
     validateNumber(animationControls.cameraAngle, 'Camera angle', cameraAngleRange);
     validateNumber(animationControls.cameraRoll, 'Camera roll', cameraRollRange);
-    validateBoolean(animationControls.followCurrentPoint, 'Follow current point');
     validateNumber(animationControls.pitch, 'Pitch', pitchRange);
     validateNumber(animationControls.zoom, 'Zoom', zoomRange);
     if (animationControls.zoomInToImages !== undefined && animationControls.zoomInToImages !== false && typeof animationControls.zoomInToImages !== 'number') {

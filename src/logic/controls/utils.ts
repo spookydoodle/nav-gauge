@@ -61,14 +61,16 @@ export const racingGameMapLayout: MapLayout = {
 export const defaultZoomInToImages = 15;
 
 export const defaultAnimationControls: AnimationControlsType = {
-    cameraAngle: 0,
     followCurrentPoint: true,
     autoRotate: true,
+    bearingLineLengthInMeters: 500,
+    maxBearingDiffPerFrame: 5,
+    cameraAngle: 0,
     pitch: 0,
-    zoom: 10,
-    zoomInToImages: defaultZoomInToImages,
+    zoom: 12,
+    zoomInToImages: false,
     cameraRoll: 0,
-    speedMultiplier: 10000,
+    speedMultiplier: 5000,
     easeDuration: 100,
 };
 
@@ -108,7 +110,9 @@ export const clamp = (value: number, range: [number, number]) => {
 
 export const pitchRange: [number, number] = [0, 85];
 export const zoomRange: [number, number] = [0, 20];
-export const cameraAngleRange: [number, number] = [-360, 360]
-export const cameraRollRange: [number, number] = [-360, 360]
-export const speedMultiplierRange: [number, number] = [0, 1000000]
-export const easeDurationRange: [number, number] = [0, 1000]
+export const bearingLineLengthInMetersRange: [number, number] = [0, 100000];
+export const maxBearingDiffPerFrameRange: [number, number] = [0, 360];
+export const cameraAngleRange: [number, number] = [-360, 360];
+export const cameraRollRange: [number, number] = [-360, 360];
+export const speedMultiplierRange: [number, number] = [0, 1000000];
+export const easeDurationRange: [number, number] = [0, 1000];

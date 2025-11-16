@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { useMap } from "../../map/useMap";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
-import { clearLayersAndSources, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "../../logic/map-layers";
+import { clearLayersAndSources, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
 import { useGaugeContext } from "../../contexts/useGaugeContext";
 
 interface Props {
@@ -103,9 +103,7 @@ export const RouteLayer: FC<Props> = ({
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
-            const { currentPoint, currentPointBearing, lines } = getRouteSourceData(geojson, startTimeEpoch, current);
-            map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
-            map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
+            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current);
             
             if (followCurrentPoint) {
                 const lngLat = new maplibregl.LngLat(currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]);

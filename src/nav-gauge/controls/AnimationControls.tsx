@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import classNames from "classnames";
 import { Fieldset, Input } from "../../components";
-import { AnimationControlsType, clamp, defaultZoomInToImages, easeDurationRange, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange } from "../../logic";
+import { AnimationControlsType, clamp, defaultZoomInToImages, easeDurationRange, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -14,13 +14,15 @@ export const AnimationControls: FC<Props> = ({
     onAnimationConrolsChange
 }) => {
     const {
-        cameraAngle,
         followCurrentPoint,
         autoRotate,
+        cameraAngle,
+        cameraRoll,
+        bearingLineLengthInMeters,
+        maxBearingDiffPerFrame,
         pitch,
         zoom,
         zoomInToImages,
-        cameraRoll,
         speedMultiplier,
         easeDuration
     } = animationControls;
@@ -74,6 +76,30 @@ export const AnimationControls: FC<Props> = ({
                         max={cameraRollRange[1]}
                         onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, cameraRoll: clamp(Number(event.target.value), cameraRollRange) }
+                            : prev)}
+                    />
+                    <Input
+                        id="animation-controls-bearing-line-length-in-meters"
+                        name="animation-controls-bearing-line-length-in-meters"
+                        label="Bearing line length in meters roll"
+                        type='number'
+                        value={bearingLineLengthInMeters}
+                        min={bearingLineLengthInMetersRange[0]}
+                        max={bearingLineLengthInMetersRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, bearingLineLengthInMeters: clamp(Number(event.target.value), bearingLineLengthInMetersRange) }
+                            : prev)}
+                    />
+                    <Input
+                        id="animation-controls-max-bearing-diff-per-frame"
+                        name="animation-controls-max-bearing-diff-per-frame"
+                        label="Max bearing diff per frame"
+                        type='number'
+                        value={maxBearingDiffPerFrame}
+                        min={maxBearingDiffPerFrameRange[0]}
+                        max={maxBearingDiffPerFrameRange[1]}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, maxBearingDiffPerFrame: clamp(Number(event.target.value), maxBearingDiffPerFrameRange) }
                             : prev)}
                     />
                     <Input

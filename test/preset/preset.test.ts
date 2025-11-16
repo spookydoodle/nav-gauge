@@ -91,9 +91,23 @@ describe("Preset", () => {
         });
         
         describe("Animation controls", () => {
+            it("should throw if followCurrentPoint incorrect", () => {
+                expect(() => validateAnimationControls({ followCurrentPoint: false })).to.not.throw();
+                expect(() => validateAnimationControls({ followCurrentPoint: "" } as unknown as AnimationControlsType)).to.throw("Follow current point should be of type boolean");
+            });
             it("should throw if autoRotate incorrect", () => {
                 expect(() => validateAnimationControls({ autoRotate: false })).to.not.throw();
                 expect(() => validateAnimationControls({ autoRotate: "" } as unknown as AnimationControlsType)).to.throw("Auto rotate should be of type boolean");
+            });
+            it("should throw if bearingLineLengthInMeters incorrect", () => {
+                expect(() => validateAnimationControls({ bearingLineLengthInMeters: 1000 })).to.not.throw();
+                expect(() => validateAnimationControls({ bearingLineLengthInMeters: 100001 } as unknown as AnimationControlsType)).to.throw("Bearing line length in meters should be within range [0, 100000]");
+                expect(() => validateAnimationControls({ bearingLineLengthInMeters: "" } as unknown as AnimationControlsType)).to.throw("Bearing line length in meters should be of type number");
+            });
+            it("should throw if maxBearingDiffPerFrame incorrect", () => {
+                expect(() => validateAnimationControls({ maxBearingDiffPerFrame: 1 })).to.not.throw();
+                expect(() => validateAnimationControls({ maxBearingDiffPerFrame: 370 } as unknown as AnimationControlsType)).to.throw("Max bearing diff per frame should be within range [0, 360]");
+                expect(() => validateAnimationControls({ maxBearingDiffPerFrame: "" } as unknown as AnimationControlsType)).to.throw("Max bearing diff per frame should be of type number");
             });
             it("should throw if cameraAngle incorrect", () => {
                 expect(() => validateAnimationControls({ cameraAngle: -90 })).to.not.throw();
@@ -104,10 +118,6 @@ describe("Preset", () => {
                 expect(() => validateAnimationControls({ cameraRoll: -90 })).to.not.throw();
                 expect(() => validateAnimationControls({ cameraRoll: 2000000 } as unknown as AnimationControlsType)).to.throw("Camera roll should be within range [-360, 360]");
                 expect(() => validateAnimationControls({ cameraRoll: "" } as unknown as AnimationControlsType)).to.throw("Camera roll should be of type number");
-            });
-            it("should throw if followCurrentPoint incorrect", () => {
-                expect(() => validateAnimationControls({ followCurrentPoint: false })).to.not.throw();
-                expect(() => validateAnimationControls({ followCurrentPoint: "" } as unknown as AnimationControlsType)).to.throw("Follow current point should be of type boolean");
             });
             it("should throw if pitch incorrect", () => {
                 expect(() => validateAnimationControls({ pitch: 20 })).to.not.throw();

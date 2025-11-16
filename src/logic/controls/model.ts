@@ -52,8 +52,12 @@ export interface AnimationControlsType {
      */
     followCurrentPoint: boolean;
     /**
+     * If set to `true`, will apply rotation according to the direction where current point is heading to.
+     */
+    autoRotate: boolean;
+    /**
      * From which side should the camera look at current point on the route. Map beaering.
-     * If `followCurrentPoint` is enabled, will be offset by the current point bearing.
+     * If `autoRotate` is enabled, will be offset by the current point bearing.
      */
     cameraAngle: number;
     /**
@@ -61,9 +65,14 @@ export interface AnimationControlsType {
      */
     cameraRoll: number;
     /**
-     * If set to `true`, will apply rotation according to the direction where current point is heading to.
+     * Used to detect the first points before/after current point which are at least half of that value away from current point.
+     * Bearing for current point used to auto rotate the map will be calculated using this line.
      */
-    autoRotate: boolean;
+    bearingLineLengthInMeters: number;
+    /**
+     * Maximum amount of degrees to allow updating the map bearing each frame (when `autoRotate` is enabled).
+     */
+    maxBearingDiffPerFrame: number;
     /**
      * Pitch to keep during recording. Value between 0 and 85.
      */

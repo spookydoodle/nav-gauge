@@ -5,7 +5,7 @@ import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
 import { FeatureProperties, GeoJson, ImageData } from "../parsers";
-import { FeatureStateProps } from "./model";
+import { CurrentPointData, FeatureStateProps } from "./model";
 
 export const clearLayersAndSources = (
     map: maplibregl.Map,
@@ -70,7 +70,7 @@ export const routeLineLayer: maplibregl.LineLayerSpecification = {
             colorActive,
             colorInactive
         ],
-        'line-width': 4,
+        'line-width': 2,
         'line-opacity': .6,
     },
     layout: {
@@ -92,7 +92,7 @@ export const routePointsLayer: maplibregl.CircleLayerSpecification = {
             colorActive,
             colorInactive
         ],
-        'circle-radius': 3,
+        'circle-radius': 2,
     }
 };
 
@@ -124,8 +124,24 @@ export const imagesLayer: maplibregl.CircleLayerSpecification = {
     source: sourceIds.image,
     paint: {
         'circle-color': "red",
-        "circle-radius": 5
+        "circle-radius": 3
     }
+};
+
+/**
+ * Gets current point data, updates map sources, and returns it.
+ */
+export const updateRouteLayer = (
+    map: maplibregl.Map,
+    geojson: GeoJson,
+    startTimeEpoch: number,
+    progressMs: number,
+): CurrentPointData => {
+    const { currentPoint, lines, ...rest } = getRouteSourceData(geojson, startTimeEpoch, progressMs);
+    map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
+    map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
+
+    return { currentPoint, lines, ...rest };
 };
 
 /**
@@ -152,11 +168,12 @@ const getCurrentPoint = (
     const totalDistanceMeters = turfLength(line, { units: 'meters' });
     const totalTimeMs = (new Date(currentLineEnd.properties.time).valueOf() - new Date(currentLineStart.properties.time).valueOf());
     const currentPoint = turfAlong(line, totalDistanceMeters * fraction, { units: 'meters' });
+    const currentPointSpeed = (totalDistanceMeters) / (totalTimeMs / 3600);
 
     return {
         currentPoint,
         currentPointBearing: getCurrentPointBearing(currentPoint, geojson, splitIndex),
-        currentPointSpeed: (totalDistanceMeters / 1000) / (totalTimeMs / 3600000)
+        currentPointSpeed
     };
 };
 
@@ -200,12 +217,7 @@ export const getRouteSourceData = (
     geojson: GeoJson,
     startTimeEpoch: number,
     progressMs: number,
-): {
-    lines: GeoJSON.GeoJSON;
-    currentPoint: GeoJSON.Feature<GeoJSON.Point>;
-    currentPointBearing: number;
-    currentPointSpeed: number;
-} => {
+): CurrentPointData => {
     const currentTime = startTimeEpoch + progressMs;
     const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf());
     const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime);
