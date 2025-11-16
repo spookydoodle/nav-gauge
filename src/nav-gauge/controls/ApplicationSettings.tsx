@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Fieldset, Input, Theme, themeOptions } from "../../components";
-import { ApplicationSettingsType } from "../../logic";
+import { Fieldset, Input, themeOptions } from "../../components";
+import { ApplicationSettingsType, Theme } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {

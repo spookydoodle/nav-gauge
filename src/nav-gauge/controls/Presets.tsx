@@ -1,12 +1,13 @@
 import { FC, useEffect } from "react";
-import { defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, validateGaugeControls, validateMapLayout } from "../../logic";
+import { AnimationControlsType, applyGaugeControls, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, PresetValues, validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
     preset: Preset;
-    onPresetChange: (preset: Preset, mapLayout?: MapLayout, gaugeControls?: GaugeControlsType) => void;
+    onPresetChange: (preset: Preset, presetValues?: PresetValues) => void;
     mapLayout: MapLayout;
     gaugeControls: GaugeControlsType;
+    animationControls: AnimationControlsType;
 }
 
 export const Presets: FC<Props> = ({
@@ -14,6 +15,7 @@ export const Presets: FC<Props> = ({
     onPresetChange,
     mapLayout,
     gaugeControls,
+    animationControls,
 }) => {
     useEffect(() => {
         if (preset && !detectPreset(mapLayout, gaugeControls)) {
@@ -24,11 +26,16 @@ export const Presets: FC<Props> = ({
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const nextPreset = event.target.value as Preset;
         const option = presetOptions.find((option) => option.value === nextPreset);
-        onPresetChange(nextPreset, option?.mapLayout, option?.gaugeControls);
+
+        onPresetChange(nextPreset, {
+            presetMapLayout: option?.mapLayout,
+            presetGaugeControls: option?.gaugeControls,
+            presetAnimationControls: option?.animationControls,
+        });
     };
 
     const handleExport = () => {
-        const jsonString = JSON.stringify({ mapLayout, gaugeControls }, null, 2);
+        const jsonString = JSON.stringify({ mapLayout, gaugeControls, animationControls }, null, 2);
         const blob = new Blob([jsonString], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
 
@@ -53,12 +60,20 @@ export const Presets: FC<Props> = ({
             .then((text) => {
                 try {
                     const result = JSON.parse(text);
-                    const possibleMapLayout = { defaultMapLayout, ...(result.mapLayout as MapLayout) };
-                    const possibleGaugeControls = { defaultGaugeControls, ...(result.gaugeControls as GaugeControlsType) };
+                    const possibleMapLayout: MapLayout = { ...defaultMapLayout, ...(result.mapLayout as MapLayout) };
                     validateMapLayout(possibleMapLayout);
+
+                    const possibleGaugeControls: GaugeControlsType = { ...defaultGaugeControls, ...(result.gaugeControls as GaugeControlsType) };
                     validateGaugeControls(possibleGaugeControls);
-                    // TODO: Add validation and allow upload animation controls
-                    onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), possibleMapLayout, possibleGaugeControls);
+
+                    const possibleAnimationControls = { ...defaultAnimationControls, ...(result.animationControls as AnimationControlsType) };
+                    validateAnimationControls(possibleAnimationControls);
+
+                    onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), {
+                        presetMapLayout: possibleMapLayout,
+                        presetGaugeControls: applyGaugeControls(possibleGaugeControls),
+                        presetAnimationControls: possibleAnimationControls
+                    });
                 } catch (e) {
                     console.error(e);
                 }

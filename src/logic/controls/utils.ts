@@ -1,4 +1,4 @@
-import { Theme } from "../../components";
+import { Theme } from "../theme";
 import { AnimationControlsType, ApplicationSettingsType, CameraAngle, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
 
 export const controlsPositions: maplibregl.ControlPosition[] = [
@@ -10,7 +10,7 @@ export const controlsPositions: maplibregl.ControlPosition[] = [
 
 export const defaultGaugeControls: GaugeControlsType = {
     globeProjection: true,
-    showZoom: false,
+    showZoomButtons: false,
     showCurrentZoom: true,
     showCompass: true,
     showGreenScreen: false,
@@ -58,18 +58,31 @@ export const racingGameMapLayout: MapLayout = {
     innerBoxShadow: '',
 };
 
+export const defaultZoomInToImages = 15;
+
+export const defaultAnimationControls: AnimationControlsType = {
+    cameraAngle: CameraAngle.Rear,
+    followCurrentPoint: true,
+    autoRotate: true,
+    pitch: 30, // TODO:
+    zoom: 10,
+    zoomInToImages: defaultZoomInToImages,
+};
+
 export const presetOptions: PresetOption[] = [
     {
         value: 'default',
         label: 'Default',
         mapLayout: defaultMapLayout,
         gaugeControls: defaultGaugeControls,
+        animationControls: defaultAnimationControls,
     },
     {
         value: 'racing-game',
         label: 'Racing game',
         mapLayout: racingGameMapLayout,
         gaugeControls: defaultGaugeControls,
+        animationControls: defaultAnimationControls,
     },
 ];
 
@@ -84,26 +97,17 @@ export const detectPreset = (
     ))?.value ?? "";
 };
 
-export const defaultZoomInToImages = 15;
-
-export const defaultAnimationControls: AnimationControlsType = {
-    cameraAngle: CameraAngle.Rear,
-    followCurrentPoint: true,
-    autoRotate: true,
-    pitch: 30, // TODO:
-    zoom: 10,
-    zoomInToImages: defaultZoomInToImages,
-}
-
 export const pitchRange: [number, number] = [0, 85];
 
-export const cameraAngles: { value: CameraAngle; label: string; }[] = [
-    { value: CameraAngle.Top, label: CameraAngle.Top },
-    { value: CameraAngle.Left, label: CameraAngle.Left },
-    { value: CameraAngle.Front, label: CameraAngle.Front },
-    { value: CameraAngle.Right, label: CameraAngle.Right },
-    { value: CameraAngle.Rear, label: CameraAngle.Rear },
+export const cameraAngles: CameraAngle[] = [
+    CameraAngle.Top,
+    CameraAngle.Left,
+    CameraAngle.Front,
+    CameraAngle.Right,
+    CameraAngle.Rear
 ];
+
+export const cameraAngleOptions: { value: CameraAngle; label: string; }[] = cameraAngles.map((value) => ({ value, label: value }));
 
 export const clamp = (value: number, range: [number, number]) => {
     const [min, max] = range;

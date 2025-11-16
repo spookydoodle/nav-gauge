@@ -45,7 +45,7 @@ export const MapTools: FC<Props> = ({
     toolsLeft,
     children,
 }) => {
-    const { showZoom, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeContext();
+    const { showZoomButtons, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeContext();
     const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
     const [cssLoaded, setCssLoaded] = useState(false);
     const [isInitialized, setIsInitialized] = useState(false);
@@ -82,18 +82,18 @@ export const MapTools: FC<Props> = ({
     }, [containerRef, cssLoaded]);
 
     useEffect(() => {
-        const showControls = showZoom || showCompass;
+        const showControls = showZoomButtons || showCompass;
         if (!isInitialized || !showControls) {
             return;
         }
-        const control = new maplibregl.NavigationControl({ showZoom, showCompass, visualizePitch: true });
+        const control = new maplibregl.NavigationControl({ showZoom: showZoomButtons, showCompass, visualizePitch: true });
         map.addControl(control, controlPosition);
         map.resize();
 
         return () => {
             map.removeControl(control);
         };
-    }, [isInitialized, showZoom, showCompass, controlPosition]);
+    }, [isInitialized, showZoomButtons, showCompass, controlPosition]);
 
     useEffect(() => {
         const zoomHandler = () => {

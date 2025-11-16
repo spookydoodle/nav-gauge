@@ -5,7 +5,7 @@ import { AnimationControls } from "./controls/AnimationControls";
 import { MapLayoutControls } from "./controls/MapLayoutControls";
 import { ApplicationSettings } from "./controls/ApplicationSettings";
 import { GaugeControls } from "./controls/GaugeControls";
-import { AnimationControlsType, ApplicationSettingsType, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset } from "../logic";
+import { AnimationControlsType, ApplicationSettingsType, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts/GaugeContext";
 import { useImageReader } from "../hooks/useImageReader";
@@ -67,13 +67,20 @@ export const NavGauge: FC<Props> = ({
         }
     }, [applicationSettings.confirmBeforeLeave, images, geojson]);
 
-    const handlePresetChange = (preset: Preset, presetMapLayout?: MapLayout, presetGaugeControls?: GaugeControlsType) => {
+    const handlePresetChange = (preset: Preset, { 
+        presetMapLayout, 
+        presetGaugeControls,
+        presetAnimationControls,
+    }: PresetValues = {}) => {
         setPreset(preset);
         if (presetMapLayout) {
             setMapLayout(presetMapLayout);
         }
         if (presetGaugeControls) {
             setGaugeControls(presetGaugeControls);
+        }
+        if (presetAnimationControls) {
+            setAnimationControls(presetAnimationControls);
         }
     };
 
@@ -125,7 +132,7 @@ export const NavGauge: FC<Props> = ({
                         readImage={readImage}
                     />
                     <hr className={styles.divider} />
-                    <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
+                    <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} animationControls={animationControls} />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                     <AnimationControls animationControls={animationControls} onAnimationConrolsChange={setAnimationControls} />
