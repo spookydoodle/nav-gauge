@@ -1,20 +1,24 @@
 package main
 
 import (
+	"archive/zip"
+	"database/sql"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"log/slog"
 
+	_ "github.com/duckdb/duckdb-go/v2"
 	"github.com/protomaps/go-pmtiles/pmtiles"
 )
 
-func handleError(err error, msg string) {
+func exitIfError(err error, msg string) {
 	if err != nil {
 		slog.Error(msg, "error", err)
 		os.Exit(1)
@@ -27,10 +31,6 @@ func download(url, fileName string) error {
 		return err
 	}
 	defer res.Body.Close()
-	// TODO: Delete
-	defer fmt.Println("deferred")
-	fmt.Println("not deferred")
-	//
 
 	out, err := os.Create(fileName)
 	if err != nil {
@@ -40,6 +40,42 @@ func download(url, fileName string) error {
 
 	_, err = io.Copy(out, res.Body)
 	return err
+}
+
+func unzip(destination string, fileName string) {
+	archive, err := zip.OpenReader(fileName)
+	exitIfError(err, "unzip")
+	defer archive.Close()
+
+	for _, file := range archive.File {
+		filePath := filepath.Join(destination, file.Name)
+		fmt.Println("unzipped file ", filePath)
+
+		if !strings.HasPrefix(filePath, filepath.Clean(destination)+string(os.PathSeparator)) {
+			fmt.Println("invalid path")
+			return
+		}
+		if file.FileInfo().IsDir() {
+			fmt.Println("creating directory")
+			os.MkdirAll(filePath, os.ModePerm)
+			continue
+		}
+
+		err = os.MkdirAll(filepath.Dir(filePath), os.ModePerm)
+		exitIfError(err, "")
+
+		destinationFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		exitIfError(err, filePath)
+
+		fileInArchive, err := file.Open()
+		exitIfError(err, file.Name)
+
+		_, err = io.Copy(destinationFile, fileInArchive)
+		exitIfError(err, "copy file")
+
+		destinationFile.Close()
+		fileInArchive.Close()
+	}
 }
 
 func runCmd(name string, args ...string) error {
@@ -65,38 +101,42 @@ func main() {
 
 	// Fetch from duckdb
 	sqlBytes, err := os.ReadFile("sql/data.sql")
-	handleError(err, "reading SQL file")
+	exitIfError(err, "reading SQL file")
 
 	release := "2025-11-19.0"
 	// release := os.Getenv("OVERTURE_RELEASE")
 	duckQuery := strings.ReplaceAll(string(sqlBytes), "{{RELEASE}}", release)
-
+	fmt.Println(duckQuery)
 	slog.Info("running duckdb", "release", release)
 
-	err = runCmd("duckdb", "-c", duckQuery)
-	handleError(err, "running duckdb")
+	db, err := sql.Open("duckdb", "")
+	exitIfError(err, "duckdb")
+	defer db.Close()
 
-	// Generate .pmtiles with tippecanoe
-	// tippecanoeUrl := "https://github.com/mapbox/tippecanoe/archive/refs/tags/1.36.0.tar.gz"
-	// tippecanoeUrl := "https://github.com/mapbox/tippecanoe/archive/refs/tags/1.36.0.zip"
-	// TODO: Doesnt exist, download cd and then execute
-	tippecanoeUrl := "https://github.com/mapbox/tippecanoe/releases/download/1.36.0/tippecanoe.linux.x86_64"
-	tippecanoeFileName := "tippecanoe"
+	_, err = db.Exec(duckQuery)
 
+	// Download tippecanoe
+	tippecanoeUrl := "https://github.com/mapbox/tippecanoe/archive/refs/tags/1.36.0.zip"
+	tippecanoeDir := "tippecanoe"
+	tippecanoeZip := "tippecanoe.zip"
 	slog.Info("downloading tippecanoe...", "url", tippecanoeUrl)
+	err = download(tippecanoeUrl, tippecanoeZip)
+	exitIfError(err, "downloading tippecanoe")
 
-	err = download(tippecanoeUrl, tippecanoeFileName)
-	handleError(err, "downloading tippecanoe")
+	// Unzip tippencanoe
+	currentPath, err := os.Getwd()
+	exitIfError(err, "current path")
 
-	err = os.Chmod(tippecanoeFileName, 0755)
-	handleError(err, "making tippecanoe executable")
+	unzip(currentPath, tippecanoeZip)
+	os.RemoveAll(tippecanoeZip)
+	defer os.RemoveAll(tippecanoeDir)
 
 	// Create mbtiles
 	slog.Info("building tiles...")
 
 	// TODO: Adjust params
 	err = runCmd(
-		"./"+tippecanoeFileName,
+		"./"+tippecanoeDir,
 		"-o", "overture.mbtiles",
 		"--minimum-zoom=0",
 		"--maximum-zoom=14",
@@ -106,7 +146,7 @@ func main() {
 		"divisions.ndjson",
 		"rivers.ndjson",
 	)
-	handleError(err, "building tiles")
+	exitIfError(err, "building tiles")
 
 	// Convert to pmtiles
 	slog.Info("converting mbtiles to pmtiles")
@@ -115,19 +155,19 @@ func main() {
 	outFile := "overture.pmtiles"
 
 	in, err := os.Open(inFile)
-	handleError(err, "opening mbtiles")
+	exitIfError(err, "opening mbtiles")
 	defer in.Close()
 
 	out, err := os.Create(outFile)
-	handleError(err, "creating pmtiles file")
+	exitIfError(err, "creating pmtiles file")
 	defer out.Close()
 
 	tempFile, err := os.CreateTemp("", "basemapId.tmp")
-	handleError(err, "create temp file")
+	exitIfError(err, "create temp file")
 
 	var stdlogger = log.New(os.Stdout, "[pmtiles] ", log.LstdFlags)
 	err = pmtiles.Convert(stdlogger, in.Name(), out.Name(), true, tempFile)
-	handleError(err, "converting to pmtiles")
+	exitIfError(err, "converting to pmtiles")
 
 	slog.Info("completed", "pmtiles", outFile)
 }
