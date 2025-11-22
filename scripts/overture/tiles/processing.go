@@ -16,18 +16,44 @@ import (
 var defaultOvertureRelease = "2025-11-19.0"
 var tippecanoeUrl = "https://github.com/felt/tippecanoe/archive/refs/heads/main.zip"
 
+// Returns directory with unzipped tippecanoe files
+func SetupTippecanoe() string {
+	slog.Info("setting up tippecanoe...")
+
+	zipFile := "tippecanoe.zip"
+
+	slog.Info("downloading tippecanoe...", "url", tippecanoeUrl)
+	err := download(tippecanoeUrl, zipFile)
+	validator.ExitIfError(err, "downloading tippecanoe")
+	defer os.RemoveAll(zipFile)
+
+	currentPath, err := os.Getwd()
+	validator.ExitIfError(err, "current path")
+
+	slog.Info("unzipping tippecanoe...", "zip file", zipFile)
+	unpackedDir, err := unzip(currentPath, zipFile)
+	validator.ExitIfError(err, "unzipping tippecanoe")
+
+	slog.Info("installing tippecanoe...")
+	cmd := exec.Command("sh", "-c", "make -j && make install")
+	cmd.Dir = unpackedDir
+	_, err = cmd.CombinedOutput()
+	validator.ExitIfError(err, "installing tippecanoe")
+
+	slog.Info("tippecanoe installed")
+
+	return unpackedDir
+}
+
 // Queries overture using duckdb.
 // Installs tippecanoe.
 // Generates pmtiles using tippecanoe.
-func Generate(fileName string) {
+func Generate(fileName string, tippecanoeDir string) {
 	overtureRelease := getOvertureRelease()
 	geojsonFileName := queryOverture(overtureRelease, fileName)
 	defer os.RemoveAll(geojsonFileName)
 
-	unpackedDir := setupTippecanoe()
-	defer os.RemoveAll(unpackedDir)
-
-	createPmtiles(unpackedDir, fileName)
+	createPmtiles(tippecanoeDir, fileName)
 }
 
 // Gets overture release from environment variable. If variable not available uses the default.
@@ -62,35 +88,6 @@ func queryOverture(release string, fileName string) string {
 	slog.Info("overture file saved", "file name", fileName)
 
 	return fileName
-}
-
-// Returns directory with unzipped tippecanoe files
-func setupTippecanoe() string {
-	slog.Info("setting up tippecanoe...")
-
-	zipFile := "tippecanoe.zip"
-
-	slog.Info("downloading tippecanoe...", "url", tippecanoeUrl)
-	err := download(tippecanoeUrl, zipFile)
-	validator.ExitIfError(err, "downloading tippecanoe")
-	defer os.RemoveAll(zipFile)
-
-	currentPath, err := os.Getwd()
-	validator.ExitIfError(err, "current path")
-
-	slog.Info("unzipping tippecanoe...", "zip file", zipFile)
-	unpackedDir, err := unzip(currentPath, zipFile)
-	validator.ExitIfError(err, "unzipping tippecanoe")
-
-	slog.Info("installing tippecanoe...")
-	cmd := exec.Command("sh", "-c", "make -j && make install")
-	cmd.Dir = unpackedDir
-	_, err = cmd.CombinedOutput()
-	validator.ExitIfError(err, "installing tippecanoe")
-
-	slog.Info("tippecanoe installed")
-
-	return unpackedDir
 }
 
 // Creates pmtiles and saves under fileName.pmtiles

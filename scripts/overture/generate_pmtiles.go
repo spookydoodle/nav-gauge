@@ -19,5 +19,8 @@ func main() {
 
 	slog.SetDefault(logger)
 
-	tiles.Generate("roads")
+	tippecanoeDir := tiles.SetupTippecanoe()
+	defer os.RemoveAll(tippecanoeDir)
+
+	tiles.Generate("roads", tippecanoeDir)
 }
