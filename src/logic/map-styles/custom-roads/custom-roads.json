@@ -1,0 +1,21 @@
+{
+    "version": 8,
+    "sources": {
+        "custom-roads": {
+            "type": "vector",
+            "url": "pmtiles:///tiles/roads.pmtiles"
+        }
+    },
+    "layers": [
+        {
+            "id": "custom-roads",
+            "source": "custom-roads",
+            "source-layer": "roads",
+            "type": "line",
+            "paint": {
+                "line-color": "rgba(0, 255, 0, .25)",
+                "line-width": 5
+            }
+        }
+    ]
+}

@@ -127,12 +127,14 @@ export const MapTools: FC<Props> = ({
         if (!nextStyle) {
             return;
         }
-        cartographer.updateStyle(nextStyle.style);
+        const abortController = new AbortController();
+        cartographer.updateStyle(nextStyle.style, abortController.signal);
         if (nextStyle.attribution) {
             attributionVault.addEntry(selectedStyleId, nextStyle.attribution);
         }
-        
+
         return () => {
+            abortController.abort();
             if (nextStyle.attribution) {
                 attributionVault.removeEntry(selectedStyleId);
             }
