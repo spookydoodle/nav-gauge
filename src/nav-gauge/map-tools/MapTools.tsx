@@ -1,14 +1,14 @@
 import { FC, ReactNode, useState, useEffect } from "react";
 import maplibregl from "maplibre-gl";
-import { Protocol, PMTiles } from "pmtiles";
+import { Protocol } from "pmtiles";
 import classNames from "classnames";
 import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
 import { useSubjectState } from "../../hooks/useSubjectState";
 import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
+import { Cartographer } from "../../logic/state/cartographer";
 import findIcon from '../../icons/find.svg';
 import * as styles from './map-tools.module.css';
 import './map.css';
-import { Cartographer } from "../../logic/state/cartographer";
 
 interface Props {
     /**
@@ -48,13 +48,12 @@ export const MapTools: FC<Props> = ({
     toolsLeft,
     children,
 }) => {
-    const { cartographer, attributionVault } = useStateWarden();
+    const { cartographer } = useStateWarden();
     const { showZoomButtons, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeContext();
     const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
     const [cssLoaded, setCssLoaded] = useState(false);
     const [isInitialised, setIsInitialised] = useSubjectState(cartographer.isInitialised$);
-    const [isStyleLoaded, setIsStyleLoaded] = useSubjectState(cartographer.isStyleLoaded$);
-    const [selectedStyleId] = useSubjectState(cartographer.selectedStyleId$);
+    const [isStyleLoaded] = useSubjectState(cartographer.isStyleLoaded$);
     const [_mapZoom, setMapZoom] = useSubjectState(cartographer.zoom$);
 
     useEffect(() => {
@@ -121,25 +120,6 @@ export const MapTools: FC<Props> = ({
             cartographer.map.off("zoomend", zoomHandler);
         };
     }, []);
-
-    useEffect(() => {
-        const nextStyle = Cartographer.styles.get(selectedStyleId);
-        if (!nextStyle) {
-            return;
-        }
-        const abortController = new AbortController();
-        cartographer.updateStyle(nextStyle.style, abortController.signal);
-        if (nextStyle.attribution) {
-            attributionVault.addEntry(selectedStyleId, nextStyle.attribution);
-        }
-
-        return () => {
-            abortController.abort();
-            if (nextStyle.attribution) {
-                attributionVault.removeEntry(selectedStyleId);
-            }
-        };
-    }, [selectedStyleId]);
 
     useEffect(() => {
         if (!isStyleLoaded) {

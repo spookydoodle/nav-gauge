@@ -6,7 +6,8 @@
             "id": "background",
             "type": "background",
             "paint": {
-                "background-color": "yellow"
+                "background-color": "yellow",
+                "background-opacity": 0.5
             }
         }
     ]

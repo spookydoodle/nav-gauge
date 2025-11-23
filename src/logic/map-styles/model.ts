@@ -1,7 +1,7 @@
 import { AttributionEntry } from "../state";
 
 export interface MapStyle {
-    name: string;
+    label: string;
     style: string | maplibregl.StyleSpecification;
     attribution?: AttributionEntry;
 }

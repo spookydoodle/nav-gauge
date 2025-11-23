@@ -13,6 +13,7 @@ import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, ParsingResultWithError } from "../logic";
 import { FileInput } from "./controls/FileInput";
 import * as styles from './nav-gauge.module.css';
+import { MapStyleSelection } from "./controls/MapStyleSelection";
 
 interface Props {
     applicationSettings: ApplicationSettingsType;
@@ -67,8 +68,8 @@ export const NavGauge: FC<Props> = ({
         }
     }, [applicationSettings.confirmBeforeLeave, images, geojson]);
 
-    const handlePresetChange = (preset: Preset, { 
-        presetMapLayout, 
+    const handlePresetChange = (preset: Preset, {
+        presetMapLayout,
         presetGaugeControls,
         presetAnimationControls,
     }: PresetValues = {}) => {
@@ -133,6 +134,7 @@ export const NavGauge: FC<Props> = ({
                     />
                     <hr className={styles.divider} />
                     <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} animationControls={animationControls} />
+                    <MapStyleSelection />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                     <AnimationControls animationControls={animationControls} onAnimationConrolsChange={setAnimationControls} />

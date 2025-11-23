@@ -22,46 +22,45 @@ export const RouteLayer: FC<Props> = ({
     onProgressMsChange,
     images,
 }) => {
-    const { cartographer: { map } } = useStateWarden();
+    const { cartographer } = useStateWarden();
     const { showRouteLine, showRoutePoints, followCurrentPoint, cameraAngle, autoRotate, pitch, zoom, zoomInToImages, cameraRoll, speedMultiplier, easeDuration } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     useEffect(() => {
         const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs);
         if (showRouteLine || showRoutePoints) {
-            map.addSource(sourceIds.line, {
+            cartographer.map.addSource(sourceIds.line, {
                 type: 'geojson',
                 data: lines,
                 promoteId: 'id'
             });
         }
 
-        map.addSource(sourceIds.currentPoint, {
+        cartographer.map.addSource(sourceIds.currentPoint, {
             type: 'geojson',
             data: currentPoint,
         });
 
         if (showRouteLine) {
-            map.addLayer(routeLineLayer);
+            cartographer.map.addLayer(routeLineLayer);
         }
 
         if (showRoutePoints) {
-            map.addLayer(routePointsLayer);
+            cartographer.map.addLayer(routePointsLayer);
         }
 
-        currentPointLayers.forEach((layer) => map.addLayer(layer));
+        currentPointLayers.forEach((layer) => cartographer.map.addLayer(layer));
 
         setIsLayerAdded(true);
-
         return () => {
             setIsLayerAdded(false);
             clearLayersAndSources(
-                map,
+                cartographer.map,
                 [layerIds.line, layerIds.points, layerIds.currentPointOutline, layerIds.currentPoint],
                 [sourceIds.line, sourceIds.currentPoint]
             );
         };
-    }, [map, geojson, showRouteLine, showRoutePoints]);
+    }, [cartographer.map, geojson, showRouteLine, showRoutePoints]);
 
     useEffect(() => {
         const loadedImages = images.filter((image) => image.progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !image.error);
@@ -70,21 +69,21 @@ export const RouteLayer: FC<Props> = ({
             return;
         }
 
-        map.addSource(sourceIds.image, {
+        cartographer.map.addSource(sourceIds.image, {
             type: 'geojson',
             data: getImagesSourceData(geojson, loadedImages)
         });
 
-        map.addLayer(imagesLayer);
+        cartographer.map.addLayer(imagesLayer);
 
         return () => {
             clearLayersAndSources(
-                map,
+                cartographer.map,
                 [layerIds.images],
                 [sourceIds.image]
             );
         };
-    }, [map, images]);
+    }, [cartographer.map, images]);
 
     useEffect(() => {
         if (!isPlaying || !isLayerAdded) {
@@ -103,16 +102,16 @@ export const RouteLayer: FC<Props> = ({
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
-            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current);
-            
+            const { currentPoint, currentPointBearing } = updateRouteLayer(cartographer.map, geojson, startTimeEpoch, current);
+
             if (followCurrentPoint) {
                 const lngLat = new maplibregl.LngLat(currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]);
-                const currentBearing = map.getBearing();
+                const currentBearing = cartographer.map.getBearing();
                 const nextBearing = (cameraAngle + (autoRotate ? (currentPointBearing) : 0));
                 const bearingDiff = ((nextBearing - currentBearing + 540) % 360) - 180;
                 const maxDiff = 5;
 
-                map.easeTo({
+                cartographer.map.easeTo({
                     easeId: 'follow-current-point',
                     animate: true,
                     center: lngLat,

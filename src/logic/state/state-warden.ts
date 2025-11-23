@@ -8,5 +8,5 @@ export class StateWarden {
     public cartographer = new Cartographer();
     public attributionVault = new AttributionVault();
 
-    public constructor() {}
+    public constructor() { }
 }

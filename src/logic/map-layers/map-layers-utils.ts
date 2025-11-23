@@ -12,7 +12,6 @@ export const clearLayersAndSources = (
     layerIds: string[],
     sourceIds: string[]
 ) => {
-
     for (const id of layerIds) {
         if (map.getLayer(id)) {
             map.removeLayer(id);

@@ -2,7 +2,7 @@ import { MapStyle } from "../model";
 import osmStyle from "./osm.json";
 
 export const osmMapStyle: MapStyle = {
-    name: 'OpenStreetMap',
+    label: 'OpenStreetMap',
     style: osmStyle,
     attribution: {
         text: "OpenStreetMap",
