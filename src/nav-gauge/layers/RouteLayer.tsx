@@ -1,9 +1,9 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { useMap } from "../../map/useMap";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
 import { clearLayersAndSources, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
-import { useGaugeContext } from "../../contexts/useGaugeContext";
+import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
+import { useStateWarden } from "../../contexts";
 
 interface Props {
     isPlaying: boolean;
@@ -22,7 +22,7 @@ export const RouteLayer: FC<Props> = ({
     onProgressMsChange,
     images,
 }) => {
-    const { map } = useMap();
+    const { cartographer: { map } } = useStateWarden();
     const { showRouteLine, showRoutePoints, followCurrentPoint, cameraAngle, autoRotate, pitch, zoom, zoomInToImages, cameraRoll, speedMultiplier, easeDuration } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 

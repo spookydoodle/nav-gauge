@@ -7,7 +7,7 @@ import { ApplicationSettings } from "./controls/ApplicationSettings";
 import { GaugeControls } from "./controls/GaugeControls";
 import { AnimationControlsType, ApplicationSettingsType, cleanUpAnimationControls, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
 import { MapSection } from "./MapSection";
-import { GaugeContext } from "../contexts/GaugeContext";
+import { GaugeContext } from "../contexts";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, ParsingResultWithError } from "../logic";

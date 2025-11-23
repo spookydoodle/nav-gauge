@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import maplibregl from "maplibre-gl";
 import { FeatureStateProps, GeoJson, getClosestFeature, ImageData, sourceIds } from "../../logic";
+import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
 import * as styles from './route-layer.module.css';
 
 export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
@@ -10,14 +11,14 @@ export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
 }
 
 interface Props {
-    map: maplibregl.Map;
     image: MarkerImageData;
     updateImageFeatureId: (imageId: number, featureId: number) => void;
     geojson: GeoJson;
 }
 
 // TODO: If multiple in the same location, render all
-export const ImageMarker: FC<Props> = ({ map, image, geojson, updateImageFeatureId }) => {
+export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId }) => {
+    const { cartographer } = useStateWarden();
     const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -34,7 +35,7 @@ export const ImageMarker: FC<Props> = ({ map, image, geojson, updateImageFeature
             setClosestFeatureId(null);
         };
 
-        image.marker.addTo(map);
+        image.marker.addTo(cartographer.map);
         image.marker.on('drag', handleDrag);
         image.marker.on('dragend', handleDragEnd);
 
@@ -51,7 +52,7 @@ export const ImageMarker: FC<Props> = ({ map, image, geojson, updateImageFeature
         }
         // TODO: Add another source for all points or closest point and update data here
         const updateHighlight = (highlight: boolean) => {
-            map.setFeatureState({ source: sourceIds.line, id: closestFeatureId }, {
+            cartographer.map.setFeatureState({ source: sourceIds.line, id: closestFeatureId }, {
                 [FeatureStateProps.Highlight]: highlight
             });
         }

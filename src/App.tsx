@@ -1,8 +1,11 @@
 import { FC, StrictMode, useEffect } from "react";
+import { TopBar, Footer } from "./layout";
 import { NavGauge } from "./nav-gauge/NavGauge";
 import { useLocalStorageState } from "./hooks/useLocalStorageState";
 import { ApplicationSettingsType, defaultApplicationSettings } from "./logic";
-import * as styles from './app.module.css';
+import { theOneAndOnlyStateWarden, StateWardenContext } from "./contexts";
+import './app.css';
+import "./themes.css";
 
 const App: FC = () => {
     const [applicationSettings, setApplicationSettings] = useLocalStorageState<ApplicationSettingsType>('application-settings', defaultApplicationSettings);
@@ -13,15 +16,11 @@ const App: FC = () => {
 
     return (
         <StrictMode>
-            <nav className={styles["navbar"]}>
-                <span>nav gauge</span>
-            </nav>
-            <NavGauge applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
-            <footer className={styles["footer"]}>
-                <a target="_blank" rel="noreferrer" href="https://openstreetmap.org/copyright">
-                    © OpenStreetMap
-                </a>
-            </footer>
+            <StateWardenContext.Provider value={theOneAndOnlyStateWarden}>
+                <TopBar />
+                <NavGauge applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
+                <Footer />
+            </StateWardenContext.Provider>
         </StrictMode>
     );
 }

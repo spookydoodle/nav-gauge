@@ -1,7 +1,7 @@
 import { CSSProperties, FC } from "react";
 import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage, getRouteSourceData, updateRouteLayer } from "../../logic";
+import { useStateWarden } from "../../contexts";
 import * as styles from './player.module.css';
-import { useMap } from "../../map/useMap";
 
 interface Props {
     geojson?: GeoJson;
@@ -22,7 +22,7 @@ export const Player: FC<Props> = ({
     isPlaying,
     onIsPlayingChange,
 }) => {
-    const { map } = useMap();
+    const { cartographer: { map } } = useStateWarden();
     const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
