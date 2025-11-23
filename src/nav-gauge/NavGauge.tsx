@@ -12,8 +12,8 @@ import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, ParsingResultWithError } from "../logic";
 import { FileInput } from "./controls/FileInput";
-import * as styles from './nav-gauge.module.css';
 import { MapStyleSelection } from "./controls/MapStyleSelection";
+import * as styles from './nav-gauge.module.css';
 
 interface Props {
     applicationSettings: ApplicationSettingsType;

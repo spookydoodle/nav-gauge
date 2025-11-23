@@ -42,7 +42,6 @@ export class Cartographer {
                 return;
             }
             this.updateStyle(nextStyle.style);
-
             localStorage.setItem(this.selectedStyleLocalStorageId, id);
         });
     }
@@ -57,7 +56,8 @@ export class Cartographer {
     };
 
     /**
-     * Safely updates style and sets the `isStyleLoaded` accordingly to allow layer components to unmount for the duration of the updates to avoid "Style is not done loading" errors.
+     * subscribes to map `data` events to check when style is loaded.
+     * Then upates the value of `isStyleLoaded$` observable..
      */
     private validateStyleLoaded = () => {
         this.styleAbortController.abort();

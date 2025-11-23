@@ -18,7 +18,7 @@ interface Props {
 
 // TODO: If multiple in the same location, render all
 export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId }) => {
-    const { cartographer } = useStateWarden();
+    const { cartographer: { map } } = useStateWarden();
     const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -35,7 +35,7 @@ export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId })
             setClosestFeatureId(null);
         };
 
-        image.marker.addTo(cartographer.map);
+        image.marker.addTo(map);
         image.marker.on('drag', handleDrag);
         image.marker.on('dragend', handleDragEnd);
 
@@ -52,7 +52,7 @@ export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId })
         }
         // TODO: Add another source for all points or closest point and update data here
         const updateHighlight = (highlight: boolean) => {
-            cartographer.map.setFeatureState({ source: sourceIds.line, id: closestFeatureId }, {
+            map.setFeatureState({ source: sourceIds.line, id: closestFeatureId }, {
                 [FeatureStateProps.Highlight]: highlight
             });
         }

@@ -49,6 +49,7 @@ export const MapTools: FC<Props> = ({
     children,
 }) => {
     const { cartographer } = useStateWarden();
+    const { map } = cartographer;
     const { showZoomButtons, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeContext();
     const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
     const [cssLoaded, setCssLoaded] = useState(false);
@@ -76,7 +77,7 @@ export const MapTools: FC<Props> = ({
         if (!containerRef || !cssLoaded) {
             return;
         }
-        const mapContainer = cartographer.map.getContainer();
+        const mapContainer = map.getContainer();
         containerRef.appendChild(mapContainer);
         const protocolId = 'pmtiles';
         const protocol = new Protocol();
@@ -96,28 +97,28 @@ export const MapTools: FC<Props> = ({
             return;
         }
         const resizeHandler = () => {
-            cartographer.map.resize();
+            map.resize();
         };
         // TODO: Observer parent
         window.addEventListener('resize', resizeHandler);
         const control = new maplibregl.NavigationControl({ showZoom: showZoomButtons, showCompass, visualizePitch: true });
-        cartographer.map.addControl(control, controlPosition);
-        cartographer.map.resize();
+        map.addControl(control, controlPosition);
+        map.resize();
 
         return () => {
-            cartographer.map.removeControl(control);
+            map.removeControl(control);
             window.removeEventListener('resize', resizeHandler);
         };
     }, [isInitialised, showZoomButtons, showCompass, controlPosition]);
 
     useEffect(() => {
         const zoomHandler = () => {
-            setMapZoom(cartographer.map.getZoom());
+            setMapZoom(map.getZoom());
         };
-        cartographer.map.on("zoomend", zoomHandler);
+        map.on("zoomend", zoomHandler);
 
         return () => {
-            cartographer.map.off("zoomend", zoomHandler);
+            map.off("zoomend", zoomHandler);
         };
     }, []);
 
@@ -125,19 +126,19 @@ export const MapTools: FC<Props> = ({
         if (!isStyleLoaded) {
             return;
         }
-        cartographer.map.setProjection({ type: globeProjection ? 'globe' : 'mercator' });
-        cartographer.map.resize();
+        map.setProjection({ type: globeProjection ? 'globe' : 'mercator' });
+        map.resize();
 
         const projectionHandler = () => {
-            if (cartographer.map.isStyleLoaded()) {
-                cartographer.map.setProjection({ type: globeProjection ? 'globe' : 'mercator' });
-                cartographer.map.resize()
+            if (map.isStyleLoaded()) {
+                map.setProjection({ type: globeProjection ? 'globe' : 'mercator' });
+                map.resize()
             }
         };
-        cartographer.map.on('style.load', projectionHandler);
+        map.on('style.load', projectionHandler);
 
         return () => {
-            cartographer.map.off('style.load', projectionHandler);
+            map.off('style.load', projectionHandler);
         };
     }, [isStyleLoaded, globeProjection]);
 
@@ -146,7 +147,7 @@ export const MapTools: FC<Props> = ({
             return;
         }
         (async () => {
-            if (!cartographer.map.hasImage('placeholder')) {
+            if (!map.hasImage('placeholder')) {
                 const image = new Image();
                 const promise = new Promise((resolve) => {
                     image.onload = resolve;
@@ -155,13 +156,13 @@ export const MapTools: FC<Props> = ({
                 await promise;
                 image.width = 20;
                 image.height = 20;
-                cartographer.map.addImage('placeholder', image);
+                map.addImage('placeholder', image);
             }
         })();
 
         return () => {
-            if (cartographer.map.hasImage('placeholder')) {
-                cartographer.map.removeImage('placeholder');
+            if (map.hasImage('placeholder')) {
+                map.removeImage('placeholder');
             }
         };
     }, [isInitialised]);
