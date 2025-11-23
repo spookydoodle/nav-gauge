@@ -1,8 +1,11 @@
 import { FC, ReactNode, useState, useEffect } from "react";
 import maplibregl from "maplibre-gl";
+import { Protocol } from "pmtiles";
 import classNames from "classnames";
-import { useGaugeContext } from "../../contexts/useGaugeContext";
-import { map, MapContext } from "../../map/map-context";
+import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
+import { useSubjectState } from "../../hooks/useSubjectState";
+import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
+import { Cartographer } from "../../logic/state/cartographer";
 import findIcon from '../../icons/find.svg';
 import * as styles from './map-tools.module.css';
 import './map.css';
@@ -45,12 +48,14 @@ export const MapTools: FC<Props> = ({
     toolsLeft,
     children,
 }) => {
+    const { cartographer } = useStateWarden();
+    const { map } = cartographer;
     const { showZoomButtons, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeContext();
     const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
     const [cssLoaded, setCssLoaded] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [isStyleLoaded, setIsStyleLoaded] = useState(false);
-    const [mapZoom, setMapZoom] = useState(0);
+    const [isInitialised, setIsInitialised] = useSubjectState(cartographer.isInitialised$);
+    const [isStyleLoaded] = useSubjectState(cartographer.isStyleLoaded$);
+    const [_mapZoom, setMapZoom] = useSubjectState(cartographer.zoom$);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -74,19 +79,24 @@ export const MapTools: FC<Props> = ({
         }
         const mapContainer = map.getContainer();
         containerRef.appendChild(mapContainer);
-        setIsInitialized(true);
+        const protocolId = 'pmtiles';
+        const protocol = new Protocol();
+        maplibregl.addProtocol(protocolId, protocol.tile);
+
+        setIsInitialised(true);
 
         return () => {
+            maplibregl.removeProtocol(protocolId);
             containerRef.removeChild(mapContainer);
         };
     }, [containerRef, cssLoaded]);
 
     useEffect(() => {
         const showControls = showZoomButtons || showCompass;
-        if (!isInitialized || !showControls) {
+        if (!isInitialised || !showControls) {
             return;
         }
-        const resizeHandler =  () => {
+        const resizeHandler = () => {
             map.resize();
         };
         // TODO: Observer parent
@@ -99,23 +109,16 @@ export const MapTools: FC<Props> = ({
             map.removeControl(control);
             window.removeEventListener('resize', resizeHandler);
         };
-    }, [isInitialized, showZoomButtons, showCompass, controlPosition]);
+    }, [isInitialised, showZoomButtons, showCompass, controlPosition]);
 
     useEffect(() => {
         const zoomHandler = () => {
             setMapZoom(map.getZoom());
         };
-        const styleCheckHandler = () => {
-            if (map.isStyleLoaded()) {
-                setIsStyleLoaded(true);
-            }
-        }
         map.on("zoomend", zoomHandler);
-        map.on('data', styleCheckHandler);
 
         return () => {
             map.off("zoomend", zoomHandler);
-            map.off('data', styleCheckHandler);
         };
     }, []);
 
@@ -140,7 +143,7 @@ export const MapTools: FC<Props> = ({
     }, [isStyleLoaded, globeProjection]);
 
     useEffect(() => {
-        if (!isInitialized) {
+        if (!isInitialised) {
             return;
         }
         (async () => {
@@ -162,31 +165,29 @@ export const MapTools: FC<Props> = ({
                 map.removeImage('placeholder');
             }
         };
-    }, [isInitialized]);
+    }, [isInitialised]);
 
     return (
-        <MapContext.Provider value={{ map, mapZoom }}>
-            <div className={styles["container"]}>
-                <div className={classNames(styles["toolbox"], styles["top"])}>
-                    {toolsTop}
-                </div>
-                <div className={classNames(styles["toolbox"], styles["right"])}>
-                    {toolsRight}
-                </div>
-                <div className={classNames(styles["toolbox"], styles["bottom"])}>
-                    {toolsBottom}
-                </div>
-                <div className={classNames(styles["toolbox"], styles["left"])}>
-                    {toolsLeft}
-                </div>
-                <div className={styles["map-area"]}>
-                    <div ref={setContainerRef} className={classNames(styles["nav-gauge-map"], {
-                        [styles["with-green-screen"]]: showGreenScreen
-                    })}>
-                        {isStyleLoaded ? children : null}
-                    </div>
+        <div className={styles["container"]}>
+            <div className={classNames(styles["toolbox"], styles["top"])}>
+                {toolsTop}
+            </div>
+            <div className={classNames(styles["toolbox"], styles["right"])}>
+                {toolsRight}
+            </div>
+            <div className={classNames(styles["toolbox"], styles["bottom"])}>
+                {toolsBottom}
+            </div>
+            <div className={classNames(styles["toolbox"], styles["left"])}>
+                {toolsLeft}
+            </div>
+            <div className={styles["map-area"]}>
+                <div ref={setContainerRef} className={classNames(styles["nav-gauge-map"], {
+                    [styles["with-green-screen"]]: showGreenScreen
+                })}>
+                    {isStyleLoaded ? children : null}
                 </div>
             </div>
-        </MapContext.Provider>
+        </div>
     );
 };

@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import maplibregl from "maplibre-gl";
 import { FeatureStateProps, GeoJson, getClosestFeature, ImageData, sourceIds } from "../../logic";
+import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
 import * as styles from './route-layer.module.css';
 
 export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
@@ -10,14 +11,14 @@ export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
 }
 
 interface Props {
-    map: maplibregl.Map;
     image: MarkerImageData;
     updateImageFeatureId: (imageId: number, featureId: number) => void;
     geojson: GeoJson;
 }
 
 // TODO: If multiple in the same location, render all
-export const ImageMarker: FC<Props> = ({ map, image, geojson, updateImageFeatureId }) => {
+export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId }) => {
+    const { cartographer: { map } } = useStateWarden();
     const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
 
     useEffect(() => {

@@ -99,7 +99,10 @@ func createPmtiles(unpackedDir string, fileName string) {
 		"tippecanoe",
 		"-fo", fmt.Sprintf("../%s.pmtiles", fileName),
 		"-l", fileName,
-		"-zg",
+		"-Z", "0",
+		"-z", "22",
+		"--extend-zooms-if-still-dropping",
+		"--attribution=\"<a href=\"https://docs.overturemaps.org/attribution\">© Overture Maps</a>\"",
 		fmt.Sprintf("../%s.geojson", fileName),
 	)
 	cmd.Dir = unpackedDir

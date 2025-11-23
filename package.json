@@ -51,8 +51,10 @@
         "exif-js": "^2.3.0",
         "luxon": "^3.7.2",
         "maplibre-gl": "^5.13.0",
+        "pmtiles": "^4.3.0",
         "react": "^19.2.0",
-        "react-dom": "^19.2.0"
+        "react-dom": "^19.2.0",
+        "rxjs": "^7.8.2"
     },
     "devDependencies": {
         "@babel/core": "^7.28.5",

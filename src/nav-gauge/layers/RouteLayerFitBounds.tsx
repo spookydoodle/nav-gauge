@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useMap } from "../../map/useMap";
+import { useStateWarden } from "../../contexts";
 import findIcon from '../../icons/find.svg';
 import * as styles from './route-layer.module.css';
 
@@ -15,13 +15,12 @@ interface Props {
     animate?: boolean;
 }
 
-
 export const RouteLayerFitBounds: FC<Props> = ({
     boundingBox,
     padding = 50,
     animate = true,
 }) => {
-    const { map } = useMap();
+    const { cartographer: { map } } = useStateWarden();
 
     useEffect(() => {
         handlePanTo();

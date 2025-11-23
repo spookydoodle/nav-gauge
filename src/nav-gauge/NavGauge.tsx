@@ -7,11 +7,12 @@ import { ApplicationSettings } from "./controls/ApplicationSettings";
 import { GaugeControls } from "./controls/GaugeControls";
 import { AnimationControlsType, ApplicationSettingsType, cleanUpAnimationControls, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
 import { MapSection } from "./MapSection";
-import { GaugeContext } from "../contexts/GaugeContext";
+import { GaugeContext } from "../contexts";
 import { useImageReader } from "../hooks/useImageReader";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 import { parsers, RouteTimes, ParsingResultWithError } from "../logic";
 import { FileInput } from "./controls/FileInput";
+import { MapStyleSelection } from "./controls/MapStyleSelection";
 import * as styles from './nav-gauge.module.css';
 
 interface Props {
@@ -67,8 +68,8 @@ export const NavGauge: FC<Props> = ({
         }
     }, [applicationSettings.confirmBeforeLeave, images, geojson]);
 
-    const handlePresetChange = (preset: Preset, { 
-        presetMapLayout, 
+    const handlePresetChange = (preset: Preset, {
+        presetMapLayout,
         presetGaugeControls,
         presetAnimationControls,
     }: PresetValues = {}) => {
@@ -133,6 +134,7 @@ export const NavGauge: FC<Props> = ({
                     />
                     <hr className={styles.divider} />
                     <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} animationControls={animationControls} />
+                    <MapStyleSelection />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
                     <AnimationControls animationControls={animationControls} onAnimationConrolsChange={setAnimationControls} />

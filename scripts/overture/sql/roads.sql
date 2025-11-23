@@ -15,7 +15,7 @@ COPY(
     class,
     geometry
   FROM
-    read_parquet('s3://overturemaps-us-west-2/release/{{RELEASE}}/theme=transportation/type=segment/*', filename=true, hive_partitioning=1)
+    read_parquet('s3://overturemaps-us-west-2/release/{{RELEASE}}/theme=transportation/type=segment/*')
   WHERE
     bbox.xmin < 2.314 
     AND bbox.ymin < 48.882 
