@@ -9,7 +9,6 @@ import { Cartographer } from "../../logic/state/cartographer";
 import findIcon from '../../icons/find.svg';
 import * as styles from './map-tools.module.css';
 import './map.css';
-import { MapLayers } from "./MapLayers";
 
 interface Props {
     /**
