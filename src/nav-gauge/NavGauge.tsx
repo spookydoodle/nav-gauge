@@ -47,7 +47,7 @@ export const NavGauge: FC<Props> = ({
         [geojson]
     );
 
-    const [images, readImage, updateImageFeatureId] = useImageReader(geojson);
+    const [images, readImage, updateImageFeatureId] = useImageReader();
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
     const [animationControls, setAnimationControls] = useLocalStorageState<AnimationControlsType>('animation-controls', defaultAnimationControls, cleanUpAnimationControls);

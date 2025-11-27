@@ -8,12 +8,10 @@ type ImageReaderResult = [
     (imageId: number, featureId: number) => void
 ]
 
-export const useImageReader = (
-    geojson?: GeoJson
-): ImageReaderResult => {
+export const useImageReader = (): ImageReaderResult => {
     const [images, setImages] = useState<ImageData[]>([]);
 
-    const readImage = (file: File) => {
+    const readImage = (file: File, geojson?: GeoJson) => {
         const reader = new FileReader();
 
         const getNext = (ids: number[]) => {

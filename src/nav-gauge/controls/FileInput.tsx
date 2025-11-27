@@ -7,7 +7,7 @@ interface Props {
     error?: Error;
     geojson?: GeoJson;
     onGeojsonChange: Dispatch<SetStateAction<ParsingResultWithError>>;
-    readImage: (file: File) => void;
+    readImage: (file: File, geojson?: GeoJson) => void;
 }
 
 export const FileInput: FC<Props> = ({
@@ -22,19 +22,29 @@ export const FileInput: FC<Props> = ({
         if (!files || files.length === 0) {
             return;
         }
+        let currentGeojson = geojson;
+        let geojsonFile: File | undefined = undefined;
+        let imageFiles: File[] = [];
+
         for (let i = 0; i < files.length; i++) {
             const file = files.item(i)!;
             if (file.type.includes('image')) {
-                readImage(file);
+                imageFiles.push(file);
                 continue;
             }
-            onGeojsonChange({});
-            parsers
-                .get(FileToGeoJSONParser.getFileExtension(file))
-                ?.parse(file)
-                .then((result => onGeojsonChange(result ?? { error: new Error('No parser found for file.') })));
-
+            geojsonFile = file;
         }
+
+        if (geojsonFile) {
+            onGeojsonChange({});
+            const result = await parsers
+                .get(FileToGeoJSONParser.getFileExtension(geojsonFile))
+                ?.parse(geojsonFile);
+            onGeojsonChange(result ?? { error: new Error('No parser found for file.') });
+            currentGeojson = result?.geojson
+        }
+        
+        imageFiles.forEach((file) => readImage(file, currentGeojson));
     };
 
     return (
