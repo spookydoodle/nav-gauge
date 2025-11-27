@@ -23,7 +23,20 @@ export const RouteLayer: FC<Props> = ({
     images,
 }) => {
     const { cartographer: { map } } = useStateWarden();
-    const { showRouteLine, showRoutePoints, followCurrentPoint, cameraAngle, autoRotate, pitch, zoom, zoomInToImages, cameraRoll, speedMultiplier, easeDuration } = useGaugeContext();
+    const {
+        showRouteLine,
+        showRoutePoints,
+        followCurrentPoint,
+        cameraAngle,
+        autoRotate,
+        pitch,
+        zoom,
+        zoomInToImages,
+        imagePauseDuration,
+        cameraRoll,
+        speedMultiplier,
+        easeDuration
+    } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     useEffect(() => {
