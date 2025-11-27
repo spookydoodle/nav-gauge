@@ -69,6 +69,7 @@ export const defaultAnimationControls: AnimationControlsType = {
     pitch: 0,
     zoom: 12,
     zoomInToImages: false,
+    imagePauseDuration: 3000,
     cameraRoll: 0,
     speedMultiplier: 5000,
     easeDuration: 100,
@@ -114,5 +115,6 @@ export const bearingLineLengthInMetersRange: [number, number] = [0, 100000];
 export const maxBearingDiffPerFrameRange: [number, number] = [0, 360];
 export const cameraAngleRange: [number, number] = [-360, 360];
 export const cameraRollRange: [number, number] = [-360, 360];
+export const imagePauseDurationRange: [number, number] = [0, 10000];
 export const speedMultiplierRange: [number, number] = [0, 1000000];
 export const easeDurationRange: [number, number] = [0, 1000];
