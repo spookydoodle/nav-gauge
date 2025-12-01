@@ -39,6 +39,12 @@ export interface ImageData {
     marker?: maplibregl.Marker;
 }
 
+export interface LoadedImageData extends Omit<ImageData, 'progress' | 'error' | 'featureId' | 'data' | 'lngLat'> {
+    lngLat: maplibregl.LngLat;
+    featureId: number;
+    data: string;
+}
+
 export const parseImage = async (file: File, e: ProgressEvent<FileReader>): Promise<{ data?: string; exif?: ExifData; error?: string; lngLat?: maplibregl.LngLat; }> => {
     const buffer = await file.arrayBuffer();
     const exif = EXIF.readFromBinaryFile(buffer) as false | ExifData;

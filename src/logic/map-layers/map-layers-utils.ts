@@ -4,9 +4,8 @@ import turfDistance from "@turf/distance";
 import turfAlong from "@turf/along";
 import * as turfHelpers from "@turf/helpers";
 import turfLength from "@turf/length";
-import { FeatureProperties, GeoJson, ImageData } from "../parsers";
+import { FeatureProperties, GeoJson, LoadedImageData } from "../parsers";
 import { CurrentPointData, FeatureStateProps } from "./model";
-import { bearingLineLengthInMetersRange } from "../controls";
 
 export const clearLayersAndSources = (
     map: maplibregl.Map,
@@ -36,27 +35,11 @@ export const sourceIds = {
     image: sourceId + '-image',
 }
 
-export const getImagesSourceData = (
-    geojson: GeoJson,
-    loadedImages: ImageData[]
-): GeoJSON.FeatureCollection => {
-    return {
-        type: 'FeatureCollection',
-        features: loadedImages.map((image): GeoJSON.Feature<GeoJSON.Point> => ({
-            type: 'Feature',
-            geometry: geojson.features.find((f) => f.properties.id === image.id)?.geometry!,
-            properties: {}
-        }))
-            .filter((el) => !!el.geometry)
-    };
-};
-
 export const layerIds = {
     currentPointOutline: 'route-current-point-outline',
     currentPoint: 'route-current-point',
     points: 'route-points',
     line: 'route-line',
-    images: 'route-image',
 }
 
 export const routeLineLayer: maplibregl.LineLayerSpecification = {
@@ -116,17 +99,6 @@ export const currentPointLayers: maplibregl.CircleLayerSpecification[] = [
         }
     }
 ];
-
-// TODO: Style fallback for broken images
-export const imagesLayer: maplibregl.CircleLayerSpecification = {
-    id: layerIds.images,
-    type: 'circle',
-    source: sourceIds.image,
-    paint: {
-        'circle-color': "red",
-        "circle-radius": 3
-    }
-};
 
 /**
  * Gets current point data, updates map sources, and returns it.

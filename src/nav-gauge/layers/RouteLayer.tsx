@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
-import { clearLayersAndSources, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
+import { clearLayersAndSources, currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
 import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
 import { useStateWarden } from "../../contexts";
+import { LoadedImageData } from "../../logic";
 
 interface Props {
     isPlaying: boolean;
@@ -40,6 +41,10 @@ export const RouteLayer: FC<Props> = ({
         maxBearingDiffPerFrame,
     } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
+
+    const loadedImages: LoadedImageData[] = images.filter(({ progress, error, ...image }) =>
+        progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !error
+    ) as LoadedImageData[];
 
     useEffect(() => {
         const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs, bearingLineLengthInMeters);
@@ -78,34 +83,12 @@ export const RouteLayer: FC<Props> = ({
     }, [map, geojson, showRouteLine, showRoutePoints, bearingLineLengthInMeters]);
 
     useEffect(() => {
-        const loadedImages = images.filter((image) => image.progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !image.error);
-
-        if (loadedImages.length === 0) {
-            return;
-        }
-
-        map.addSource(sourceIds.image, {
-            type: 'geojson',
-            data: getImagesSourceData(geojson, loadedImages)
-        });
-
-        map.addLayer(imagesLayer);
-
-        return () => {
-            clearLayersAndSources(
-                map,
-                [layerIds.images],
-                [sourceIds.image]
-            );
-        };
-    }, [map, images]);
-
-    useEffect(() => {
         if (!isPlaying || !isLayerAdded) {
             return;
         }
         let animation: number | undefined;
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
+        const imageFeatureIds = loadedImages.map((image) => image.featureId)
         let last = performance.now();
         let current = progressMs;
 
@@ -149,7 +132,23 @@ export const RouteLayer: FC<Props> = ({
                 cancelAnimationFrame(animation);
             }
         };
-    }, [isPlaying, isLayerAdded, followCurrentPoint, cameraAngle, cameraRoll, autoRotate, pitch, zoom, zoomInToImages, speedMultiplier, easeDuration, bearingLineLengthInMeters, maxBearingDiffPerFrame]);
+    }, [
+        isPlaying,
+        isLayerAdded,
+        followCurrentPoint,
+        cameraAngle,
+        cameraRoll,
+        autoRotate,
+        pitch,
+        zoom,
+        zoomInToImages,
+        speedMultiplier,
+        easeDuration,
+        bearingLineLengthInMeters,
+        maxBearingDiffPerFrame,
+        imagePauseDuration,
+        loadedImages,
+    ]);
 
     return null;
 };
