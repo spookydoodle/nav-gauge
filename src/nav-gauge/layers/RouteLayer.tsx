@@ -35,12 +35,14 @@ export const RouteLayer: FC<Props> = ({
         imagePauseDuration,
         cameraRoll,
         speedMultiplier,
-        easeDuration
+        easeDuration,
+        bearingLineLengthInMeters,
+        maxBearingDiffPerFrame,
     } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     useEffect(() => {
-        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs);
+        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs, bearingLineLengthInMeters);
         if (showRouteLine || showRoutePoints) {
             map.addSource(sourceIds.line, {
                 type: 'geojson',
@@ -73,7 +75,7 @@ export const RouteLayer: FC<Props> = ({
                 [sourceIds.line, sourceIds.currentPoint]
             );
         };
-    }, [map, geojson, showRouteLine, showRoutePoints]);
+    }, [map, geojson, showRouteLine, showRoutePoints, bearingLineLengthInMeters]);
 
     useEffect(() => {
         const loadedImages = images.filter((image) => image.progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !image.error);
@@ -115,14 +117,13 @@ export const RouteLayer: FC<Props> = ({
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
-            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current);
+            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current, bearingLineLengthInMeters);
 
             if (followCurrentPoint) {
                 const lngLat = new maplibregl.LngLat(currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]);
                 const currentBearing = map.getBearing();
                 const nextBearing = (cameraAngle + (autoRotate ? (currentPointBearing) : 0));
                 const bearingDiff = ((nextBearing - currentBearing + 540) % 360) - 180;
-                const maxDiff = 5;
 
                 map.easeTo({
                     easeId: 'follow-current-point',
@@ -132,7 +133,7 @@ export const RouteLayer: FC<Props> = ({
                     duration: easeDuration,
                     zoom,
                     pitch,
-                    bearing: currentBearing + Math.max(-maxDiff, Math.min(maxDiff, bearingDiff)),
+                    bearing: currentBearing + Math.max(-maxBearingDiffPerFrame, Math.min(maxBearingDiffPerFrame, bearingDiff)),
                     roll: cameraRoll,
                 });
             }
@@ -148,7 +149,7 @@ export const RouteLayer: FC<Props> = ({
                 cancelAnimationFrame(animation);
             }
         };
-    }, [isPlaying, isLayerAdded, followCurrentPoint, cameraAngle, cameraRoll, autoRotate, pitch, zoom, zoomInToImages, speedMultiplier, easeDuration]);
+    }, [isPlaying, isLayerAdded, followCurrentPoint, cameraAngle, cameraRoll, autoRotate, pitch, zoom, zoomInToImages, speedMultiplier, easeDuration, bearingLineLengthInMeters, maxBearingDiffPerFrame]);
 
     return null;
 };
