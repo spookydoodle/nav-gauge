@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
-import { clearLayersAndSources, currentPointLayers, getImagesSourceData, getRouteSourceData, imagesLayer, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
+import { clearLayersAndSources, currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
 import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
 import { useStateWarden } from "../../contexts";
+import { LoadedImageData } from "../../logic";
 
 interface Props {
     isPlaying: boolean;
@@ -23,11 +24,30 @@ export const RouteLayer: FC<Props> = ({
     images,
 }) => {
     const { cartographer: { map } } = useStateWarden();
-    const { showRouteLine, showRoutePoints, followCurrentPoint, cameraAngle, autoRotate, pitch, zoom, zoomInToImages, cameraRoll, speedMultiplier, easeDuration } = useGaugeContext();
+    const {
+        showRouteLine,
+        showRoutePoints,
+        followCurrentPoint,
+        cameraAngle,
+        autoRotate,
+        pitch,
+        zoom,
+        zoomInToImages,
+        imagePauseDuration,
+        cameraRoll,
+        speedMultiplier,
+        easeDuration,
+        bearingLineLengthInMeters,
+        maxBearingDiffPerFrame,
+    } = useGaugeContext();
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
+    const loadedImages: LoadedImageData[] = images.filter(({ progress, error, ...image }) =>
+        progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !error
+    ) as LoadedImageData[];
+
     useEffect(() => {
-        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs);
+        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs, bearingLineLengthInMeters);
         if (showRouteLine || showRoutePoints) {
             map.addSource(sourceIds.line, {
                 type: 'geojson',
@@ -60,37 +80,17 @@ export const RouteLayer: FC<Props> = ({
                 [sourceIds.line, sourceIds.currentPoint]
             );
         };
-    }, [map, geojson, showRouteLine, showRoutePoints]);
-
-    useEffect(() => {
-        const loadedImages = images.filter((image) => image.progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !image.error);
-
-        if (loadedImages.length === 0) {
-            return;
-        }
-
-        map.addSource(sourceIds.image, {
-            type: 'geojson',
-            data: getImagesSourceData(geojson, loadedImages)
-        });
-
-        map.addLayer(imagesLayer);
-
-        return () => {
-            clearLayersAndSources(
-                map,
-                [layerIds.images],
-                [sourceIds.image]
-            );
-        };
-    }, [map, images]);
+    }, [map, geojson, showRouteLine, showRoutePoints, bearingLineLengthInMeters]);
 
     useEffect(() => {
         if (!isPlaying || !isLayerAdded) {
             return;
         }
         let animation: number | undefined;
+        let imagePauseTimeout: NodeJS.Timeout | undefined;
+        let lastImageShownFeatureId: number | undefined;
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
+        const sortedImageFeatures = loadedImages.toSorted((a, b) => b.featureId - a.featureId);
         let last = performance.now();
         let current = progressMs;
 
@@ -102,14 +102,24 @@ export const RouteLayer: FC<Props> = ({
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
             }
-            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current);
+            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current, bearingLineLengthInMeters);
+            const currentPointImage = sortedImageFeatures.find((f) => f.featureId === currentPoint.id);
+
+            if (currentPointImage && animation !== undefined && lastImageShownFeatureId !== currentPointImage.featureId) {
+                lastImageShownFeatureId = currentPointImage.featureId;
+                cancelAnimationFrame(animation);
+                imagePauseTimeout = setTimeout(() => {
+                    animation = requestAnimationFrame(animate);
+                }, imagePauseDuration);
+
+                return;
+            }
 
             if (followCurrentPoint) {
                 const lngLat = new maplibregl.LngLat(currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]);
                 const currentBearing = map.getBearing();
-                const nextBearing = (cameraAngle + (autoRotate ? (currentPointBearing) : 0));
+                const nextBearing = (cameraAngle + (autoRotate ? currentPointBearing : 0));
                 const bearingDiff = ((nextBearing - currentBearing + 540) % 360) - 180;
-                const maxDiff = 5;
 
                 map.easeTo({
                     easeId: 'follow-current-point',
@@ -119,10 +129,11 @@ export const RouteLayer: FC<Props> = ({
                     duration: easeDuration,
                     zoom,
                     pitch,
-                    bearing: currentBearing + Math.max(-maxDiff, Math.min(maxDiff, bearingDiff)),
+                    bearing: currentBearing + Math.max(-maxBearingDiffPerFrame, Math.min(maxBearingDiffPerFrame, bearingDiff)),
                     roll: cameraRoll,
                 });
             }
+
             // TODO: Calculate % of geometry done based on current progressMs and update paint property line gradient instead of all data.
             onProgressMsChange(current);
             animation = requestAnimationFrame(animate);
@@ -131,11 +142,29 @@ export const RouteLayer: FC<Props> = ({
         animate();
 
         return () => {
-            if (animation) {
+            clearTimeout(imagePauseTimeout);
+            lastImageShownFeatureId = undefined;
+            if (animation !== undefined) {
                 cancelAnimationFrame(animation);
             }
         };
-    }, [isPlaying, isLayerAdded, followCurrentPoint, cameraAngle, cameraRoll, autoRotate, pitch, zoom, zoomInToImages, speedMultiplier, easeDuration]);
+    }, [
+        isPlaying,
+        isLayerAdded,
+        followCurrentPoint,
+        cameraAngle,
+        cameraRoll,
+        autoRotate,
+        pitch,
+        zoom,
+        zoomInToImages,
+        speedMultiplier,
+        easeDuration,
+        bearingLineLengthInMeters,
+        maxBearingDiffPerFrame,
+        imagePauseDuration,
+        loadedImages,
+    ]);
 
     return null;
 };

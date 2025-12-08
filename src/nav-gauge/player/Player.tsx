@@ -1,6 +1,6 @@
 import { CSSProperties, FC } from "react";
 import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage, getRouteSourceData, updateRouteLayer } from "../../logic";
-import { useStateWarden } from "../../contexts";
+import { useGaugeContext, useStateWarden } from "../../contexts";
 import * as styles from './player.module.css';
 
 interface Props {
@@ -23,6 +23,7 @@ export const Player: FC<Props> = ({
     onIsPlayingChange,
 }) => {
     const { cartographer: { map } } = useStateWarden();
+    const { bearingLineLengthInMeters } = useGaugeContext();
     const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
@@ -30,9 +31,17 @@ export const Player: FC<Props> = ({
         if (!routeTimes || isNaN(Number(event.target.value))) {
             return;
         }
+        // Halt playing animations to allow manual update.
+        if (isPlaying) {
+            onIsPlayingChange(false);
+        }
         onProgressMsChange(Number(event.target.value));
         if (geojson) {
-            updateRouteLayer(map, geojson, routeTimes.startTimeEpoch,Number(event.target.value));
+            updateRouteLayer(map, geojson, routeTimes.startTimeEpoch,Number(event.target.value), bearingLineLengthInMeters);
+        }
+        // Resume playing animations
+        if (isPlaying) {
+            setTimeout(() => onIsPlayingChange(true), 0);
         }
     }
 
