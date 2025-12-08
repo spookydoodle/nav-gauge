@@ -141,7 +141,12 @@ const getCurrentPoint = (
     const line = turfHelpers.lineString([currentLineStartPos, currentLineEndPos]);
     const totalDistanceMeters = turfLength(line, { units: 'meters' });
     const totalTimeMs = (new Date(currentLineEnd.properties.time).valueOf() - new Date(currentLineStart.properties.time).valueOf());
-    const currentPoint = turfAlong(line, totalDistanceMeters * fraction, { units: 'meters' });
+    const currentPoint = currentLineEnd;
+    
+    if (!('featureId' in currentPoint.properties)) {
+        currentPoint.geometry = turfAlong(line, totalDistanceMeters * fraction, { units: 'meters' }).geometry
+    };
+
     const currentPointSpeed = (totalDistanceMeters) / (totalTimeMs / 3600);
 
     return {

@@ -87,8 +87,10 @@ export const RouteLayer: FC<Props> = ({
             return;
         }
         let animation: number | undefined;
+        let imagePauseTimeout: NodeJS.Timeout | undefined;
+        let lastImageShownFeatureId: number | undefined;
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
-        const imageFeatureIds = loadedImages.map((image) => image.featureId)
+        const sortedImageFeatures = loadedImages.toSorted((a, b) => b.featureId - a.featureId);
         let last = performance.now();
         let current = progressMs;
 
@@ -101,11 +103,22 @@ export const RouteLayer: FC<Props> = ({
                 current = 0;
             }
             const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current, bearingLineLengthInMeters);
+            const currentPointImage = sortedImageFeatures.find((f) => f.featureId === currentPoint.id);
+
+            if (currentPointImage && animation !== undefined && lastImageShownFeatureId !== currentPointImage.featureId) {
+                lastImageShownFeatureId = currentPointImage.featureId;
+                cancelAnimationFrame(animation);
+                imagePauseTimeout = setTimeout(() => {
+                    animation = requestAnimationFrame(animate);
+                }, imagePauseDuration);
+
+                return;
+            }
 
             if (followCurrentPoint) {
                 const lngLat = new maplibregl.LngLat(currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]);
                 const currentBearing = map.getBearing();
-                const nextBearing = (cameraAngle + (autoRotate ? (currentPointBearing) : 0));
+                const nextBearing = (cameraAngle + (autoRotate ? currentPointBearing : 0));
                 const bearingDiff = ((nextBearing - currentBearing + 540) % 360) - 180;
 
                 map.easeTo({
@@ -120,6 +133,7 @@ export const RouteLayer: FC<Props> = ({
                     roll: cameraRoll,
                 });
             }
+
             // TODO: Calculate % of geometry done based on current progressMs and update paint property line gradient instead of all data.
             onProgressMsChange(current);
             animation = requestAnimationFrame(animate);
@@ -128,7 +142,9 @@ export const RouteLayer: FC<Props> = ({
         animate();
 
         return () => {
-            if (animation) {
+            clearTimeout(imagePauseTimeout);
+            lastImageShownFeatureId = undefined;
+            if (animation !== undefined) {
                 cancelAnimationFrame(animation);
             }
         };
