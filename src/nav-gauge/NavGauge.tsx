@@ -8,13 +8,11 @@ import { GaugeControls } from "./controls/GaugeControls";
 import { AnimationControlsType, ApplicationSettingsType, cleanUpAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
 import { MapSection } from "./MapSection";
 import { GaugeContext } from "../contexts";
-import { useImageReader } from "../hooks/useImageReader";
-import { useLocalStorageState } from "../hooks/useLocalStorageState";
-import { parsers, RouteTimes, ParsingResultWithError } from "../logic";
+import { useImageReader, useLocalStorageState } from "../hooks";
+import { parsers, RouteTimes, ParsingResultWithError, Animatrix } from "../logic";
 import { FileInput } from "./controls/FileInput";
 import { MapStyleSelection } from "./controls/MapStyleSelection";
 import * as styles from './nav-gauge.module.css';
-import { Animatrix } from "../logic/state/animatrix";
 
 interface Props {
     applicationSettings: ApplicationSettingsType;
@@ -51,6 +49,7 @@ export const NavGauge: FC<Props> = ({
     const [images, readImage, updateImageFeatureId] = useImageReader();
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
+    // TODO: Use subject state from animatrix
     const [animationControls, setAnimationControls] = useLocalStorageState<AnimationControlsType>('animation-controls', Animatrix.defaultControls, cleanUpAnimationControls);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
 

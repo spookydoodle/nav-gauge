@@ -1,7 +1,16 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
-import { clearLayersAndSources, currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
+import {
+    clearLayersAndSources,
+    currentPointLayers,
+    getRouteSourceData,
+    layerIds,
+    routeLineLayer,
+    routePointsLayer,
+    sourceIds,
+    updateRouteLayer
+} from "../../logic";
 import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
 import { useStateWarden } from "../../contexts";
 import { LoadedImageData } from "../../logic";
@@ -23,7 +32,7 @@ export const RouteLayer: FC<Props> = ({
     onProgressMsChange,
     images,
 }) => {
-    const { cartomancer: { map } } = useStateWarden();
+    const { cartomancer: { map }, animatrix } = useStateWarden();
     const {
         showRouteLine,
         showRoutePoints,
@@ -94,6 +103,7 @@ export const RouteLayer: FC<Props> = ({
         let last = performance.now();
         let current = progressMs;
 
+        // TODO: Move to animatrix
         const animate = () => {
             const now = performance.now();
             const dt = now - last;
@@ -106,9 +116,11 @@ export const RouteLayer: FC<Props> = ({
             const currentPointImage = sortedImageFeatures.find((f) => f.featureId === currentPoint.id);
 
             if (currentPointImage && animation !== undefined && lastImageShownFeatureId !== currentPointImage.featureId) {
+                animatrix.displayImageId$.next(currentPointImage.id);
                 lastImageShownFeatureId = currentPointImage.featureId;
                 cancelAnimationFrame(animation);
                 displayImageTimeout = setTimeout(() => {
+                    animatrix.displayImageId$.next(null);
                     animation = requestAnimationFrame(animate);
                 }, displayImageDuration);
 
@@ -143,6 +155,7 @@ export const RouteLayer: FC<Props> = ({
 
         return () => {
             clearTimeout(displayImageTimeout);
+            animatrix.displayImageId$.next(null);
             lastImageShownFeatureId = undefined;
             if (animation !== undefined) {
                 cancelAnimationFrame(animation);

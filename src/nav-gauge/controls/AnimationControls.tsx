@@ -1,9 +1,21 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import classNames from "classnames";
 import { Fieldset, Input } from "../../components";
-import { AnimationControlsType, clamp, defaultZoomInToImages, easeDurationRange, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../../logic";
+import {
+    AnimationControlsType,
+    clamp,
+    defaultZoomInToImages,
+    easeDurationRange,
+    pitchRange,
+    cameraRollRange,
+    speedMultiplierRange,
+    zoomRange,
+    cameraAngleRange,
+    bearingLineLengthInMetersRange,
+    maxBearingDiffPerFrameRange,
+    Animatrix
+} from "../../logic";
 import * as styles from './controls.module.css';
-import { Animatrix } from "../../logic/state/animatrix";
 
 interface Props {
     animationControls: AnimationControlsType;

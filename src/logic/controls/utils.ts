@@ -1,6 +1,6 @@
 import { Animatrix } from "../state/animatrix";
 import { Theme } from "../theme";
-import { AnimationControlsType, ApplicationSettingsType, CameraAngle, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
+import { ApplicationSettingsType, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
 
 export const controlsPositions: maplibregl.ControlPosition[] = [
     "top-left",

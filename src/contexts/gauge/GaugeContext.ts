@@ -6,9 +6,9 @@ import {
     defaultGaugeControls,
     defaultMapLayout,
     GaugeControlsType,
-    MapLayout
+    MapLayout,
+    Animatrix
 } from "../../logic";
-import { Animatrix } from "../../logic/state/animatrix";
 
 export type GaugeContext = GaugeControlsType & MapLayout & AnimationControlsType & ApplicationSettingsType;
 
