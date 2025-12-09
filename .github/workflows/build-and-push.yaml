@@ -40,7 +40,7 @@ jobs:
           build: yarn build
           start: yarn start
 
-  push:
+  build-and-push:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' 
     permissions:
