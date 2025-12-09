@@ -1,6 +1,7 @@
 import { FC, useEffect } from "react";
-import { AnimationControlsType, applyGaugeControls, defaultAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, PresetValues, validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../logic";
+import { AnimationControlsType, applyGaugeControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, PresetValues, validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../logic";
 import * as styles from './controls.module.css';
+import { Animatrix } from "../../logic/state/animatrix";
 
 interface Props {
     preset: Preset;
@@ -66,7 +67,7 @@ export const Presets: FC<Props> = ({
                     const possibleGaugeControls: GaugeControlsType = { ...defaultGaugeControls, ...(result.gaugeControls as GaugeControlsType) };
                     validateGaugeControls(possibleGaugeControls);
 
-                    const possibleAnimationControls = { ...defaultAnimationControls, ...(result.animationControls as AnimationControlsType) };
+                    const possibleAnimationControls = { ...Animatrix.defaultControls, ...(result.animationControls as AnimationControlsType) };
                     validateAnimationControls(possibleAnimationControls);
 
                     onPresetChange(detectPreset(possibleMapLayout, possibleGaugeControls), {

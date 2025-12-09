@@ -1,7 +1,7 @@
 import { FC, StrictMode, useEffect } from "react";
 import { TopBar, Footer } from "./layout";
 import { NavGauge } from "./nav-gauge/NavGauge";
-import { useLocalStorageState } from "./hooks/useLocalStorageState";
+import { useLocalStorageState } from "./hooks";
 import { ApplicationSettingsType, defaultApplicationSettings } from "./logic";
 import { theOneAndOnlyStateWarden, StateWardenContext } from "./contexts";
 import './app.css';

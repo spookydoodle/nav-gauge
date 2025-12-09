@@ -1,7 +1,20 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import classNames from "classnames";
 import { Fieldset, Input } from "../../components";
-import { AnimationControlsType, clamp, defaultZoomInToImages, easeDurationRange, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../../logic";
+import {
+    AnimationControlsType,
+    clamp,
+    defaultZoomInToImages,
+    easeDurationRange,
+    pitchRange,
+    cameraRollRange,
+    speedMultiplierRange,
+    zoomRange,
+    cameraAngleRange,
+    bearingLineLengthInMetersRange,
+    maxBearingDiffPerFrameRange,
+    Animatrix
+} from "../../logic";
 import * as styles from './controls.module.css';
 
 interface Props {
@@ -23,6 +36,7 @@ export const AnimationControls: FC<Props> = ({
         pitch,
         zoom,
         zoomInToImages,
+        displayImageDuration,
         speedMultiplier,
         easeDuration
     } = animationControls;
@@ -152,6 +166,19 @@ export const AnimationControls: FC<Props> = ({
                             ? { ...prev, zoomInToImages: clamp(Number(event.target.value), zoomRange) }
                             : prev)}
                         disabled={zoomInToImages === false}
+                    />
+                    <Input
+                        id="animation-controls-image-pause-duration"
+                        name="animation-controls-image-pause-duration"
+                        label="Image pause duration (ms)"
+                        type='number'
+                        value={displayImageDuration}
+                        min={Animatrix.displayImageDurationRange[0]}
+                        max={Animatrix.displayImageDurationRange[1]}
+                        step={500}
+                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                            ? { ...prev, displayImageDuration: clamp(Number(event.target.value), Animatrix.displayImageDurationRange) }
+                            : prev)}
                     />
                     <Input
                         id="animation-controls-speed-multiplier"

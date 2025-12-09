@@ -8,12 +8,10 @@ type ImageReaderResult = [
     (imageId: number, featureId: number) => void
 ]
 
-export const useImageReader = (
-    geojson?: GeoJson
-): ImageReaderResult => {
+export const useImageReader = (): ImageReaderResult => {
     const [images, setImages] = useState<ImageData[]>([]);
 
-    const readImage = (file: File) => {
+    const readImage = (file: File, geojson?: GeoJson) => {
         const reader = new FileReader();
 
         const getNext = (ids: number[]) => {
@@ -62,7 +60,6 @@ export const useImageReader = (
 
                 if (feature) {
                     const markerElement = document.createElement('div');
-                    markerElement.classList.add("test-marker-to-remove"); // TODO: Remove this;
                     const featureLngLat = new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]);
 
                     nextImages[index].markerElement = markerElement;

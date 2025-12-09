@@ -1,5 +1,6 @@
+import { Animatrix } from "../state/animatrix";
 import { Theme } from "../theme";
-import { AnimationControlsType, ApplicationSettingsType, CameraAngle, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
+import { ApplicationSettingsType, ControlPlacement, GaugeControlsType, MapLayout, Preset, PresetOption } from "./model";
 
 export const controlsPositions: maplibregl.ControlPosition[] = [
     "top-left",
@@ -60,34 +61,20 @@ export const racingGameMapLayout: MapLayout = {
 
 export const defaultZoomInToImages = 15;
 
-export const defaultAnimationControls: AnimationControlsType = {
-    followCurrentPoint: true,
-    autoRotate: true,
-    bearingLineLengthInMeters: 500,
-    maxBearingDiffPerFrame: 5,
-    cameraAngle: 0,
-    pitch: 0,
-    zoom: 12,
-    zoomInToImages: false,
-    cameraRoll: 0,
-    speedMultiplier: 5000,
-    easeDuration: 100,
-};
-
 export const presetOptions: PresetOption[] = [
     {
         value: 'default',
         label: 'Default',
         mapLayout: defaultMapLayout,
         gaugeControls: defaultGaugeControls,
-        animationControls: defaultAnimationControls,
+        animationControls: Animatrix.defaultControls,
     },
     {
         value: 'racing-game',
         label: 'Racing game',
         mapLayout: racingGameMapLayout,
         gaugeControls: defaultGaugeControls,
-        animationControls: defaultAnimationControls,
+        animationControls: Animatrix.defaultControls,
     },
 ];
 

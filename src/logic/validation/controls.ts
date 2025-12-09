@@ -1,4 +1,5 @@
-import { AnimationControlsType, easeDurationRange, GaugeControlsType, MapLayout, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, defaultAnimationControls, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../controls";
+import { AnimationControlsType, easeDurationRange, GaugeControlsType, MapLayout, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../controls";
+import { Animatrix } from "../state/animatrix";
 
 const validateString = (value: unknown, name: string) => {
     if (value !== undefined && typeof value !== 'string') {
@@ -81,6 +82,7 @@ export const validateAnimationControls = (animationControls: Partial<AnimationCo
     if (animationControls.zoomInToImages && typeof animationControls.zoomInToImages === 'number') {
         validateNumber(animationControls.zoomInToImages, 'Zoom in to images', zoomRange);
     }
+    validateNumber(animationControls.displayImageDuration, 'Image pause duration', Animatrix.displayImageDurationRange);
     validateNumber(animationControls.speedMultiplier, 'Speed in seconds per frame', speedMultiplierRange);
     validateNumber(animationControls.easeDuration, 'Ease duration', easeDurationRange);
 };
@@ -105,7 +107,7 @@ export const applyGaugeControls = (possibleGaugeControls: GaugeControlsType): Ga
 export const cleanUpAnimationControls = (state: unknown): Partial<AnimationControlsType> => {
     const { cameraAngle, ...controls } = state as AnimationControlsType;
     return {
-        cameraAngle: typeof cameraAngle === 'number' ? cameraAngle : defaultAnimationControls.cameraAngle,
+        cameraAngle: typeof cameraAngle === 'number' ? cameraAngle : Animatrix.defaultControls.cameraAngle,
         ...controls
     };
 };
