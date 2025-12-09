@@ -1,9 +1,14 @@
-import { FC, useEffect, useState } from "react";
+import { CSSProperties, FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
+import classNames from 'classnames';
 import maplibregl from "maplibre-gl";
 import { FeatureStateProps, GeoJson, getClosestFeature, ImageData, sourceIds } from "../../logic";
 import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
+import { useSubjectState } from "../../hooks";
+import { useGaugeContext } from "../../contexts";
 import * as styles from './route-layer.module.css';
+
+const imageSize = 30;
 
 export type MarkerImageData = Omit<ImageData, 'marker' | 'markerElement'> & {
     marker: maplibregl.Marker;
@@ -18,8 +23,10 @@ interface Props {
 
 // TODO: If multiple in the same location, render all
 export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId }) => {
-    const { cartographer: { map } } = useStateWarden();
+    const { cartomancer: { map }, animatrix } = useStateWarden();
     const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
+    const [displayImageId] = useSubjectState(animatrix.displayImageId$);
+    const { size } = useGaugeContext();
 
     useEffect(() => {
         const handleDrag = () => {
@@ -40,8 +47,8 @@ export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId })
         image.marker.on('dragend', handleDragEnd);
 
         return () => {
-        image.marker.off('drag', handleDrag);
-        image.marker.off('dragend', handleDragEnd);
+            image.marker.off('drag', handleDrag);
+            image.marker.off('dragend', handleDragEnd);
             image.marker.remove();
         };
     }, [image]);
@@ -57,14 +64,25 @@ export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId })
             });
         }
         updateHighlight(true);
-        
+
         return () => {
             updateHighlight(false);
         };
     }, [closestFeatureId]);
 
     return ReactDOM.createPortal(
-        <img src={image.data} alt={`image ${image.id}`} width={30} height={30} className={styles['image-marker']} />,
+        <img
+            src={image.data}
+            alt={`image ${image.id}`}
+            className={classNames(styles['image-marker'], {
+                [styles['in-display']]: displayImageId === image.id
+            })}
+            style={{
+                // TODO: Add ref client size observer to handle the "full screen" size
+                '--image-size': `${imageSize}px`,
+                '--image-display-scale': Math.ceil(Math.min(size.width, size.height) / imageSize)
+            } as CSSProperties}
+        />,
         image.markerElement
     );
 };

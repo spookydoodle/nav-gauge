@@ -22,7 +22,7 @@ export const Player: FC<Props> = ({
     isPlaying,
     onIsPlayingChange,
 }) => {
-    const { cartographer: { map } } = useStateWarden();
+    const { cartomancer: { map } } = useStateWarden();
     const { bearingLineLengthInMeters } = useGaugeContext();
     const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);

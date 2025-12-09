@@ -1,7 +1,16 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { RouteTimes, GeoJson, ImageData } from "../../logic";
-import { clearLayersAndSources, currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../logic/map-layers";
+import {
+    clearLayersAndSources,
+    currentPointLayers,
+    getRouteSourceData,
+    layerIds,
+    routeLineLayer,
+    routePointsLayer,
+    sourceIds,
+    updateRouteLayer
+} from "../../logic";
 import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
 import { useStateWarden } from "../../contexts";
 import { LoadedImageData } from "../../logic";
@@ -23,7 +32,7 @@ export const RouteLayer: FC<Props> = ({
     onProgressMsChange,
     images,
 }) => {
-    const { cartographer: { map } } = useStateWarden();
+    const { cartomancer: { map }, animatrix } = useStateWarden();
     const {
         showRouteLine,
         showRoutePoints,
@@ -33,7 +42,7 @@ export const RouteLayer: FC<Props> = ({
         pitch,
         zoom,
         zoomInToImages,
-        imagePauseDuration,
+        displayImageDuration,
         cameraRoll,
         speedMultiplier,
         easeDuration,
@@ -87,13 +96,14 @@ export const RouteLayer: FC<Props> = ({
             return;
         }
         let animation: number | undefined;
-        let imagePauseTimeout: NodeJS.Timeout | undefined;
+        let displayImageTimeout: NodeJS.Timeout | undefined;
         let lastImageShownFeatureId: number | undefined;
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
         const sortedImageFeatures = loadedImages.toSorted((a, b) => b.featureId - a.featureId);
         let last = performance.now();
         let current = progressMs;
 
+        // TODO: Move to animatrix
         const animate = () => {
             const now = performance.now();
             const dt = now - last;
@@ -106,11 +116,13 @@ export const RouteLayer: FC<Props> = ({
             const currentPointImage = sortedImageFeatures.find((f) => f.featureId === currentPoint.id);
 
             if (currentPointImage && animation !== undefined && lastImageShownFeatureId !== currentPointImage.featureId) {
+                animatrix.displayImageId$.next(currentPointImage.id);
                 lastImageShownFeatureId = currentPointImage.featureId;
                 cancelAnimationFrame(animation);
-                imagePauseTimeout = setTimeout(() => {
+                displayImageTimeout = setTimeout(() => {
+                    animatrix.displayImageId$.next(null);
                     animation = requestAnimationFrame(animate);
-                }, imagePauseDuration);
+                }, displayImageDuration);
 
                 return;
             }
@@ -142,7 +154,8 @@ export const RouteLayer: FC<Props> = ({
         animate();
 
         return () => {
-            clearTimeout(imagePauseTimeout);
+            clearTimeout(displayImageTimeout);
+            animatrix.displayImageId$.next(null);
             lastImageShownFeatureId = undefined;
             if (animation !== undefined) {
                 cancelAnimationFrame(animation);
@@ -162,7 +175,7 @@ export const RouteLayer: FC<Props> = ({
         easeDuration,
         bearingLineLengthInMeters,
         maxBearingDiffPerFrame,
-        imagePauseDuration,
+        displayImageDuration,
         loadedImages,
     ]);
 

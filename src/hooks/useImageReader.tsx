@@ -60,7 +60,6 @@ export const useImageReader = (): ImageReaderResult => {
 
                 if (feature) {
                     const markerElement = document.createElement('div');
-                    markerElement.classList.add("test-marker-to-remove"); // TODO: Remove this;
                     const featureLngLat = new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]);
 
                     nextImages[index].markerElement = markerElement;
