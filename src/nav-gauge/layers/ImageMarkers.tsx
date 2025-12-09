@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { GeoJson, ImageData } from "../../logic";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
-import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
 
 interface Props {
     geojson: GeoJson;

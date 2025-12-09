@@ -20,7 +20,7 @@ export const RouteLayerFitBounds: FC<Props> = ({
     padding = 50,
     animate = true,
 }) => {
-    const { cartographer: { map } } = useStateWarden();
+    const { cartomancer: { map } } = useStateWarden();
 
     useEffect(() => {
         handlePanTo();

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 import { validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../src/logic/validation/controls.js";
-import { AnimationControlsType, CameraAngle, GaugeControlsType, MapLayout } from "../../src/logic/index.js";
+import { AnimationControlsType, GaugeControlsType, MapLayout } from "../../src/logic/index.js";
 
 describe("Preset", () => {
     describe("File upload validation", () => {
@@ -136,11 +136,11 @@ describe("Preset", () => {
                 expect(() => validateAnimationControls({ zoomInToImages: 200 } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be within range [0, 20]");
                 expect(() => validateAnimationControls({ zoomInToImages: "" } as unknown as AnimationControlsType)).to.throw("Zoom in to images should be either false or of type number within range [0, 20]");
             });
-            it("should throw if imagePauseDuration incorrect", () => {
-                expect(() => validateAnimationControls({ imagePauseDuration: 4500 })).to.not.throw();
-                expect(() => validateAnimationControls({ imagePauseDuration: 2000000 } as unknown as AnimationControlsType)).to.throw("Image pause duration should be within range [0, 10000]");
-                expect(() => validateAnimationControls({ imagePauseDuration: -1000 } as unknown as AnimationControlsType)).to.throw("Image pause duration should be within range [0, 10000]");
-                expect(() => validateAnimationControls({ imagePauseDuration: "" } as unknown as AnimationControlsType)).to.throw("Image pause duration should be of type number");
+            it("should throw if displayImageDuration incorrect", () => {
+                expect(() => validateAnimationControls({ displayImageDuration: 4500 })).to.not.throw();
+                expect(() => validateAnimationControls({ displayImageDuration: 2000000 } as unknown as AnimationControlsType)).to.throw("Image pause duration should be within range [0, 10000]");
+                expect(() => validateAnimationControls({ displayImageDuration: -1000 } as unknown as AnimationControlsType)).to.throw("Image pause duration should be within range [0, 10000]");
+                expect(() => validateAnimationControls({ displayImageDuration: "" } as unknown as AnimationControlsType)).to.throw("Image pause duration should be of type number");
             });
             it("should throw if speed incorrect", () => {
                 expect(() => validateAnimationControls({ speedMultiplier: 120 })).to.not.throw();

@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
 import { useSubjectState } from "../../hooks/useSubjectState";
 import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
-import { Cartographer } from "../../logic/state/cartographer";
+import { Cartomancer } from "../../logic/state/cartomancer";
 import findIcon from '../../icons/find.svg';
 import * as styles from './map-tools.module.css';
 import './map.css';
@@ -48,15 +48,15 @@ export const MapTools: FC<Props> = ({
     toolsLeft,
     children,
 }) => {
-    const { cartographer } = useStateWarden();
-    const { map } = cartographer;
+    const { cartomancer } = useStateWarden();
+    const { map } = cartomancer;
     const { showZoomButtons, showCompass, showGreenScreen, controlPosition, globeProjection } = useGaugeContext();
     const [containerRef, setContainerRef] = useState<HTMLElement | null>(null);
     const [cssLoaded, setCssLoaded] = useState(false);
-    const [isInitialised, setIsInitialised] = useSubjectState(cartographer.isInitialised$);
-    const [isStyleLoaded, setIsStyleLoaded] = useSubjectState(cartographer.isStyleLoaded$);
-    const [selectedStyleId] = useSubjectState(cartographer.selectedStyleId$);
-    const [_mapZoom, setMapZoom] = useSubjectState(cartographer.zoom$);
+    const [isInitialised, setIsInitialised] = useSubjectState(cartomancer.isInitialised$);
+    const [isStyleLoaded, setIsStyleLoaded] = useSubjectState(cartomancer.isStyleLoaded$);
+    const [selectedStyleId] = useSubjectState(cartomancer.selectedStyleId$);
+    const [_mapZoom, setMapZoom] = useSubjectState(cartomancer.zoom$);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -144,13 +144,13 @@ export const MapTools: FC<Props> = ({
     }, [isStyleLoaded, globeProjection]);
 
     useEffect(() => {
-        const nextStyle = Cartographer.styles.get(selectedStyleId);
+        const nextStyle = Cartomancer.styles.get(selectedStyleId);
         if (!nextStyle) {
             return;
         }
 
         const abortController = new AbortController();
-        cartographer.updateStyle(nextStyle.style, abortController.signal, (err) => {
+        cartomancer.updateStyle(nextStyle.style, abortController.signal, (err) => {
             if (!abortController.signal.aborted) {
                 console.error(err)
             }

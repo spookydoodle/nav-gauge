@@ -23,7 +23,7 @@ export const RouteLayer: FC<Props> = ({
     onProgressMsChange,
     images,
 }) => {
-    const { cartographer: { map } } = useStateWarden();
+    const { cartomancer: { map } } = useStateWarden();
     const {
         showRouteLine,
         showRoutePoints,
@@ -33,7 +33,7 @@ export const RouteLayer: FC<Props> = ({
         pitch,
         zoom,
         zoomInToImages,
-        imagePauseDuration,
+        displayImageDuration,
         cameraRoll,
         speedMultiplier,
         easeDuration,
@@ -87,7 +87,7 @@ export const RouteLayer: FC<Props> = ({
             return;
         }
         let animation: number | undefined;
-        let imagePauseTimeout: NodeJS.Timeout | undefined;
+        let displayImageTimeout: NodeJS.Timeout | undefined;
         let lastImageShownFeatureId: number | undefined;
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
         const sortedImageFeatures = loadedImages.toSorted((a, b) => b.featureId - a.featureId);
@@ -108,9 +108,9 @@ export const RouteLayer: FC<Props> = ({
             if (currentPointImage && animation !== undefined && lastImageShownFeatureId !== currentPointImage.featureId) {
                 lastImageShownFeatureId = currentPointImage.featureId;
                 cancelAnimationFrame(animation);
-                imagePauseTimeout = setTimeout(() => {
+                displayImageTimeout = setTimeout(() => {
                     animation = requestAnimationFrame(animate);
-                }, imagePauseDuration);
+                }, displayImageDuration);
 
                 return;
             }
@@ -142,7 +142,7 @@ export const RouteLayer: FC<Props> = ({
         animate();
 
         return () => {
-            clearTimeout(imagePauseTimeout);
+            clearTimeout(displayImageTimeout);
             lastImageShownFeatureId = undefined;
             if (animation !== undefined) {
                 cancelAnimationFrame(animation);
@@ -162,7 +162,7 @@ export const RouteLayer: FC<Props> = ({
         easeDuration,
         bearingLineLengthInMeters,
         maxBearingDiffPerFrame,
-        imagePauseDuration,
+        displayImageDuration,
         loadedImages,
     ]);
 

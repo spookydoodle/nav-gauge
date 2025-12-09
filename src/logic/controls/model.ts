@@ -86,9 +86,10 @@ export interface AnimationControlsType {
      */
     zoomInToImages: false | number;
     /**
-     * How long to view the image for (in milliseconds). Defaults to `3000` (3 seconds).
+     * How long to view the image for (in milliseconds).
+     * Defaults to `3000` (3 seconds).
      */
-    imagePauseDuration: number;
+    displayImageDuration: number;
     /**
      * Value in seconds by which to move current point on the route (relates to timestamp).
      */

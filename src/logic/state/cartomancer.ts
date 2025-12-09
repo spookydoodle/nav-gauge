@@ -5,7 +5,7 @@ import { backgroundMapStyle, customRoadsMapStyle, MapStyle, osmMapStyle } from "
 /**
  * Stores and manages the map.
  */
-export class Cartographer {
+export class Cartomancer {
     public static styles = new Map<string, MapStyle>([
         ['background', backgroundMapStyle],
         ['osm', osmMapStyle],
@@ -16,18 +16,18 @@ export class Cartographer {
 
     public isInitialised$ = new BehaviorSubject(false);
     public isStyleLoaded$ = new BehaviorSubject(false);
-    private selectedStyleLocalStorageId = 'cartographer:map-style';
+    private selectedStyleLocalStorageId = 'cartomancer:map-style';
     public selectedStyleId$: BehaviorSubject<string>;
     public zoom$ = new BehaviorSubject(0);
 
     public constructor() {
         let styleId = localStorage.getItem(this.selectedStyleLocalStorageId);
-        if (!styleId || !Cartographer.styles.get(styleId)) {
+        if (!styleId || !Cartomancer.styles.get(styleId)) {
             styleId = 'osm';
         }
         this.selectedStyleId$ = new BehaviorSubject(styleId);
 
-        const style = Cartographer.styles.get(styleId) || osmMapStyle;
+        const style = Cartomancer.styles.get(styleId) || osmMapStyle;
         this.map = new maplibregl.Map({
             container: document.createElement('div'),
             style: style.style,

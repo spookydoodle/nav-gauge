@@ -18,7 +18,7 @@ interface Props {
 
 // TODO: If multiple in the same location, render all
 export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId }) => {
-    const { cartographer: { map } } = useStateWarden();
+    const { cartomancer: { map } } = useStateWarden();
     const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
 
     useEffect(() => {
