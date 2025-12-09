@@ -1,5 +1,5 @@
 import { Animatrix } from "./animatrix";
-import { AttributionVault } from "./attribution"
+import { AttributionVault } from "./attribution-vault"
 import { Cartomancer } from "./cartomancer";
 
 /**

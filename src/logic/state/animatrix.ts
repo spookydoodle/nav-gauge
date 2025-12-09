@@ -23,7 +23,7 @@ export class Animatrix {
     public static displayImageDurationRange: [number, number] = [0, 10000];
 
     public constructor() {
-
+        // TODO: Handle local storage here - initialize controls$ with local storage data
     }
 
     public controls$ = new BehaviorSubject<AnimationControlsType>(Animatrix.defaultControls);
