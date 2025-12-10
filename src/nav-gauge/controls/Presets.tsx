@@ -1,14 +1,29 @@
 import { FC, useEffect } from "react";
-import { AnimationControlsType, applyGaugeControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, presetOptions, PresetValues, validateAnimationControls, validateGaugeControls, validateMapLayout } from "../../logic";
+import {
+    AnimationControlsType,
+    applyGaugeControls,
+    defaultGaugeControls,
+    defaultMapLayout,
+    detectPreset,
+    GaugeControlsType,
+    MapLayout,
+    Preset,
+    presetOptions,
+    PresetValues,
+    validateAnimationControls,
+    validateGaugeControls,
+    validateMapLayout,
+    Animatrix
+} from "../../logic";
+import { useStateWarden } from "../../contexts";
+import { useSubjectState } from "../../hooks";
 import * as styles from './controls.module.css';
-import { Animatrix } from "../../logic/state/animatrix";
 
 interface Props {
     preset: Preset;
     onPresetChange: (preset: Preset, presetValues?: PresetValues) => void;
     mapLayout: MapLayout;
     gaugeControls: GaugeControlsType;
-    animationControls: AnimationControlsType;
 }
 
 export const Presets: FC<Props> = ({
@@ -16,8 +31,10 @@ export const Presets: FC<Props> = ({
     onPresetChange,
     mapLayout,
     gaugeControls,
-    animationControls,
 }) => {
+    const { animatrix } = useStateWarden();
+    const [animationControls] = useSubjectState(animatrix.controls$);
+
     useEffect(() => {
         if (preset && !detectPreset(mapLayout, gaugeControls)) {
             onPresetChange("");
@@ -27,11 +44,13 @@ export const Presets: FC<Props> = ({
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const nextPreset = event.target.value as Preset;
         const option = presetOptions.find((option) => option.value === nextPreset);
-
+        if (!option) {
+            return;
+        }
         onPresetChange(nextPreset, {
-            presetMapLayout: option?.mapLayout,
-            presetGaugeControls: option?.gaugeControls,
-            presetAnimationControls: option?.animationControls,
+            presetMapLayout: option.mapLayout,
+            presetGaugeControls: option.gaugeControls,
+            presetAnimationControls: option.animationControls,
         });
     };
 

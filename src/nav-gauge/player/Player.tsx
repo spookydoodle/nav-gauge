@@ -1,6 +1,7 @@
 import { CSSProperties, FC } from "react";
-import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage, getRouteSourceData, updateRouteLayer } from "../../logic";
-import { useGaugeContext, useStateWarden } from "../../contexts";
+import { RouteTimes, GeoJson, ImageData, formatProgressMs, formatTimestamp, getProgressPercentage, updateRouteLayer } from "../../logic";
+import { useSubjectState } from "../../hooks";
+import { useStateWarden } from "../../contexts";
 import * as styles from './player.module.css';
 
 interface Props {
@@ -22,8 +23,9 @@ export const Player: FC<Props> = ({
     isPlaying,
     onIsPlayingChange,
 }) => {
-    const { cartomancer: { map } } = useStateWarden();
-    const { bearingLineLengthInMeters } = useGaugeContext();
+    const { cartomancer: { map }, animatrix } = useStateWarden();
+    const [animationControls] = useSubjectState(animatrix.controls$)
+    const { bearingLineLengthInMeters } = animationControls;
     const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 

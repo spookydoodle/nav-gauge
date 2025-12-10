@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import maplibregl from "maplibre-gl";
 import { FeatureStateProps, GeoJson, getClosestFeature, ImageData, sourceIds } from "../../logic";
-import { useStateWarden } from "../../contexts/state-warden/useStateWarden";
+import { useStateWarden, useGaugeContext } from "../../contexts";
 import { useSubjectState } from "../../hooks";
-import { useGaugeContext } from "../../contexts";
 import * as styles from './route-layer.module.css';
 
 const imageSize = 30;

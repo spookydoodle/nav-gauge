@@ -1,5 +1,5 @@
 import { createContext, } from "react";
-import { StateWarden } from "../../logic/state";
+import { StateWarden } from "../../logic";
 
 export const theOneAndOnlyStateWarden: StateWarden = new StateWarden();
 

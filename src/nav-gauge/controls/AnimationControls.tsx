@@ -1,8 +1,7 @@
-import { Dispatch, FC, SetStateAction } from "react";
+import { FC } from "react";
 import classNames from "classnames";
 import { Fieldset, Input } from "../../components";
 import {
-    AnimationControlsType,
     clamp,
     defaultZoomInToImages,
     easeDurationRange,
@@ -15,17 +14,15 @@ import {
     maxBearingDiffPerFrameRange,
     Animatrix
 } from "../../logic";
+import { useSubjectState } from "../../hooks";
+import { useStateWarden } from "../../contexts";
 import * as styles from './controls.module.css';
 
-interface Props {
-    animationControls: AnimationControlsType;
-    onAnimationConrolsChange: Dispatch<SetStateAction<AnimationControlsType>>;
-}
+interface Props { }
 
-export const AnimationControls: FC<Props> = ({
-    animationControls,
-    onAnimationConrolsChange
-}) => {
+export const AnimationControls: FC<Props> = () => {
+    const { animatrix } = useStateWarden();
+    const [animationControls, setAnimationControls] = useSubjectState(animatrix.controls$);
     const {
         followCurrentPoint,
         autoRotate,
@@ -51,7 +48,7 @@ export const AnimationControls: FC<Props> = ({
                 type='checkbox'
                 checked={followCurrentPoint}
                 onChange={() => { }}
-                onContainerClick={() => onAnimationConrolsChange((prev) => ({ ...prev, followCurrentPoint: !prev.followCurrentPoint }))}
+                onContainerClick={() => setAnimationControls((prev) => ({ ...prev, followCurrentPoint: !prev.followCurrentPoint }))}
                 containerClassName={styles["checkbox"]}
             />
             {followCurrentPoint ? (
@@ -64,7 +61,7 @@ export const AnimationControls: FC<Props> = ({
                         type='checkbox'
                         checked={autoRotate}
                         onChange={() => { }}
-                        onContainerClick={() => onAnimationConrolsChange((prev) => ({ ...prev, autoRotate: !prev.autoRotate }))}
+                        onContainerClick={() => setAnimationControls((prev) => ({ ...prev, autoRotate: !prev.autoRotate }))}
                         containerClassName={classNames(styles["checkbox"], styles["top-margin"])}
                     />
                     <div />
@@ -76,7 +73,7 @@ export const AnimationControls: FC<Props> = ({
                         value={cameraAngle}
                         min={cameraAngleRange[0]}
                         max={cameraAngleRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, cameraAngle: clamp(Number(event.target.value), cameraAngleRange) }
                             : prev)}
                     />
@@ -88,7 +85,7 @@ export const AnimationControls: FC<Props> = ({
                         value={cameraRoll}
                         min={cameraRollRange[0]}
                         max={cameraRollRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, cameraRoll: clamp(Number(event.target.value), cameraRollRange) }
                             : prev)}
                     />
@@ -100,7 +97,7 @@ export const AnimationControls: FC<Props> = ({
                         value={bearingLineLengthInMeters}
                         min={bearingLineLengthInMetersRange[0]}
                         max={bearingLineLengthInMetersRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, bearingLineLengthInMeters: clamp(Number(event.target.value), bearingLineLengthInMetersRange) }
                             : prev)}
                     />
@@ -112,7 +109,7 @@ export const AnimationControls: FC<Props> = ({
                         value={maxBearingDiffPerFrame}
                         min={maxBearingDiffPerFrameRange[0]}
                         max={maxBearingDiffPerFrameRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, maxBearingDiffPerFrame: clamp(Number(event.target.value), maxBearingDiffPerFrameRange) }
                             : prev)}
                     />
@@ -124,7 +121,7 @@ export const AnimationControls: FC<Props> = ({
                         value={pitch}
                         min={pitchRange[0]}
                         max={pitchRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, pitch: clamp(Number(event.target.value), pitchRange) }
                             : prev)}
                     />
@@ -136,7 +133,7 @@ export const AnimationControls: FC<Props> = ({
                         value={zoom}
                         min={zoomRange[0]}
                         max={zoomRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, zoom: clamp(Number(event.target.value), zoomRange) }
                             : prev)}
                     />
@@ -148,7 +145,7 @@ export const AnimationControls: FC<Props> = ({
                         type='checkbox'
                         checked={zoomInToImages !== false}
                         onChange={() => { }}
-                        onContainerClick={() => onAnimationConrolsChange((prev) => ({
+                        onContainerClick={() => setAnimationControls((prev) => ({
                             ...prev,
                             zoomInToImages: prev.zoomInToImages === false ? defaultZoomInToImages : false
                         }))}
@@ -162,7 +159,7 @@ export const AnimationControls: FC<Props> = ({
                         value={zoomInToImages || zoom}
                         min={zoomRange[0]}
                         max={zoomRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, zoomInToImages: clamp(Number(event.target.value), zoomRange) }
                             : prev)}
                         disabled={zoomInToImages === false}
@@ -176,7 +173,7 @@ export const AnimationControls: FC<Props> = ({
                         min={Animatrix.displayImageDurationRange[0]}
                         max={Animatrix.displayImageDurationRange[1]}
                         step={500}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, displayImageDuration: clamp(Number(event.target.value), Animatrix.displayImageDurationRange) }
                             : prev)}
                     />
@@ -188,7 +185,7 @@ export const AnimationControls: FC<Props> = ({
                         value={speedMultiplier}
                         min={speedMultiplierRange[0]}
                         max={speedMultiplierRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, speedMultiplier: clamp(Number(event.target.value), speedMultiplierRange) }
                             : prev)}
                     />
@@ -200,7 +197,7 @@ export const AnimationControls: FC<Props> = ({
                         value={easeDuration}
                         min={easeDurationRange[0]}
                         max={easeDurationRange[1]}
-                        onChange={(event) => onAnimationConrolsChange((prev) => !isNaN(Number(event.target.value))
+                        onChange={(event) => setAnimationControls((prev) => !isNaN(Number(event.target.value))
                             ? { ...prev, easeDuration: clamp(Number(event.target.value), easeDurationRange) }
                             : prev)}
                     />

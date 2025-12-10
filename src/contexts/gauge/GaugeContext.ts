@@ -7,14 +7,12 @@ import {
     defaultMapLayout,
     GaugeControlsType,
     MapLayout,
-    Animatrix
 } from "../../logic";
 
-export type GaugeContext = GaugeControlsType & MapLayout & AnimationControlsType & ApplicationSettingsType;
+export type GaugeContext = GaugeControlsType & MapLayout & ApplicationSettingsType;
 
 export const GaugeContext = createContext<GaugeContext>({
     ...defaultGaugeControls,
     ...defaultMapLayout,
-    ...Animatrix.defaultControls,
     ...defaultApplicationSettings
 });
