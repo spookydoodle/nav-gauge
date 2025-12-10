@@ -1,4 +1,16 @@
-import { AnimationControlsType, easeDurationRange, GaugeControlsType, MapLayout, pitchRange, cameraRollRange, speedMultiplierRange, zoomRange, cameraAngleRange, bearingLineLengthInMetersRange, maxBearingDiffPerFrameRange } from "../controls";
+import {
+    AnimationControlsType,
+    easeDurationRange,
+    GaugeControlsType,
+    MapLayout,
+    pitchRange,
+    cameraRollRange,
+    speedMultiplierRange,
+    zoomRange,
+    cameraAngleRange,
+    bearingLineLengthInMetersRange,
+    maxBearingDiffPerFrameRange
+} from "../controls";
 import { Animatrix } from "../state/animatrix";
 
 const validateString = (value: unknown, name: string) => {

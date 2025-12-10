@@ -5,11 +5,11 @@ import { AnimationControls } from "./controls/AnimationControls";
 import { MapLayoutControls } from "./controls/MapLayoutControls";
 import { ApplicationSettings } from "./controls/ApplicationSettings";
 import { GaugeControls } from "./controls/GaugeControls";
-import { AnimationControlsType, ApplicationSettingsType, cleanUpAnimationControls, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
+import { ApplicationSettingsType, defaultGaugeControls, defaultMapLayout, detectPreset, GaugeControlsType, MapLayout, Preset, PresetValues } from "../logic";
 import { MapSection } from "./MapSection";
-import { GaugeContext } from "../contexts";
+import { GaugeContext, useStateWarden } from "../contexts";
 import { useImageReader, useLocalStorageState } from "../hooks";
-import { parsers, RouteTimes, ParsingResultWithError, Animatrix } from "../logic";
+import { parsers, RouteTimes, ParsingResultWithError } from "../logic";
 import { FileInput } from "./controls/FileInput";
 import { MapStyleSelection } from "./controls/MapStyleSelection";
 import * as styles from './nav-gauge.module.css';
@@ -23,6 +23,7 @@ export const NavGauge: FC<Props> = ({
     applicationSettings,
     onApplicationSettingsChange
 }) => {
+    const { animatrix } = useStateWarden();
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
 
     const routeTimes = useMemo(
@@ -49,8 +50,6 @@ export const NavGauge: FC<Props> = ({
     const [images, readImage, updateImageFeatureId] = useImageReader();
     const [gaugeControls, setGaugeControls] = useLocalStorageState<GaugeControlsType>('gauge-controls', defaultGaugeControls);
     const [mapLayout, setMapLayout] = useLocalStorageState<MapLayout>('map-layout', defaultMapLayout);
-    // TODO: Use subject state from animatrix
-    const [animationControls, setAnimationControls] = useLocalStorageState<AnimationControlsType>('animation-controls', Animatrix.defaultControls, cleanUpAnimationControls);
     const [preset, setPreset] = useState<Preset>(detectPreset(mapLayout, gaugeControls));
 
     useEffect(() => {
@@ -81,7 +80,7 @@ export const NavGauge: FC<Props> = ({
             setGaugeControls(presetGaugeControls);
         }
         if (presetAnimationControls) {
-            setAnimationControls(presetAnimationControls);
+            animatrix.controls$.next(presetAnimationControls);
         }
     };
 
@@ -110,7 +109,7 @@ export const NavGauge: FC<Props> = ({
     }, []);
 
     return (
-        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...animationControls, ...applicationSettings }}>
+        <GaugeContext.Provider value={{ ...gaugeControls, ...mapLayout, ...applicationSettings }}>
             <div className={styles.layout} style={{
                 ...controlsCssStyle,
                 '--map-width': mapLayout.size.type === 'full-screen' ? '100%' : `${mapLayout.size.width}px`,
@@ -133,11 +132,11 @@ export const NavGauge: FC<Props> = ({
                         readImage={readImage}
                     />
                     <hr className={styles.divider} />
-                    <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} animationControls={animationControls} />
+                    <Presets preset={preset} onPresetChange={handlePresetChange} mapLayout={mapLayout} gaugeControls={gaugeControls} />
                     <MapStyleSelection />
                     <MapLayoutControls mapLayout={mapLayout} onMapLayoutChange={setMapLayout} />
                     <GaugeControls gaugeControls={gaugeControls} onGaugeConrolsChange={setGaugeControls} />
-                    <AnimationControls animationControls={animationControls} onAnimationConrolsChange={setAnimationControls} />
+                    <AnimationControls />
                     <ApplicationSettings applicationSettings={applicationSettings} onApplicationSettingsChange={onApplicationSettingsChange} />
                 </div>
                 <div className={styles["main-area"]}>

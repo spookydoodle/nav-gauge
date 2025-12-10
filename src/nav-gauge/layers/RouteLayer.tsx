@@ -1,7 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { RouteTimes, GeoJson, ImageData } from "../../logic";
 import {
+    RouteTimes,
+    GeoJson,
+    ImageData,
+    LoadedImageData,
     clearLayersAndSources,
     currentPointLayers,
     getRouteSourceData,
@@ -11,9 +14,8 @@ import {
     sourceIds,
     updateRouteLayer
 } from "../../logic";
-import { useGaugeContext } from "../../contexts/gauge/useGaugeContext";
-import { useStateWarden } from "../../contexts";
-import { LoadedImageData } from "../../logic";
+import { useStateWarden, useGaugeContext } from "../../contexts";
+import { useSubjectState } from "../../hooks";
 
 interface Props {
     isPlaying: boolean;
@@ -33,9 +35,9 @@ export const RouteLayer: FC<Props> = ({
     images,
 }) => {
     const { cartomancer: { map }, animatrix } = useStateWarden();
+    const [animationControls] = useSubjectState(animatrix.controls$);
+    const { showRouteLine, showRoutePoints } = useGaugeContext();
     const {
-        showRouteLine,
-        showRoutePoints,
         followCurrentPoint,
         cameraAngle,
         autoRotate,
@@ -48,7 +50,7 @@ export const RouteLayer: FC<Props> = ({
         easeDuration,
         bearingLineLengthInMeters,
         maxBearingDiffPerFrame,
-    } = useGaugeContext();
+    } = animationControls;
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     const loadedImages: LoadedImageData[] = images.filter(({ progress, error, ...image }) =>
