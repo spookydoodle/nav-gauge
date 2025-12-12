@@ -104,6 +104,7 @@ export const RouteLayer: FC<Props> = ({
                 current = 0;
             }
             const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current, bearingLineLengthInMeters);
+            // TODO: Fix for large speeds
             const currentPointImage = sortedImageFeatures.find((f) => f.featureId === currentPoint.id);
 
             if (currentPointImage && animation !== undefined && lastImageShownFeatureId !== currentPointImage.featureId) {
