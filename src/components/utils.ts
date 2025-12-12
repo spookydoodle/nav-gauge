@@ -1,4 +1,4 @@
-import { Theme, ThemeOption } from "../logic";
+import { Theme, ThemeOption } from "../tinker-chest";
 
 export const themeOptions: ThemeOption[] = [
     { value: Theme.Dark, label: 'Dark' },

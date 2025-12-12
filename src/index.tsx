@@ -1,8 +1,8 @@
 import { createRoot } from 'react-dom/client';
-import App from "./App";
+import { Hub } from "./Hub";
 import "./index.css";
 
-const container = document.getElementById('app');
+const container = document.getElementById('hub');
 const root = createRoot(container!);
 
-root.render(<App />);
+root.render(<Hub />);

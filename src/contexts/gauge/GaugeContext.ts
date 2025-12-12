@@ -1,13 +1,12 @@
 import { createContext, } from "react";
 import {
-    AnimationControlsType,
     ApplicationSettingsType,
     defaultApplicationSettings,
     defaultGaugeControls,
     defaultMapLayout,
     GaugeControlsType,
     MapLayout,
-} from "../../logic";
+} from "../../tinker-chest";
 
 export type GaugeContext = GaugeControlsType & MapLayout & ApplicationSettingsType;
 

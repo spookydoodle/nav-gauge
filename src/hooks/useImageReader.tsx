@@ -1,15 +1,15 @@
 import { useState } from "react";
 import maplibregl from "maplibre-gl";
-import { GeoJson, getClosestFeature, ImageData, parseImage } from "../logic";
+import { Cartomancer, GeoJson, MarkerImage, parseImage } from "../apparatus";
 
 type ImageReaderResult = [
-    ImageData[],
+    MarkerImage[],
     (file: File) => void,
     (imageId: number, featureId: number) => void
 ]
 
 export const useImageReader = (): ImageReaderResult => {
-    const [images, setImages] = useState<ImageData[]>([]);
+    const [images, setImages] = useState<MarkerImage[]>([]);
 
     const readImage = (file: File, geojson?: GeoJson) => {
         const reader = new FileReader();
@@ -46,7 +46,7 @@ export const useImageReader = (): ImageReaderResult => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
 
-                const [featureId, feature] = geojson && lngLat ? getClosestFeature(lngLat, geojson) : [];
+                const [featureId, feature] = geojson && lngLat ? Cartomancer.getClosestFeature(lngLat, geojson) : [];
 
                 nextImages[index] = {
                     ...nextImages[index],
