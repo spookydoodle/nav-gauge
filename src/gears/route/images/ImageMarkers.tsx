@@ -1,17 +1,11 @@
 import { FC } from "react";
-import { GeoJson, MarkerImage } from "../../apparatus";
+import { OverlayComponentProps } from "../../../apparatus";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
 
-interface Props {
-    geojson: GeoJson;
-    images: MarkerImage[];
-    updateImageFeatureId: (imageId: number, featureId: number) => void;
-}
-
-export const ImageMarkers: FC<Props> = ({
+export const ImageMarkers: FC<OverlayComponentProps> = ({
     geojson,
     images,
-    updateImageFeatureId
+    onUpdateImageFeatureId
 }) => {
     const markerImages = images.filter((image) => !!image.marker && !!image.markerElement) as MarkerImageData[];
 
@@ -20,7 +14,7 @@ export const ImageMarkers: FC<Props> = ({
             key={image.id}
             image={image}
             geojson={geojson}
-            updateImageFeatureId={updateImageFeatureId}
+            onUpdateImageFeatureId={onUpdateImageFeatureId}
         />
     ));
 };

@@ -2,11 +2,12 @@ import { CSSProperties, FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import maplibregl from "maplibre-gl";
-import { Cartomancer, GeoJson, MarkerImage } from "../../apparatus";
-import { FeatureStateProps, sourceIds } from "../../apparatus/state/cartomancer/map-layers";
-import { useStateWarden, useGaugeContext } from "../../contexts";
-import { useSubjectState } from "../../hooks";
-import * as styles from './route-layer.module.css';
+import { Cartomancer, GeoJson, MarkerImage } from "../../../apparatus";
+import { FeatureStateProps } from "../../../apparatus/state/cartomancer/map-layers";
+import { sourceIds } from '../tinkers';
+import { useStateWarden, useGaugeContext } from "../../../contexts";
+import { useSubjectState } from "../../../hooks";
+import * as styles from './images.module.css';
 
 const imageSize = 30;
 
@@ -17,12 +18,12 @@ export type MarkerImageData = Omit<MarkerImage, 'marker' | 'markerElement'> & {
 
 interface Props {
     image: MarkerImageData;
-    updateImageFeatureId: (imageId: number, featureId: number) => void;
+    onUpdateImageFeatureId: (imageId: number, featureId: number) => void;
     geojson: GeoJson;
 }
 
 // TODO: If multiple in the same location, render all
-export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId }) => {
+export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId }) => {
     const { cartomancer: { map }, animatrix } = useStateWarden();
     const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
     const [displayImageId] = useSubjectState(animatrix.displayImageId$);
@@ -37,7 +38,7 @@ export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId })
             const lngLat = image.marker.getLngLat();
             const [id, feature] = Cartomancer.getClosestFeature(lngLat, geojson);
             image.marker.setLngLat(new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]));
-            updateImageFeatureId(image.id, id);
+            onUpdateImageFeatureId(image.id, id);
 
             setClosestFeatureId(null);
         };

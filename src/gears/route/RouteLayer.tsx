@@ -1,21 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { GeoJson, LoadedImageData, MarkerImage } from "../../apparatus";
-import { RouteTimes } from "../../tinker-chest";
+import { OverlayComponentProps, LoadedImageData } from "../../apparatus";
 import { useStateWarden, useGaugeContext } from "../../contexts";
 import { useSubjectState } from "../../hooks";
-import { clearLayersAndSources, currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "../../apparatus/state/cartomancer/map-layers";
+import { currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "./tinkers";
 
-interface Props {
-    isPlaying: boolean;
-    geojson: GeoJson;
-    routeTimes: RouteTimes;
-    progressMs: number;
-    onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
-    images: MarkerImage[];
-}
-
-export const RouteLayer: FC<Props> = ({
+export const RouteLayer: FC<OverlayComponentProps> = ({
     isPlaying,
     geojson,
     routeTimes,
@@ -23,7 +13,8 @@ export const RouteLayer: FC<Props> = ({
     onProgressMsChange,
     images,
 }) => {
-    const { cartomancer: { map }, animatrix } = useStateWarden();
+    const { cartomancer, animatrix } = useStateWarden();
+    const { map } = cartomancer;
     const [animationControls] = useSubjectState(animatrix.controls$);
     const { showRouteLine, showRoutePoints } = useGaugeContext();
     const {
@@ -74,8 +65,7 @@ export const RouteLayer: FC<Props> = ({
         setIsLayerAdded(true);
         return () => {
             setIsLayerAdded(false);
-            clearLayersAndSources(
-                map,
+            cartomancer.clearLayersAndSources(
                 [layerIds.line, layerIds.points, layerIds.currentPointOutline, layerIds.currentPoint],
                 [sourceIds.line, sourceIds.currentPoint]
             );

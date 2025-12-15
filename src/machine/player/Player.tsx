@@ -1,7 +1,7 @@
 import { CSSProperties, FC } from "react";
 import { GeoJson, MarkerImage } from "../../apparatus";
 import { RouteTimes, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../tinker-chest";
-import { updateRouteLayer } from "../../apparatus/state/cartomancer/map-layers";
+import { updateRouteLayer } from "../../gears";
 import { useSubjectState } from "../../hooks";
 import { useStateWarden } from "../../contexts";
 import * as styles from './player.module.css';

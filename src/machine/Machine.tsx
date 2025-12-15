@@ -8,24 +8,34 @@ import { GaugeControls } from "./controls/GaugeControls";
 import { ApplicationSettingsType, defaultGaugeControls, defaultMapLayout, GaugeControlsType, MapLayout } from "../tinker-chest";
 import { MapSection } from "./MapSection";
 import { GaugeContext, useStateWarden } from "../contexts";
-import { useImageReader, useLocalStorageState } from "../hooks";
+import { useImageReader, useLocalStorageState, useSubjectState } from "../hooks";
 import { RouteTimes } from "../tinker-chest";
 import { parsers, ParsingResultWithError, Preset, PresetStation, PresetValues } from "../apparatus";
 import { FileInput } from "./controls/FileInput";
 import { MapStyleSelection } from "./controls/MapStyleSelection";
-import * as styles from './nav-gauge.module.css';
+import * as styles from './machine.module.css';
 
 interface Props {
     applicationSettings: ApplicationSettingsType;
     onApplicationSettingsChange: Dispatch<SetStateAction<ApplicationSettingsType>>;
 }
 
-export const NavGauge: FC<Props> = ({
+export const Machine: FC<Props> = ({
     applicationSettings,
     onApplicationSettingsChange
 }) => {
-    const { animatrix } = useStateWarden();
+    const stateWarden = useStateWarden();
+    const { animatrix, engine } = stateWarden;
+    const [gears] = useSubjectState(engine.gears$);
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
+
+    useEffect(() => {
+        stateWarden.engine.openValves(gears, stateWarden);
+
+        return () => {
+            stateWarden.engine.closeValves(gears, stateWarden);
+        };
+    }, [stateWarden, gears]);
 
     const routeTimes = useMemo(
         (): RouteTimes | undefined => {
@@ -122,6 +132,7 @@ export const NavGauge: FC<Props> = ({
                 '--map-radius': mapLayout.borderRadius,
                 '--map-box-shadow': mapLayout.boxShadow,
                 '--map-inner-box-shadow': mapLayout.innerBoxShadow,
+                // TODO: Make draggable on mobile
                 '--side-panel-height-sm': "240px",
             } as unknown as CSSProperties}>
                 <div className={styles["side-panel"]}>
@@ -145,7 +156,7 @@ export const NavGauge: FC<Props> = ({
                         geojson={geojson}
                         boundingBox={boundingBox}
                         images={images}
-                        updateImageFeatureId={updateImageFeatureId}
+                        onUpdateImageFeatureId={updateImageFeatureId}
                         routeTimes={routeTimes}
                     />
                 </div>

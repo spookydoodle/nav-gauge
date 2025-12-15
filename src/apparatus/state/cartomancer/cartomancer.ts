@@ -3,6 +3,7 @@ import maplibregl from "maplibre-gl";
 import turfDistance from "@turf/distance";
 import { point as turfPoint } from "@turf/helpers";
 import { backgroundMapStyle, customRoadsMapStyle, MapStyle, osmMapStyle } from "./map-styles";
+import { Overlay } from "./model";
 import { FeatureProperties, GeoJson } from "../../parsers";
 
 /**
@@ -42,6 +43,8 @@ export class Cartomancer {
             localStorage.setItem(this.selectedStyleLocalStorageId, id);
         });
     }
+
+    public overlays$ = new BehaviorSubject<Overlay[]>([]);
 
     /**
      * Safely updates style and resolves when the `map.isStyleLoaded()` check resolves.
@@ -83,12 +86,44 @@ export class Cartomancer {
         });
     };
 
+    public addOverlay = (overlay: Overlay) => {
+        if (this.overlays$.value.some((o) => o.id === overlay.id)) {
+            throw new Error(`Overlay with id: ${overlay.id} already exists.`);
+        }
+        this.overlays$.next(this.overlays$.value.concat(overlay));
+    };
+
+    public removeOverlay = (id: string) => {
+        this.overlays$.next(this.overlays$.value.filter((overlay) => overlay.id !== id));
+    };
+
     /**
- * Searches for the closest point to a given coordinate using the turf distance metric (Haversine formula).
- * @param lngLat Coordinates for which to find the closest feature.
- * @param geojson Route data to get feature id from.
- * @returns A tuple where the first element is the ID of the closest feature from `geojson`, and second is the feature.
- */
+     * Removes layers with given `layerIds` and afterwards sources with given `sourceIds`.
+     * @param layerIds 
+     * @param sourceIds 
+     */
+    public clearLayersAndSources = (
+        layerIds: string[],
+        sourceIds: string[]
+    ) => {
+        for (const id of layerIds) {
+            if (this.map.getLayer(id)) {
+                this.map.removeLayer(id);
+            }
+        }
+        for (const id of sourceIds) {
+            if (this.map.getSource(id)) {
+                this.map.removeSource(id);
+            }
+        }
+    };
+
+    /**
+     * Searches for the closest point to a given coordinate using the turf distance metric (Haversine formula).
+     * @param lngLat Coordinates for which to find the closest feature.
+     * @param geojson Route data to get feature id from.
+     * @returns A tuple where the first element is the ID of the closest feature from `geojson`, and second is the feature.
+     */
     public static getClosestFeature = (
         lngLat: maplibregl.LngLat,
         geojson: GeoJson,
