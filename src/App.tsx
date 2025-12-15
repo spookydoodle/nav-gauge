@@ -4,6 +4,7 @@ import { Machine } from "./machine/Machine";
 import { useLocalStorageState } from "./hooks";
 import { ApplicationSettingsType, defaultApplicationSettings } from "./tinker-chest";
 import { theOneAndOnlyStateWarden, StateWardenContext } from "./contexts";
+import { routeGear } from "./gears";
 import './app.css';
 import "./themes.css";
 
@@ -13,6 +14,14 @@ export const App: FC = () => {
     useEffect(() => {
         document.body.setAttribute("data-theme", applicationSettings.theme);
     }, [applicationSettings.theme]);
+
+    useEffect(() => {
+        theOneAndOnlyStateWarden.engine.addGear(routeGear);
+
+        return () => {
+            theOneAndOnlyStateWarden.engine.removeGear(routeGear.id);
+        };
+    }, []);
 
     return (
         <StrictMode>

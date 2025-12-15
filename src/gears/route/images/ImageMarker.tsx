@@ -18,12 +18,12 @@ export type MarkerImageData = Omit<MarkerImage, 'marker' | 'markerElement'> & {
 
 interface Props {
     image: MarkerImageData;
-    updateImageFeatureId: (imageId: number, featureId: number) => void;
+    onUpdateImageFeatureId: (imageId: number, featureId: number) => void;
     geojson: GeoJson;
 }
 
 // TODO: If multiple in the same location, render all
-export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId }) => {
+export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId }) => {
     const { cartomancer: { map }, animatrix } = useStateWarden();
     const [closestFeatureId, setClosestFeatureId] = useState<number | null>(null);
     const [displayImageId] = useSubjectState(animatrix.displayImageId$);
@@ -38,7 +38,7 @@ export const ImageMarker: FC<Props> = ({ image, geojson, updateImageFeatureId })
             const lngLat = image.marker.getLngLat();
             const [id, feature] = Cartomancer.getClosestFeature(lngLat, geojson);
             image.marker.setLngLat(new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]));
-            updateImageFeatureId(image.id, id);
+            onUpdateImageFeatureId(image.id, id);
 
             setClosestFeatureId(null);
         };

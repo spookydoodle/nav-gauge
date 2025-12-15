@@ -58,11 +58,6 @@ export const MapSection: React.FC<Props> = ({
                             onUpdateImageFeatureId={onUpdateImageFeatureId}
                         />
                     ))}
-                    <ImageMarkers
-                        geojson={geojson}
-                        images={images}
-                        updateImageFeatureId={onUpdateImageFeatureId}
-                    />
                 </>
                 : null}
         </MapTools>

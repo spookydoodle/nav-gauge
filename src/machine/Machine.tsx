@@ -8,7 +8,7 @@ import { GaugeControls } from "./controls/GaugeControls";
 import { ApplicationSettingsType, defaultGaugeControls, defaultMapLayout, GaugeControlsType, MapLayout } from "../tinker-chest";
 import { MapSection } from "./MapSection";
 import { GaugeContext, useStateWarden } from "../contexts";
-import { useImageReader, useLocalStorageState } from "../hooks";
+import { useImageReader, useLocalStorageState, useSubjectState } from "../hooks";
 import { RouteTimes } from "../tinker-chest";
 import { parsers, ParsingResultWithError, Preset, PresetStation, PresetValues } from "../apparatus";
 import { FileInput } from "./controls/FileInput";
@@ -25,16 +25,17 @@ export const Machine: FC<Props> = ({
     onApplicationSettingsChange
 }) => {
     const stateWarden = useStateWarden();
-    const { animatrix } = stateWarden;
+    const { animatrix, engine } = stateWarden;
+    const [gears] = useSubjectState(engine.gears$);
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
 
     useEffect(() => {
-        stateWarden.engine.openValves(stateWarden);
+        stateWarden.engine.openValves(gears, stateWarden);
 
         return () => {
-            stateWarden.engine.closeValves(stateWarden);
+            stateWarden.engine.closeValves(gears, stateWarden);
         };
-    }, [stateWarden]);
+    }, [stateWarden, gears]);
 
     const routeTimes = useMemo(
         (): RouteTimes | undefined => {
