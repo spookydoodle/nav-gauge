@@ -20,7 +20,7 @@ interface Props {
     onApplicationSettingsChange: Dispatch<SetStateAction<ApplicationSettingsType>>;
 }
 
-export const NavGauge: FC<Props> = ({
+export const Hub: FC<Props> = ({
     applicationSettings,
     onApplicationSettingsChange
 }) => {
@@ -122,6 +122,7 @@ export const NavGauge: FC<Props> = ({
                 '--map-radius': mapLayout.borderRadius,
                 '--map-box-shadow': mapLayout.boxShadow,
                 '--map-inner-box-shadow': mapLayout.innerBoxShadow,
+                // TODO: Make draggable on mobile
                 '--side-panel-height-sm': "240px",
             } as unknown as CSSProperties}>
                 <div className={styles["side-panel"]}>

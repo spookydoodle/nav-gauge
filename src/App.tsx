@@ -1,13 +1,13 @@
 import { FC, StrictMode, useEffect } from "react";
 import { TopBar, Footer } from "./layout";
-import { NavGauge } from "./hub/NavGauge";
+import { Hub } from "./hub/Hub";
 import { useLocalStorageState } from "./hooks";
 import { ApplicationSettingsType, defaultApplicationSettings } from "./tinker-chest";
 import { theOneAndOnlyStateWarden, StateWardenContext } from "./contexts";
-import './hub.css';
+import './app.css';
 import "./themes.css";
 
-export const Hub: FC = () => {
+export const App: FC = () => {
     const [applicationSettings, setApplicationSettings] = useLocalStorageState<ApplicationSettingsType>('application-settings', defaultApplicationSettings);
 
     useEffect(() => {
@@ -18,7 +18,7 @@ export const Hub: FC = () => {
         <StrictMode>
             <StateWardenContext.Provider value={theOneAndOnlyStateWarden}>
                 <TopBar />
-                <NavGauge applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
+                <Hub applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
                 <Footer />
             </StateWardenContext.Provider>
         </StrictMode>
