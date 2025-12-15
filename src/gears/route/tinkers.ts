@@ -4,30 +4,14 @@ import turfDistance from "@turf/distance";
 import turfAlong from "@turf/along";
 import { point as turfPoint, lineString as turfLine } from "@turf/helpers";
 import turfLength from "@turf/length";
-import { GeoJson } from "../../../parsers";
-import { CurrentPointData, FeatureStateProps } from "./model";
-
-// TODO: move to cartomancer
-export const clearLayersAndSources = (
-    map: maplibregl.Map,
-    layerIds: string[],
-    sourceIds: string[]
-) => {
-    for (const id of layerIds) {
-        if (map.getLayer(id)) {
-            map.removeLayer(id);
-        }
-    }
-    for (const id of sourceIds) {
-        if (map.getSource(id)) {
-            map.removeSource(id);
-        }
-    }
-};
+import { GeoJson } from "../../apparatus/parsers";
+// TODO: Move
+import { CurrentPointData, FeatureStateProps } from "../../apparatus/state/cartomancer/map-layers/model";
 
 export const colorActive = '#003161';
 export const colorInactive = 'grey';
 
+// TODO: Move to route layer utils
 export const sourceId = 'route';
 
 export const sourceIds = {

@@ -1,0 +1,8 @@
+.zoom-button {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}

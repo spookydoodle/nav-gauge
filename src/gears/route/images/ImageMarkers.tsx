@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { GeoJson, MarkerImage } from "../../apparatus";
+import { GeoJson, MarkerImage } from "../../../apparatus";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
 
 interface Props {

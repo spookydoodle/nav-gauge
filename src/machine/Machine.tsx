@@ -13,19 +13,28 @@ import { RouteTimes } from "../tinker-chest";
 import { parsers, ParsingResultWithError, Preset, PresetStation, PresetValues } from "../apparatus";
 import { FileInput } from "./controls/FileInput";
 import { MapStyleSelection } from "./controls/MapStyleSelection";
-import * as styles from './nav-gauge.module.css';
+import * as styles from './machine.module.css';
 
 interface Props {
     applicationSettings: ApplicationSettingsType;
     onApplicationSettingsChange: Dispatch<SetStateAction<ApplicationSettingsType>>;
 }
 
-export const Hub: FC<Props> = ({
+export const Machine: FC<Props> = ({
     applicationSettings,
     onApplicationSettingsChange
 }) => {
-    const { animatrix } = useStateWarden();
+    const stateWarden = useStateWarden();
+    const { animatrix } = stateWarden;
     const [{ geojson, boundingBox, routeName, error }, setGeoJson] = useState<ParsingResultWithError>({});
+
+    useEffect(() => {
+        stateWarden.engine.openValves(stateWarden);
+
+        return () => {
+            stateWarden.engine.closeValves(stateWarden);
+        };
+    }, [stateWarden]);
 
     const routeTimes = useMemo(
         (): RouteTimes | undefined => {
@@ -146,7 +155,7 @@ export const Hub: FC<Props> = ({
                         geojson={geojson}
                         boundingBox={boundingBox}
                         images={images}
-                        updateImageFeatureId={updateImageFeatureId}
+                        onUpdateImageFeatureId={updateImageFeatureId}
                         routeTimes={routeTimes}
                     />
                 </div>

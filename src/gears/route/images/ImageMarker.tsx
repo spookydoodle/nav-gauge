@@ -2,11 +2,12 @@ import { CSSProperties, FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import maplibregl from "maplibre-gl";
-import { Cartomancer, GeoJson, MarkerImage } from "../../apparatus";
-import { FeatureStateProps, sourceIds } from "../../apparatus/state/cartomancer/map-layers";
-import { useStateWarden, useGaugeContext } from "../../contexts";
-import { useSubjectState } from "../../hooks";
-import * as styles from './route-layer.module.css';
+import { Cartomancer, GeoJson, MarkerImage } from "../../../apparatus";
+import { FeatureStateProps } from "../../../apparatus/state/cartomancer/map-layers";
+import { sourceIds } from '../tinkers';
+import { useStateWarden, useGaugeContext } from "../../../contexts";
+import { useSubjectState } from "../../../hooks";
+import * as styles from './images.module.css';
 
 const imageSize = 30;
 

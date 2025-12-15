@@ -1,6 +1,6 @@
 import { FC, StrictMode, useEffect } from "react";
 import { TopBar, Footer } from "./layout";
-import { Hub } from "./hub/Hub";
+import { Machine } from "./machine/Machine";
 import { useLocalStorageState } from "./hooks";
 import { ApplicationSettingsType, defaultApplicationSettings } from "./tinker-chest";
 import { theOneAndOnlyStateWarden, StateWardenContext } from "./contexts";
@@ -18,7 +18,7 @@ export const App: FC = () => {
         <StrictMode>
             <StateWardenContext.Provider value={theOneAndOnlyStateWarden}>
                 <TopBar />
-                <Hub applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
+                <Machine applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
                 <Footer />
             </StateWardenContext.Provider>
         </StrictMode>
