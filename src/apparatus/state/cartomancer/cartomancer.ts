@@ -125,9 +125,12 @@ export class Cartomancer {
      * @returns A tuple where the first element is the ID of the closest feature from `geojson`, and second is the feature.
      */
     public static getClosestFeature = (
-        lngLat: maplibregl.LngLat,
         geojson: GeoJson,
+        lngLat?: maplibregl.LngLat,
     ): [number, GeoJSON.Feature<GeoJSON.Point, FeatureProperties>] => {
+        if (!lngLat) {
+            return [0, geojson.features[0]];
+        }
         const [feature] = geojson.features.reduce<[GeoJSON.Feature<GeoJSON.Point, FeatureProperties>, number]>((acc, val) => {
             const from = turfPoint([lngLat.lng, lngLat.lat]);
             const to = turfPoint(val.geometry.coordinates);

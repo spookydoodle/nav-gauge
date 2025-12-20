@@ -32,11 +32,11 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
     useEffect(() => {
         const handleDrag = () => {
             const lngLat = image.marker.getLngLat();
-            setClosestFeatureId(Cartomancer.getClosestFeature(lngLat, geojson)[0]);
+            setClosestFeatureId(Cartomancer.getClosestFeature(geojson, lngLat)[0]);
         };
         const handleDragEnd = () => {
             const lngLat = image.marker.getLngLat();
-            const [id, feature] = Cartomancer.getClosestFeature(lngLat, geojson);
+            const [id, feature] = Cartomancer.getClosestFeature(geojson, lngLat);
             image.marker.setLngLat(new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]));
             onUpdateImageFeatureId(image.id, id);
 
