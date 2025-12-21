@@ -11,7 +11,6 @@ import { CurrentPointData, FeatureStateProps } from "../../apparatus/state/carto
 export const colorActive = '#003161';
 export const colorInactive = 'grey';
 
-// TODO: Move to route layer utils
 export const sourceId = 'route';
 
 export const sourceIds = {
@@ -94,12 +93,56 @@ export const updateRouteLayer = (
     startTimeEpoch: number,
     progressMs: number,
     bearingLineLengthInMeters: number,
+    nextImageFeatureId?: number,
 ): CurrentPointData => {
-    const { currentPoint, lines, ...rest } = getRouteSourceData(geojson, startTimeEpoch, progressMs, bearingLineLengthInMeters);
+    const { currentPoint, lines, ...rest } = getRouteSourceData(geojson, startTimeEpoch, progressMs, bearingLineLengthInMeters, nextImageFeatureId);
     map.getSource<maplibregl.GeoJSONSource>(sourceIds.currentPoint)?.setData(currentPoint);
     map.getSource<maplibregl.GeoJSONSource>(sourceIds.line)?.setData(lines);
 
     return { currentPoint, lines, ...rest };
+};
+
+export const getRouteSourceData = (
+    geojson: GeoJson,
+    startTimeEpoch: number,
+    progressMs: number,
+    bearingLineLengthInMeters: number,
+    nextImageFeatureId?: number,
+): CurrentPointData => {
+    const currentTime = startTimeEpoch + progressMs;
+    const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf() || f.properties.id === nextImageFeatureId);
+    const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime, bearingLineLengthInMeters);
+
+    return {
+        currentPoint,
+        currentPointBearing,
+        currentPointSpeed,
+        lines: {
+            ...geojson,
+            features: [
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: geojson.features.slice(0, splitIndex).map((f) => f.geometry.coordinates).concat([currentPoint.geometry.coordinates])
+                    },
+                    properties: {
+                        status: 'before',
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: [currentPoint.geometry.coordinates].concat(geojson.features.slice(splitIndex).map((f) => f.geometry.coordinates))
+                    },
+                    properties: {
+                        status: 'after',
+                    }
+                },
+            ]
+        }
+    };
 };
 
 /**
@@ -177,46 +220,4 @@ const getFirstPointInDistance = (
         }
     }
     return p;
-};
-
-export const getRouteSourceData = (
-    geojson: GeoJson,
-    startTimeEpoch: number,
-    progressMs: number,
-    bearingLineLengthInMeters: number,
-): CurrentPointData => {
-    const currentTime = startTimeEpoch + progressMs;
-    const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf());
-    const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime, bearingLineLengthInMeters);
-
-    return {
-        currentPoint,
-        currentPointBearing,
-        currentPointSpeed,
-        lines: {
-            ...geojson,
-            features: [
-                {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: geojson.features.slice(0, splitIndex).map((f) => f.geometry.coordinates).concat([currentPoint.geometry.coordinates])
-                    },
-                    properties: {
-                        status: 'before',
-                    }
-                },
-                {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: [currentPoint.geometry.coordinates].concat(geojson.features.slice(splitIndex).map((f) => f.geometry.coordinates))
-                    },
-                    properties: {
-                        status: 'after',
-                    }
-                },
-            ]
-        }
-    };
 };
