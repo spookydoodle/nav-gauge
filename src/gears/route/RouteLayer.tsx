@@ -6,15 +6,15 @@ import { useSubjectState } from "../../hooks";
 import { currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "./tinkers";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({
-    isPlaying,
     geojson,
     routeTimes,
     progressMs,
     onProgressMsChange,
     images,
 }) => {
-    const { cartomancer, animatrix } = useStateWarden();
+    const { cartomancer, animatrix, chronoLens } = useStateWarden();
     const { map } = cartomancer;
+    const [isPlaying] = useSubjectState(chronoLens.isPlaying$);
     const [animationControls] = useSubjectState(animatrix.controls$);
     const { showRouteLine, showRoutePoints } = useGaugeContext();
     const {

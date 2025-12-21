@@ -1,6 +1,7 @@
 import { Animatrix } from "./animatrix";
 import { AttributionVault } from "./attribution-vault"
 import { Cartomancer } from "./cartomancer";
+import { ChronoLens } from "./chrono-lens";
 import { Engine } from "./engine";
 
 /**
@@ -8,6 +9,7 @@ import { Engine } from "./engine";
  */
 export class StateWarden {
     public animatrix = new Animatrix();
+    public chronoLens = new ChronoLens();
     public attributionVault = new AttributionVault();
     public cartomancer = new Cartomancer();
     public engine = new Engine();

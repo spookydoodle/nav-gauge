@@ -12,8 +12,6 @@ interface Props {
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
     routeTimes?: RouteTimes;
-    isPlaying: boolean;
-    onIsPlayingChange: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const Player: FC<Props> = ({
@@ -22,13 +20,14 @@ export const Player: FC<Props> = ({
     progressMs,
     onProgressMsChange,
     routeTimes,
-    isPlaying,
-    onIsPlayingChange,
 }) => {
-    const { cartomancer: { map }, animatrix } = useStateWarden();
+    const { cartomancer: { map }, animatrix, chronoLens } = useStateWarden();
+    const [isPlaying, setIsPlaying] = useSubjectState(chronoLens.isPlaying$);
+    const [isRecording, setIsRecording] = useSubjectState(chronoLens.isRecording$);
     const [animationControls] = useSubjectState(animatrix.controls$)
     const { bearingLineLengthInMeters } = animationControls;
-    const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
+    const handlePlayClick = () => setIsPlaying((prev) => !prev);
+    const handleRecordClick = () => setIsRecording((prev) => !prev);
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
     const handleProgressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,7 +36,7 @@ export const Player: FC<Props> = ({
         }
         // Halt playing animations to allow manual update.
         if (isPlaying) {
-            onIsPlayingChange(false);
+            setIsPlaying(false);
         }
         onProgressMsChange(Number(event.target.value));
         if (geojson) {
@@ -45,7 +44,7 @@ export const Player: FC<Props> = ({
         }
         // Resume playing animations
         if (isPlaying) {
-            setTimeout(() => onIsPlayingChange(true), 0);
+            setTimeout(() => setIsPlaying(true), 0);
         }
     }
 
@@ -85,6 +84,9 @@ export const Player: FC<Props> = ({
                 </p>
                 <button onClick={handlePlayClick}>
                     {isPlaying ? 'Pause' : 'Play'}
+                </button>
+                <button onClick={handleRecordClick}>
+                    {isRecording ? 'Stop' : 'Start'} recording
                 </button>
                 <p className={styles.text}>
                     {formatTimestamp(progressMs, routeTimes?.startTimeEpoch)}
