@@ -1,4 +1,4 @@
-import { AttributionEntry } from "../../model";
+import { AttributionEntry } from "../../attribution-vault";
 
 export interface MapStyle {
     label: string;

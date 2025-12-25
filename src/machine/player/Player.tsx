@@ -1,5 +1,5 @@
 import { CSSProperties, FC } from "react";
-import { GeoJson, MarkerImage } from "../../apparatus";
+import { GeoJson, MarkerImage, SurveillanceState } from "../../apparatus";
 import { RouteTimes, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../tinker-chest";
 import { updateRouteLayer } from "../../gears";
 import { useSubjectState } from "../../hooks";
@@ -23,11 +23,16 @@ export const Player: FC<Props> = ({
 }) => {
     const { cartomancer: { map }, animatrix, chronoLens } = useStateWarden();
     const [isPlaying, setIsPlaying] = useSubjectState(chronoLens.isPlaying$);
-    const [isRecording, setIsRecording] = useSubjectState(chronoLens.isRecording$);
+    const [surveillanceState, setSurveillanceState] = useSubjectState(chronoLens.surveillanceState$);
     const [animationControls] = useSubjectState(animatrix.controls$)
     const { bearingLineLengthInMeters } = animationControls;
     const handlePlayClick = () => setIsPlaying((prev) => !prev);
-    const handleRecordClick = () => setIsRecording((prev) => !prev);
+    const handleRecordClick = () => setSurveillanceState((prev) => prev === SurveillanceState.Stopped
+        ? SurveillanceState.InProgress
+        : SurveillanceState.Stopped);
+    const handleRecordPauseClick = () => setSurveillanceState((prev) => prev === SurveillanceState.Paused
+        ? SurveillanceState.InProgress
+        : SurveillanceState.Paused);
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
     const handleProgressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,7 +45,7 @@ export const Player: FC<Props> = ({
         }
         onProgressMsChange(Number(event.target.value));
         if (geojson) {
-            updateRouteLayer(map, geojson, routeTimes.startTimeEpoch,Number(event.target.value), bearingLineLengthInMeters);
+            updateRouteLayer(map, geojson, routeTimes.startTimeEpoch, Number(event.target.value), bearingLineLengthInMeters);
         }
         // Resume playing animations
         if (isPlaying) {
@@ -86,8 +91,14 @@ export const Player: FC<Props> = ({
                     {isPlaying ? 'Pause' : 'Play'}
                 </button>
                 <button onClick={handleRecordClick}>
-                    {isRecording ? 'Stop' : 'Start'} recording
+                    {surveillanceState === SurveillanceState.Stopped ? 'Start' : 'Stop'} recording
                 </button>
+                {surveillanceState !== SurveillanceState.Stopped ? (
+                    <button onClick={handleRecordPauseClick}>
+                        {surveillanceState === SurveillanceState.Paused ? 'Resume' : 'Pause'} recording
+                    </button>
+                ) : null}
+                <button onClick={() => chronoLens.cleanup()}>Clear</button>
                 <p className={styles.text}>
                     {formatTimestamp(progressMs, routeTimes?.startTimeEpoch)}
                 </p>

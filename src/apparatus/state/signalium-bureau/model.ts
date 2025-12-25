@@ -1,4 +1,4 @@
-export type SignaliumNotice = ErrorSignaliumNotice;
+export type SignaliumNotice = ErrorSignaliumNotice | WarningSignaliumNotice | InfoSignaliumNotice;
 
 export interface BaseSignaliumNotice {
     id: string;
@@ -12,4 +12,8 @@ export interface ErrorSignaliumNotice extends BaseSignaliumNotice {
 
 export interface WarningSignaliumNotice extends BaseSignaliumNotice {
     type: 'warning';
+}
+
+export interface InfoSignaliumNotice extends BaseSignaliumNotice {
+    type: 'info';
 }
