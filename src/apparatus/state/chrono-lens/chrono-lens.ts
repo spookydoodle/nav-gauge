@@ -1,9 +1,11 @@
 import { BehaviorSubject } from "rxjs";
+import { SignaliumBureau } from "../signalium-bureau";
 
 /**
  * Records the videos.
  */
 export class ChronoLens {
+    private signaliumBureau: SignaliumBureau
     private recorder: MediaRecorder | undefined;
     private stream: MediaStream | undefined;
     private chunks: Blob[] = [];
@@ -11,9 +13,10 @@ export class ChronoLens {
     public isRecording$ = new BehaviorSubject(false);
     public isPlaying$ = new BehaviorSubject(false);
 
-    public constructor() {
+    public constructor(signaliumBureau: SignaliumBureau) {
+        this.signaliumBureau = signaliumBureau;
+        
         this.isRecording$.subscribe((isRecording) => {
-            this.isPlaying$.next(isRecording);
             if (isRecording) {
                 this.startRecording();
             } else {
@@ -22,11 +25,14 @@ export class ChronoLens {
         });
     }
 
-    private startRecording = async () => {
+    private startRecording = async (
+        onError?: (e: ErrorEvent) => void,
+    ) => {
         if (!this.recorder) {
-            await this.setup();
+            await this.setup(onError);
         }
         this.recorder?.start();
+        this.isPlaying$.next(true);
     };
 
     private stopRecording = () => {
@@ -34,9 +40,12 @@ export class ChronoLens {
         for (const track of this.stream?.getTracks() ?? []) {
             track.stop();
         }
+        this.isPlaying$.next(false);
     };
 
-    private setup = async () => {
+    private setup = async (
+        onError?: (e: ErrorEvent) => void,
+    ) => {
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({
                 video: {
@@ -45,14 +54,17 @@ export class ChronoLens {
                 audio: false
             })
             this.stream = stream;
-            this.recorder = this.setupRecording(stream);
+            this.recorder = this.setupRecording(stream, onError);
         } catch (err) {
             console.error(err);
             // TODO: Add notification
         }
     }
 
-    private setupRecording = (stream: MediaStream): MediaRecorder => {
+    private setupRecording = (
+        stream: MediaStream,
+        onError?: (e: ErrorEvent) => void,
+    ): MediaRecorder => {
         const recorder = new MediaRecorder(stream, {
             mimeType: "video/webm; codecs=vp9",
         });
@@ -68,14 +80,20 @@ export class ChronoLens {
             this.chunks = [];
         };
 
+        if (onError) {
+            recorder.onerror = onError;
+        }
+
         return recorder;
     };
 
     private download = (url: string) => {
         const a = document.createElement("a");
+        a.id="test-anchor"
         a.href = url;
         a.download = "animation.webm";
         a.click();
-        document.removeChild(a);
+        console.log(a)
+        // document.removeChild(a);
     };
 }
