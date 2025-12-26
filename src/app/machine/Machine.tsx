@@ -1,16 +1,31 @@
 import { CSSProperties, Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from "react";
 import bbox from "@turf/bbox";
+import {
+    GaugeContext,
+    useLocalStorageState,
+    useSubjectState,
+    parsers,
+    ParsingResultWithError,
+    Preset,
+    PresetStation,
+    PresetValues,
+    useStateWarden,
+    useImageReader
+} from "@apparatus";
+import {
+    ApplicationSettingsType,
+    defaultGaugeControls,
+    defaultMapLayout,
+    GaugeControlsType,
+    MapLayout,
+    RouteTimes
+} from "@tinker-chest";
 import { Presets } from "./controls/Presets";
 import { AnimationControls } from "./controls/AnimationControls";
 import { MapLayoutControls } from "./controls/MapLayoutControls";
 import { ApplicationSettings } from "./controls/ApplicationSettings";
 import { GaugeControls } from "./controls/GaugeControls";
-import { ApplicationSettingsType, defaultGaugeControls, defaultMapLayout, GaugeControlsType, MapLayout } from "../tinker-chest";
 import { MapSection } from "./MapSection";
-import { GaugeContext } from "../apparatus/contexts";
-import { useImageReader, useLocalStorageState, useSubjectState } from "./hooks";
-import { RouteTimes } from "../tinker-chest";
-import { parsers, ParsingResultWithError, Preset, PresetStation, PresetValues, useStateWarden } from "../apparatus";
 import { FileInput } from "./controls/FileInput";
 import { MapStyleSelection } from "./controls/MapStyleSelection";
 import * as styles from './machine.module.css';

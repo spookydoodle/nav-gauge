@@ -16,7 +16,21 @@
         "typeRoots": [
             "@types",
             "node_modules/@types"
-        ]
+        ],
+        "paths": {
+            "@apparatus": [
+                "./src/apparatus/index.ts"
+            ],
+            "@tinker-chest": [
+                "./src/tinker-chest/index.ts"
+            ],
+            "@gears": [
+                "./src/gears/index.ts"
+            ],
+            "@ui": [
+                "./src/ui/index.ts"
+            ],
+        }
     },
     "include": [
         "@types",

@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Fieldset, Input, themeOptions } from "../../components";
-import { ApplicationSettingsType, Theme } from "../../tinker-chest";
+import { ApplicationSettingsType } from "@tinker-chest";
+import { Fieldset, Input, themeOptions, Theme } from "@ui";
 import * as styles from './controls.module.css';
 
 interface Props {

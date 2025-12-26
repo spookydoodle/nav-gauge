@@ -12,3 +12,5 @@ export { FileToGeoJSONParser } from './file-parser';
 export { GpxParser } from './gpx-parser';
 export { KmlParser } from './kml-parser';
 export * from './model';
+
+export * from './useImageReader';

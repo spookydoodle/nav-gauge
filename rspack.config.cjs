@@ -6,7 +6,13 @@ module.exports = () => ({
         extensions: [".js", ".ts", ".tsx"],
         fallback: {
             url: require.resolve("url"),
-        }
+        },
+        alias: {
+            '@apparatus': path.resolve(__dirname, './src/apparatus/index.ts'),
+            '@tinker-chest': path.resolve(__dirname, './src/tinker-chest/index.ts'),
+            '@gears': path.resolve(__dirname, './src/gears/index.ts'),
+            '@ui': path.resolve(__dirname, './src/ui/index.ts'),
+        },
     },
     module: {
         rules: [

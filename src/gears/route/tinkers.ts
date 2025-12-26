@@ -4,9 +4,11 @@ import turfDistance from "@turf/distance";
 import turfAlong from "@turf/along";
 import { point as turfPoint, lineString as turfLine } from "@turf/helpers";
 import turfLength from "@turf/length";
-import { GeoJson } from "../../apparatus/parsers";
-// TODO: Move
-import { CurrentPointData, FeatureStateProps } from "../../apparatus/state/cartomancer/map-layers/model";
+import {
+    GeoJson,
+    // TODO: Move
+    CurrentPointData, FeatureStateProps
+} from "@apparatus";
 
 export const colorActive = '#003161';
 export const colorInactive = 'grey';
@@ -110,8 +112,8 @@ export const getRouteSourceData = (
     nextImageFeatureId?: number,
 ): CurrentPointData => {
     const currentTime = startTimeEpoch + progressMs;
-    const splitIndex = geojson.features.findIndex((f) => 
-        new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf() || 
+    const splitIndex = geojson.features.findIndex((f) =>
+        new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf() ||
         (nextImageFeatureId !== undefined && f.properties.id === nextImageFeatureId)
     );
     const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime, bearingLineLengthInMeters);

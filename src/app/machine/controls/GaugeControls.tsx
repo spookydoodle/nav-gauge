@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import maplibregl from "maplibre-gl";
-import { Input, Fieldset } from "../../components";
-import { ControlPlacement, controlsPositions, GaugeControlsType } from "../../tinker-chest";
+import { ControlPlacement, controlsPositions, GaugeControlsType } from "@tinker-chest";
+import { Input, Fieldset } from "@ui";
 import * as styles from './controls.module.css';
 
 interface Props {

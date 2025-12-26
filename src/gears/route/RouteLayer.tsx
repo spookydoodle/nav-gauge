@@ -1,8 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { OverlayComponentProps, LoadedImageData, useStateWarden } from "../../apparatus";
-import { useGaugeContext } from "../../apparatus/contexts";
-import { useSubjectState } from "../../machine/hooks";
+import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState } from "@apparatus";
 import { currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "./tinkers";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({

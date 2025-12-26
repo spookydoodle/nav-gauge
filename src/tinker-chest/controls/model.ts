@@ -1,4 +1,4 @@
-import { Theme } from "../theme";
+import { Theme } from "../../ui/theme";
 
 export interface MapLayout {
     size: MapLayoutSize;
