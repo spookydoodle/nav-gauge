@@ -84,6 +84,22 @@ module.exports = (env, argv) => merge(config(env, argv), {
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendors-node-modules',
                 },
+                apparatus: {
+                    test: /[\\/]src[\\/]apparatus[\\/]/,
+                    name: 'apparatus',
+                },
+                ['tinker-chest']: {
+                    test: /[\\/]src[\\/]tinker-chest[\\/]/,
+                    name: 'tinker-chest',
+                },
+                gears: {
+                    test: /[\\/]src[\\/]gears[\\/]/,
+                    name: 'gears',
+                },
+                ui: {
+                    test: /[\\/]src[\\/]ui[\\/]/,
+                    name: 'ui',
+                },
             },
         },
         minimize: true,

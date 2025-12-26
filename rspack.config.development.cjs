@@ -9,8 +9,24 @@ module.exports = () => {
         mode: 'development',
         devtool: 'source-map',
         entry: {
-            main: {
+            machine: {
                 import: path.resolve('./src/index.tsx'),
+                dependOn: ['react-vendors']
+            },
+            apparatus: {
+                import: path.resolve('./src/apparatus/index.ts'),
+                dependOn: ['react-vendors']
+            },
+            ['tinker-chest']: {
+                import: path.resolve('./src/tinker-chest/index.ts'),
+                dependOn: ['react-vendors']
+            },
+            gears: {
+                import: path.resolve('./src/gears/index.ts'),
+                dependOn: ['react-vendors']
+            },
+            ui: {
+                import: path.resolve('./src/ui/index.ts'),
                 dependOn: ['react-vendors']
             },
             'react-vendors': ['react', 'react-dom']
