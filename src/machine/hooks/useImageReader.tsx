@@ -1,6 +1,7 @@
 import { useState } from "react";
 import maplibregl from "maplibre-gl";
-import { Cartomancer, GeoJson, MarkerImage, parseImage } from "../apparatus";
+import { Cartomancer, FeatureProperties, GeoJson, MarkerImage, parseImage } from "../../apparatus";
+import { feature } from "@turf/helpers";
 
 type ImageReaderResult = [
     MarkerImage[],
@@ -45,8 +46,7 @@ export const useImageReader = (): ImageReaderResult => {
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
-
-                const [featureId, feature] = geojson && lngLat ? Cartomancer.getClosestFeature(lngLat, geojson) : [];
+                const [featureId, feature] = geojson ? Cartomancer.getClosestFeature(geojson, lngLat) : [0, undefined];
 
                 nextImages[index] = {
                     ...nextImages[index],

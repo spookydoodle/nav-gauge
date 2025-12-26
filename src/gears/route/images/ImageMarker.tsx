@@ -2,11 +2,11 @@ import { CSSProperties, FC, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import maplibregl from "maplibre-gl";
-import { Cartomancer, GeoJson, MarkerImage } from "../../../apparatus";
+import { Cartomancer, GeoJson, MarkerImage, useStateWarden } from "../../../apparatus";
 import { FeatureStateProps } from "../../../apparatus/state/cartomancer/map-layers";
 import { sourceIds } from '../tinkers';
-import { useStateWarden, useGaugeContext } from "../../../contexts";
-import { useSubjectState } from "../../../hooks";
+import { useGaugeContext } from "../../../apparatus/contexts";
+import { useSubjectState } from "../../../machine/hooks";
 import * as styles from './images.module.css';
 
 const imageSize = 30;
@@ -32,11 +32,11 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
     useEffect(() => {
         const handleDrag = () => {
             const lngLat = image.marker.getLngLat();
-            setClosestFeatureId(Cartomancer.getClosestFeature(lngLat, geojson)[0]);
+            setClosestFeatureId(Cartomancer.getClosestFeature(geojson, lngLat)[0]);
         };
         const handleDragEnd = () => {
             const lngLat = image.marker.getLngLat();
-            const [id, feature] = Cartomancer.getClosestFeature(lngLat, geojson);
+            const [id, feature] = Cartomancer.getClosestFeature(geojson, lngLat);
             image.marker.setLngLat(new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]));
             onUpdateImageFeatureId(image.id, id);
 
@@ -70,6 +70,17 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
             updateHighlight(false);
         };
     }, [closestFeatureId]);
+
+    useEffect(() => {
+        if ( displayImageId !== image.id) {
+            return;
+        }
+        image.markerElement.classList.add(styles['display-container']);
+        
+        return () => {
+            image.markerElement.classList.remove(styles['display-container']);
+        };
+    }, [displayImageId, image.id]);
 
     return ReactDOM.createPortal(
         <img

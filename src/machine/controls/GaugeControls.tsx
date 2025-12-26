@@ -97,7 +97,7 @@ export const GaugeControls: FC<Props> = ({
                 type='checkbox'
                 checked={showZoomButtons}
                 onChange={() => { }}
-                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showZoom: !prev.showZoomButtons }))}
+                onContainerClick={() => onGaugeConrolsChange((prev) => ({ ...prev, showZoomButtons: !prev.showZoomButtons }))}
                 containerClassName={styles["checkbox"]}
             />
             <Input

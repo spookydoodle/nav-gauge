@@ -65,7 +65,7 @@ const getLngLat = (exif?: ExifData): maplibregl.LngLat | undefined => {
     }
 
     const { GPSLongitude, GPSLongitudeRef, GPSLatitude, GPSLatitudeRef } = exif;
-    if (!GPSLongitude || !GPSLongitudeRef || !GPSLatitude || !GPSLatitudeRef) {
+    if (!GPSLongitude || !GPSLongitudeRef || !GPSLatitude || !GPSLatitudeRef || GPSLongitude.concat(GPSLatitude).some(isNaN)) {
         return;
     }
 

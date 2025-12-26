@@ -1,8 +1,9 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 import { validateGaugeControls, validateMapLayout } from "../../src/tinker-chest/validation/controls.js";
-import { GaugeControlsType, MapLayout } from "../../src/tinker-chest/index.js";
-import { AnimationControlsType, Animatrix } from "../../src/apparatus/index.js";
+import { GaugeControlsType, MapLayout } from "../../src/tinker-chest/controls/model";
+import { AnimationControlsType } from "../../src/apparatus/state/animatrix/model";
+import { Animatrix } from "../../src/apparatus/state/animatrix/animatrix.js";
 
 describe("Preset", () => {
     describe("File upload validation", () => {

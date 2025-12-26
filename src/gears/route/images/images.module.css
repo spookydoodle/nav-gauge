@@ -12,7 +12,12 @@
     outline: 2px solid white;
 }
 
+.display-container {
+    z-index: 1;
+}
+
 .image-marker.in-display {
     transform: scale(var(--image-display-scale));
     transition: transform .2s ease-in;
+    z-index: 100;
 }

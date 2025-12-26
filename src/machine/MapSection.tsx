@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import { GeoJson, MarkerImage } from "../apparatus";
+import { GeoJson, MarkerImage, useStateWarden } from "../apparatus";
 import { MapTools } from "./map-tools/MapTools";
-import { RouteLayer } from "../gears/route/RouteLayer";
 import { RouteLayerFitBounds } from "./layers/RouteLayerFitBounds";
 import { Player } from "./player/Player";
 import { RouteTimes } from "../tinker-chest";
-import { ImageMarkers } from "../gears/route/images/ImageMarkers";
-import { useStateWarden } from "../contexts";
-import { useSubjectState } from "../hooks";
+import { useSubjectState } from "./hooks";
 
 interface Props {
     geojson?: GeoJson;
@@ -26,7 +23,6 @@ export const MapSection: React.FC<Props> = ({
 }) => {
     const { cartomancer } = useStateWarden();
     const [overlays] = useSubjectState(cartomancer.overlays$);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [progressMs, setProgressMs] = useState(0);
 
     useEffect(() => setProgressMs(0), [geojson]);
@@ -40,8 +36,6 @@ export const MapSection: React.FC<Props> = ({
                 routeTimes={routeTimes}
                 progressMs={progressMs}
                 onProgressMsChange={setProgressMs}
-                isPlaying={isPlaying}
-                onIsPlayingChange={setIsPlaying}
             />}
         >
             {geojson && boundingBox && routeTimes
@@ -52,7 +46,6 @@ export const MapSection: React.FC<Props> = ({
                             geojson={geojson}
                             images={images}
                             routeTimes={routeTimes}
-                            isPlaying={isPlaying}
                             progressMs={progressMs}
                             onProgressMsChange={setProgressMs}
                             onUpdateImageFeatureId={onUpdateImageFeatureId}

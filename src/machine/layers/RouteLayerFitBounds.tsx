@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
-import { useStateWarden } from "../../contexts";
-import findIcon from '../../icons/find.svg';
+import { useStateWarden } from "../../apparatus";
+import findIcon from '../icons/find.svg';
 import * as styles from './route-layer.module.css';
 
 interface Props {

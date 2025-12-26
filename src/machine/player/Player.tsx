@@ -1,10 +1,10 @@
-import { CSSProperties, FC } from "react";
-import { GeoJson, MarkerImage } from "../../apparatus";
+import { CSSProperties, FC, useEffect } from "react";
+import { GeoJson, MarkerImage, SurveillanceState, useStateWarden } from "../../apparatus";
 import { RouteTimes, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../tinker-chest";
 import { updateRouteLayer } from "../../gears";
-import { useSubjectState } from "../../hooks";
-import { useStateWarden } from "../../contexts";
+import { useSubjectState } from "../hooks";
 import * as styles from './player.module.css';
+import { pairwise } from "rxjs";
 
 interface Props {
     geojson?: GeoJson;
@@ -12,8 +12,6 @@ interface Props {
     progressMs: number;
     onProgressMsChange: React.Dispatch<React.SetStateAction<number>>;
     routeTimes?: RouteTimes;
-    isPlaying: boolean;
-    onIsPlayingChange: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const Player: FC<Props> = ({
@@ -22,13 +20,55 @@ export const Player: FC<Props> = ({
     progressMs,
     onProgressMsChange,
     routeTimes,
-    isPlaying,
-    onIsPlayingChange,
 }) => {
-    const { cartomancer: { map }, animatrix } = useStateWarden();
+    const { cartomancer: { map }, animatrix, chronoLens, signaliumBureau } = useStateWarden();
+    const [isPlaying, setIsPlaying] = useSubjectState(chronoLens.isPlaying$);
+    const [surveillanceState, setSurveillanceState] = useSubjectState(chronoLens.surveillanceState$);
     const [animationControls] = useSubjectState(animatrix.controls$)
     const { bearingLineLengthInMeters } = animationControls;
-    const handlePlayClick = () => onIsPlayingChange((prev) => !prev);
+
+    useEffect(() => {
+        const noticeId = 'player-recording';
+
+        chronoLens.surveillanceState$
+            .pipe(pairwise())
+            .subscribe(([prev, next]) => {
+                switch (next) {
+                    case SurveillanceState.Stopped:
+                        chronoLens.stopRecording();
+                        break;
+                    case SurveillanceState.Paused:
+                        chronoLens.pauseRecording();
+                        break;
+                    case SurveillanceState.InProgress: {
+                        if (prev === SurveillanceState.Paused) {
+                            chronoLens.resumeRecording();
+                        } else {
+                            chronoLens.startRecording(map.getCanvas(), (stage, error) => {
+                                signaliumBureau.addNotice({
+                                    id: noticeId,
+                                    type: 'error',
+                                    error,
+                                    text: `Something went wrong during the ${stage} stage.`
+                                });
+                            });
+                        }
+                        break;
+                    }
+                }
+            });
+
+        return () => { };
+    }, []);
+
+    const handlePlayClick = () => setIsPlaying((prev) => !prev);
+    const handleRecordClick = () => setSurveillanceState((prev) => prev === SurveillanceState.Stopped
+        ? SurveillanceState.InProgress
+        : SurveillanceState.Stopped);
+    const handleRecordPauseClick = () => setSurveillanceState((prev) => prev === SurveillanceState.Paused
+        ? SurveillanceState.InProgress
+        : SurveillanceState.Paused);
+
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
     const handleProgressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,15 +77,15 @@ export const Player: FC<Props> = ({
         }
         // Halt playing animations to allow manual update.
         if (isPlaying) {
-            onIsPlayingChange(false);
+            setIsPlaying(false);
         }
         onProgressMsChange(Number(event.target.value));
         if (geojson) {
-            updateRouteLayer(map, geojson, routeTimes.startTimeEpoch,Number(event.target.value), bearingLineLengthInMeters);
+            updateRouteLayer(map, geojson, routeTimes.startTimeEpoch, Number(event.target.value), bearingLineLengthInMeters);
         }
         // Resume playing animations
         if (isPlaying) {
-            setTimeout(() => onIsPlayingChange(true), 0);
+            setTimeout(() => setIsPlaying(true), 0);
         }
     }
 
@@ -86,6 +126,15 @@ export const Player: FC<Props> = ({
                 <button onClick={handlePlayClick}>
                     {isPlaying ? 'Pause' : 'Play'}
                 </button>
+                <button onClick={handleRecordClick}>
+                    {surveillanceState === SurveillanceState.Stopped ? 'Start' : 'Stop'} recording
+                </button>
+                {surveillanceState !== SurveillanceState.Stopped ? (
+                    <button onClick={handleRecordPauseClick}>
+                        {surveillanceState === SurveillanceState.Paused ? 'Resume' : 'Pause'} recording
+                    </button>
+                ) : null}
+                <button onClick={() => chronoLens.destroyRecording()}>Clear</button>
                 <p className={styles.text}>
                     {formatTimestamp(progressMs, routeTimes?.startTimeEpoch)}
                 </p>

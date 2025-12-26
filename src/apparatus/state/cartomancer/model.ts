@@ -11,7 +11,6 @@ export interface OverlayComponentProps {
     geojson: GeoJson;
     images: MarkerImage[];
     routeTimes: RouteTimes;
-    isPlaying: boolean;
     progressMs: number;
     onProgressMsChange: Dispatch<SetStateAction<number>>;
     onUpdateImageFeatureId: (imageId: number, featureId: number) => void;

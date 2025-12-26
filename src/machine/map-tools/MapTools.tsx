@@ -2,10 +2,10 @@ import { FC, ReactNode, useState, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import classNames from "classnames";
-import { useGaugeContext, useStateWarden } from "../../contexts";
-import { useSubjectState } from "../../hooks";
-import { Cartomancer } from "../../apparatus";
-import findIcon from '../../icons/find.svg';
+import { useGaugeContext } from "../../apparatus/contexts";
+import { useSubjectState } from "../hooks";
+import { Cartomancer, useStateWarden } from "../../apparatus";
+import findIcon from '../icons/find.svg';
 import * as styles from './map-tools.module.css';
 import './map.css';
 

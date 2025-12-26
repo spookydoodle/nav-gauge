@@ -143,3 +143,5 @@ dist
 *.tmp
 *.log
 *.bak
+
+/ztestfiles/

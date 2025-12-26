@@ -1,20 +1,20 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { OverlayComponentProps, LoadedImageData } from "../../apparatus";
-import { useStateWarden, useGaugeContext } from "../../contexts";
-import { useSubjectState } from "../../hooks";
+import { OverlayComponentProps, LoadedImageData, useStateWarden } from "../../apparatus";
+import { useGaugeContext } from "../../apparatus/contexts";
+import { useSubjectState } from "../../machine/hooks";
 import { currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "./tinkers";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({
-    isPlaying,
     geojson,
     routeTimes,
     progressMs,
     onProgressMsChange,
     images,
 }) => {
-    const { cartomancer, animatrix } = useStateWarden();
+    const { cartomancer, animatrix, chronoLens } = useStateWarden();
     const { map } = cartomancer;
+    const [isPlaying] = useSubjectState(chronoLens.isPlaying$);
     const [animationControls] = useSubjectState(animatrix.controls$);
     const { showRouteLine, showRoutePoints } = useGaugeContext();
     const {
@@ -34,7 +34,7 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     const loadedImages: LoadedImageData[] = images.filter(({ progress, error, ...image }) =>
-        progress === 100 && image.data && image.lngLat && image.featureId !== undefined && !error
+        progress === 100 && image.data && image.featureId !== undefined
     ) as LoadedImageData[];
 
     useEffect(() => {
@@ -78,11 +78,14 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
         }
         let animation: number | undefined;
         let displayImageTimeout: NodeJS.Timeout | undefined;
-        let lastImageShownFeatureId: number | undefined;
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
-        const sortedImageFeatures = loadedImages.toSorted((a, b) => b.featureId - a.featureId);
+        const sortedImageFeatures = loadedImages.toSorted((a, b) => a.featureId - b.featureId);
         let last = performance.now();
         let current = progressMs;
+        let nextImageIndex = sortedImageFeatures.findIndex((imageFeature): boolean => {
+            const f = geojson.features.find((feature) => feature.properties.id === imageFeature.featureId);
+            return !!f && new Date(f.properties.time).valueOf() >= new Date(startTimeEpoch + progressMs).valueOf();
+        });
 
         // TODO: Move to animatrix
         const animate = () => {
@@ -92,14 +95,14 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
             current += dt + speedMultiplier;
             if (startTimeEpoch + current >= endTimeEpoch) {
                 current = 0;
+                nextImageIndex = 0;
             }
-            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current, bearingLineLengthInMeters);
-            // TODO: Fix for large speeds
-            const currentPointImage = sortedImageFeatures.find((f) => f.featureId === currentPoint.id);
+            const nextImage: LoadedImageData | undefined = sortedImageFeatures[nextImageIndex];
+            const { currentPoint, currentPointBearing } = updateRouteLayer(map, geojson, startTimeEpoch, current, bearingLineLengthInMeters, nextImage?.featureId);
 
-            if (currentPointImage && animation !== undefined && lastImageShownFeatureId !== currentPointImage.featureId) {
-                animatrix.displayImageId$.next(currentPointImage.id);
-                lastImageShownFeatureId = currentPointImage.featureId;
+            if (animation !== undefined && nextImage && nextImage.featureId <= Number(currentPoint.id)) {
+                animatrix.displayImageId$.next(nextImage.id);
+                nextImageIndex = nextImageIndex + 1;
                 cancelAnimationFrame(animation);
                 displayImageTimeout = setTimeout(() => {
                     animatrix.displayImageId$.next(null);
@@ -138,7 +141,6 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
         return () => {
             clearTimeout(displayImageTimeout);
             animatrix.displayImageId$.next(null);
-            lastImageShownFeatureId = undefined;
             if (animation !== undefined) {
                 cancelAnimationFrame(animation);
             }
