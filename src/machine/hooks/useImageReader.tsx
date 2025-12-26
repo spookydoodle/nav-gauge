@@ -1,6 +1,6 @@
 import { useState } from "react";
 import maplibregl from "maplibre-gl";
-import { Cartomancer, FeatureProperties, GeoJson, MarkerImage, parseImage } from "../apparatus";
+import { Cartomancer, FeatureProperties, GeoJson, MarkerImage, parseImage } from "../../apparatus";
 import { feature } from "@turf/helpers";
 
 type ImageReaderResult = [

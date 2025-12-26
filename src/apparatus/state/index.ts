@@ -5,3 +5,5 @@ export * from './chrono-lens';
 export * from './engine';
 export * from './signalium-bureau';
 export * from './state-warden';
+export * from './StateWardenContext';
+export * from './useStateWarden';

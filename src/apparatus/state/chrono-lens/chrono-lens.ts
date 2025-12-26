@@ -1,5 +1,6 @@
 import { BehaviorSubject } from "rxjs";
 import { FrameRate, SurveillanceState } from "./model";
+import { formatTimestamp } from "../../../tinker-chest";
 
 /**
  * Records the videos.
@@ -9,18 +10,23 @@ export class ChronoLens {
     private stream: MediaStream | undefined;
     private chunks: Blob[] = [];
 
-    public frameRate$ = new BehaviorSubject<FrameRate>(30);
+    /**
+     * Frames per second. Defaults to 30.
+     */
+    public fps$ = new BehaviorSubject<FrameRate>(30);
+    // TODO: Combine isPlaing and state?
     public surveillanceState$ = new BehaviorSubject<SurveillanceState>(SurveillanceState.Stopped);
     public isPlaying$ = new BehaviorSubject(false);
-    public donwloadName$ = new BehaviorSubject('Voyage Log');
+    public downloadName$ = new BehaviorSubject('Voyage Log');
 
     public constructor() { }
 
     public startRecording = async (
+        canvas: HTMLCanvasElement,
         onError?: (stage: string, error: Error) => void
     ) => {
         if (!this.recorder) {
-            await this.setup(onError);
+            await this.setup(canvas, onError);
         }
         this.recorder?.start();
         this.isPlaying$.next(true);
@@ -37,14 +43,15 @@ export class ChronoLens {
     };
 
     public stopRecording = () => {
-        this.destroyRecording();
+        this.recorder?.stop();
     };
 
     private setup = async (
+        canvas?: HTMLCanvasElement,
         onError?: (stage: string, error: Error) => void
     ) => {
         try {
-            this.stream = await this.createStream();
+            this.stream = await this.createStream(canvas);
             this.recorder = this.createRecorder(this.stream, onError);
         } catch (error) {
             this.stream = undefined;
@@ -53,10 +60,15 @@ export class ChronoLens {
         }
     }
 
-    private createStream = async (): Promise<MediaStream> => {
+    private createStream = async (
+        canvas?: HTMLCanvasElement,
+    ): Promise<MediaStream> => {
+        if (canvas) {
+            return canvas.captureStream(this.fps$.value);
+        }
         const stream = await navigator.mediaDevices.getDisplayMedia({
             video: {
-                frameRate: this.frameRate$.value
+                frameRate: this.fps$.value
             },
             audio: false
         })
@@ -89,7 +101,7 @@ export class ChronoLens {
         recorder.onstop = () => {
             this.stop();
             this.download();
-            this.chunks = [];
+            this.destroyRecording();
         };
 
         recorder.onerror = (e) => {
@@ -106,6 +118,7 @@ export class ChronoLens {
     };
 
     private download = () => {
+        const timestamp = formatTimestamp(new Date().valueOf(), 0);
         const blob = new Blob(this.chunks, {
             type: "video/webm",
         });
@@ -115,7 +128,7 @@ export class ChronoLens {
         a.style = "display: none";
         a.href = url;
         document.body.appendChild(a);
-        a.download = `${this.sanitiseName(this.donwloadName$.value)}.webm`;
+        a.download = `${this.sanitiseName(this.downloadName$.value + timestamp)}.webm`;
         a.click();
 
         URL.revokeObjectURL(url);
@@ -123,7 +136,7 @@ export class ChronoLens {
     };
 
     private sanitiseName(value: string): string {
-        return value.replaceAll(/[._\s]/g, "");
+        return value.replaceAll(/[.:_\s]/g, "");
     }
 
     /**

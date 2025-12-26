@@ -1,9 +1,8 @@
 import { CSSProperties, FC, useEffect } from "react";
-import { GeoJson, MarkerImage, SurveillanceState } from "../../apparatus";
+import { GeoJson, MarkerImage, SurveillanceState, useStateWarden } from "../../apparatus";
 import { RouteTimes, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../tinker-chest";
 import { updateRouteLayer } from "../../gears";
-import { useSubjectState } from "../../hooks";
-import { useStateWarden } from "../../contexts";
+import { useSubjectState } from "../hooks";
 import * as styles from './player.module.css';
 import { pairwise } from "rxjs";
 
@@ -34,7 +33,6 @@ export const Player: FC<Props> = ({
         chronoLens.surveillanceState$
             .pipe(pairwise())
             .subscribe(([prev, next]) => {
-                console.log({prev, next})
                 switch (next) {
                     case SurveillanceState.Stopped:
                         chronoLens.stopRecording();
@@ -46,7 +44,7 @@ export const Player: FC<Props> = ({
                         if (prev === SurveillanceState.Paused) {
                             chronoLens.resumeRecording();
                         } else {
-                            chronoLens.startRecording((stage, error) => {
+                            chronoLens.startRecording(map.getCanvas(), (stage, error) => {
                                 signaliumBureau.addNotice({
                                     id: noticeId,
                                     type: 'error',

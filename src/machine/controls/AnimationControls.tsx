@@ -5,10 +5,9 @@ import {
     clamp,
     defaultZoomInToImages,
 } from "../../tinker-chest";
-import { useSubjectState } from "../../hooks";
-import { useStateWarden } from "../../contexts";
+import { useSubjectState } from "../hooks";
+import { Animatrix, useStateWarden } from "../../apparatus";
 import * as styles from './controls.module.css';
-import { Animatrix } from "../../apparatus";
 
 interface Props { }
 

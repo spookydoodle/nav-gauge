@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { GeoJson, MarkerImage } from "../apparatus";
+import { GeoJson, MarkerImage, useStateWarden } from "../apparatus";
 import { MapTools } from "./map-tools/MapTools";
 import { RouteLayerFitBounds } from "./layers/RouteLayerFitBounds";
 import { Player } from "./player/Player";
 import { RouteTimes } from "../tinker-chest";
-import { useStateWarden } from "../contexts";
-import { useSubjectState } from "../hooks";
+import { useSubjectState } from "./hooks";
 
 interface Props {
     geojson?: GeoJson;

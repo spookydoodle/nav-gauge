@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { AnimationControlsType, Animatrix, Preset, PresetStation, PresetValues } from "../../apparatus";
+import { AnimationControlsType, Animatrix, Preset, PresetStation, PresetValues, useStateWarden } from "../../apparatus";
 import {
     applyGaugeControls,
     defaultGaugeControls,
@@ -9,8 +9,7 @@ import {
     validateGaugeControls,
     validateMapLayout,
 } from "../../tinker-chest";
-import { useStateWarden } from "../../contexts";
-import { useSubjectState } from "../../hooks";
+import { useSubjectState } from "../hooks";
 import * as styles from './controls.module.css';
 
 interface Props {
