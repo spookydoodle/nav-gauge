@@ -25,11 +25,11 @@ export class ChronoLens {
         canvas: HTMLCanvasElement,
         onError?: (stage: string, error: Error) => void
     ) => {
+        this.isPlaying$.next(true);
         if (!this.recorder) {
             await this.setup(canvas, onError);
         }
         this.recorder?.start();
-        this.isPlaying$.next(true);
     };
 
     public pauseRecording = () => {
@@ -54,8 +54,10 @@ export class ChronoLens {
             this.stream = await this.createStream(canvas);
             this.recorder = this.createRecorder(this.stream, onError);
         } catch (error) {
-            this.stream = undefined;
-            this.recorder = undefined;
+            console.log("Err2", error)
+            this.isPlaying$.next(false);
+            this.surveillanceState$.next(SurveillanceState.Stopped);
+            this.destroyRecording();
             onError?.("setup", error as Error);
         }
     }
@@ -104,9 +106,10 @@ export class ChronoLens {
             this.destroyRecording();
         };
 
-        recorder.onerror = (e) => {
+        recorder.onerror = (event) => {
+            console.log("Err", event)
             this.destroyRecording();
-            onError?.("recording", e.error);
+            onError?.("recording", event.error);
         };
 
         return recorder;
