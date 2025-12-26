@@ -1,122 +1,73 @@
-import { BehaviorSubject, pairwise } from "rxjs";
-import { SignaliumBureau } from "../signalium-bureau";
-import { SurveillanceState } from "./model";
-import { formatTimestamp } from "../../../tinker-chest";
+import { BehaviorSubject } from "rxjs";
+import { FrameRate, SurveillanceState } from "./model";
 
 /**
  * Records the videos.
  */
 export class ChronoLens {
-    private signaliumBureau: SignaliumBureau
     private recorder: MediaRecorder | undefined;
     private stream: MediaStream | undefined;
     private chunks: Blob[] = [];
-    private noticeId = 'chrono-lens-state';
 
+    public frameRate$ = new BehaviorSubject<FrameRate>(30);
     public surveillanceState$ = new BehaviorSubject<SurveillanceState>(SurveillanceState.Stopped);
     public isPlaying$ = new BehaviorSubject(false);
+    public donwloadName$ = new BehaviorSubject('Voyage Log');
 
-    public constructor(signaliumBureau: SignaliumBureau) {
-        this.signaliumBureau = signaliumBureau;
+    public constructor() {}
 
-        this.surveillanceState$.pipe(pairwise()).subscribe(([prev, next]) => {
-            switch (next) {
-                case SurveillanceState.Stopped:
-                    this.stopRecording();
-                    break;
-                case SurveillanceState.Paused:
-                    this.pauseRecording();
-                    break;
-                case SurveillanceState.InProgress: {
-                    if (prev === SurveillanceState.Paused) {
-                        this.resumeRecording();
-                    } else {
-                        this.startRecording(
-                            undefined, // TODO: Let user decide
-                            (error) => {
-                                this.signaliumBureau.addNotice({
-                                    id: this.noticeId,
-                                    type: 'error',
-                                    error: error.error as Error,
-                                    text: 'Something went wrong during recording.'
-                                })
-                            }
-                        );
-                    }
-                    break;
-                }
-            }
-        });
-    }
-
-    private startRecording = async (
-        downloadFileName?: string,
-        onError?: (e: ErrorEvent) => void,
+    public startRecording = async (
+        onError?: (stage: string, error: Error) => void
     ) => {
         if (!this.recorder) {
-            await this.setup(downloadFileName, onError);
+            await this.setup(onError);
         }
         this.recorder?.start();
         this.isPlaying$.next(true);
-        this.signaliumBureau.addNotice({
-            id: this.noticeId,
-            type: 'info',
-            text: 'Recording started'
-        }, { keepAlive: true });
     };
 
-    private pauseRecording = () => {
+    public pauseRecording = () => {
         this.recorder?.pause();
         this.isPlaying$.next(false);
     };
 
-    private resumeRecording = () => {
+    public resumeRecording = () => {
         this.recorder?.resume();
         this.isPlaying$.next(true);
     };
 
-    private stopRecording = () => {
+    public stopRecording = () => {
         this.recorder?.stop();
     };
 
-    private stopCleanup = () => {
+    private stop = () => {
         this.isPlaying$.next(false);
         this.surveillanceState$.next(SurveillanceState.Stopped);
-        this.signaliumBureau.addNotice({
-            id: this.noticeId,
-            type: 'info',
-            text: 'Recording stopped'
-        });
     };
 
     private setup = async (
-        downloadFileName?: string,
-        onError?: (e: ErrorEvent) => void,
+        onError?: (stage: string, error: Error) => void
     ) => {
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({
                 video: {
-                    frameRate: 30
+                    frameRate: this.frameRate$.value
                 },
                 audio: false
             })
             this.stream = stream;
-            this.recorder = this.setupRecording(stream, downloadFileName, onError);
-        } catch (err) {
-            this.signaliumBureau.addNotice({
-                id: this.noticeId,
-                type: 'error',
-                error: err as Error,
-                text: 'Something went wrong.'
-            })
+            this.recorder = this.setupRecording(stream, onError);
+        } catch (error) {
+            this.stream = undefined;
+            this.recorder = undefined;
+            onError?.("setup", error as Error);
         }
     }
 
-    private setupRecording = (
+    private setupRecording(
         stream: MediaStream,
-        downloadFileName?: string,
-        onError?: (e: ErrorEvent) => void,
-    ): MediaRecorder => {
+        onError?: (stage: string, error: Error) => void
+    ): MediaRecorder {
         const recorder = new MediaRecorder(stream, {
             mimeType: "video/webm; codecs=vp9",
         });
@@ -127,35 +78,41 @@ export class ChronoLens {
 
         recorder.onpause = () => { }
 
-        recorder.onstop = (e) => {
-            const blob = new Blob(this.chunks, { type: "video/webm" });
-            const url = URL.createObjectURL(blob);
-            this.download(url, downloadFileName);
+        recorder.onstop = () => {
+            this.download();
             this.chunks = [];
-            this.stopCleanup();
+            this.stop();
         };
 
         recorder.onerror = (e) => {
-            onError?.(e);
             this.stopRecording();
             this.cleanup();
+            onError?.("recording", e.error);
         };
 
         return recorder;
-    };
+    }
 
-    private download = (
-        url: string,
-        fileName = `Voyage Log ${formatTimestamp(new Date().valueOf(), 0)}`.replaceAll(".", "").replaceAll("_", "").replaceAll(" ", "")
-    ) => {
+    private download = () => {
+        const blob = new Blob(this.chunks, {
+            type: "video/webm",
+        });
+        const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.id = "download-action"
+        a.style = "display: none";
         a.href = url;
-        a.download = `${fileName}.webm`;
         document.body.appendChild(a);
+        a.download = `${this.sanitiseName(this.donwloadName$.value)}.webm`;
         a.click();
+
+        URL.revokeObjectURL(url);
         document.body.removeChild(a);
     };
+
+    private sanitiseName(value: string): string {
+        return value.replaceAll(/[._\s]/g, "");
+    }
 
     /**
      * Resets the recorder and stream completely.

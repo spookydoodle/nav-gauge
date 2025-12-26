@@ -1,10 +1,11 @@
-import { CSSProperties, FC } from "react";
+import { CSSProperties, FC, useEffect } from "react";
 import { GeoJson, MarkerImage, SurveillanceState } from "../../apparatus";
 import { RouteTimes, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../tinker-chest";
 import { updateRouteLayer } from "../../gears";
 import { useSubjectState } from "../../hooks";
 import { useStateWarden } from "../../contexts";
 import * as styles from './player.module.css';
+import { pairwise } from "rxjs";
 
 interface Props {
     geojson?: GeoJson;
@@ -21,11 +22,46 @@ export const Player: FC<Props> = ({
     onProgressMsChange,
     routeTimes,
 }) => {
-    const { cartomancer: { map }, animatrix, chronoLens } = useStateWarden();
+    const { cartomancer: { map }, animatrix, chronoLens, signaliumBureau } = useStateWarden();
     const [isPlaying, setIsPlaying] = useSubjectState(chronoLens.isPlaying$);
     const [surveillanceState, setSurveillanceState] = useSubjectState(chronoLens.surveillanceState$);
     const [animationControls] = useSubjectState(animatrix.controls$)
     const { bearingLineLengthInMeters } = animationControls;
+
+    useEffect(() => {
+        const noticeId = 'player-recording';
+
+        chronoLens.surveillanceState$
+            .pipe(pairwise())
+            .subscribe(([prev, next]) => {
+                switch (next) {
+                    case SurveillanceState.Stopped:
+                        chronoLens.stopRecording();
+                        break;
+                    case SurveillanceState.Paused:
+                        chronoLens.pauseRecording();
+                        break;
+                    case SurveillanceState.InProgress: {
+                        if (prev === SurveillanceState.Paused) {
+                            chronoLens.resumeRecording();
+                        } else {
+                            chronoLens.startRecording((stage, error) => {
+                                signaliumBureau.addNotice({
+                                    id: noticeId,
+                                    type: 'error',
+                                    error,
+                                    text: `Something went wrong during the ${stage} stage.`
+                                });
+                            });
+                        }
+                        break;
+                    }
+                }
+            });
+
+        return () => { };
+    }, [surveillanceState]);
+
     const handlePlayClick = () => setIsPlaying((prev) => !prev);
     const handleRecordClick = () => setSurveillanceState((prev) => prev === SurveillanceState.Stopped
         ? SurveillanceState.InProgress
@@ -33,6 +69,7 @@ export const Player: FC<Props> = ({
     const handleRecordPauseClick = () => setSurveillanceState((prev) => prev === SurveillanceState.Paused
         ? SurveillanceState.InProgress
         : SurveillanceState.Paused);
+
     const progressPercentage = getProgressPercentage(progressMs, routeTimes);
 
     const handleProgressChange = (event: React.ChangeEvent<HTMLInputElement>) => {

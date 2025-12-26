@@ -110,9 +110,9 @@ export const getRouteSourceData = (
     nextImageFeatureId?: number,
 ): CurrentPointData => {
     const currentTime = startTimeEpoch + progressMs;
-    const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf() || f.properties.id === nextImageFeatureId);
+    const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf() || (nextImageFeatureId !== undefined && f.properties.id === nextImageFeatureId));
     const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime, bearingLineLengthInMeters);
-
+// TODO: Handle mid point in line
     return {
         currentPoint,
         currentPointBearing,
