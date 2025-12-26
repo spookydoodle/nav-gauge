@@ -14,7 +14,7 @@ export class SignaliumBureau {
     public notices$ = new BehaviorSubject<SignaliumNotice[]>([]);
 
     public constructor() { }
-
+private i = 0;
     /**
      * If `notice.id` is not unique, will replace existing one.
      * Errors remain until the problem is solved or upon user interaction.
@@ -32,7 +32,10 @@ export class SignaliumBureau {
             expirationTime = this.defaultExpirationTime
         } = options;
 
-        const nextNotices = this.notices$.value.filter((n) => n.id !== notice.id).concat([notice]);
+        const nextNotices = this.notices$.value
+        // .filter((n) => n.id !== notice.id)
+        .concat([{...notice, id: this.i.toString()}]);
+        this.i++;
         this.notices$.next(nextNotices);
 
         if (notice.type !== 'error' && !keepAlive) {
