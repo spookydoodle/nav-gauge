@@ -54,7 +54,6 @@ export class ChronoLens {
             this.stream = await this.createStream(canvas);
             this.recorder = this.createRecorder(this.stream, onError);
         } catch (error) {
-            console.log("Err2", error)
             this.isPlaying$.next(false);
             this.surveillanceState$.next(SurveillanceState.Stopped);
             this.destroyRecording();
