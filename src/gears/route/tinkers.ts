@@ -110,9 +110,12 @@ export const getRouteSourceData = (
     nextImageFeatureId?: number,
 ): CurrentPointData => {
     const currentTime = startTimeEpoch + progressMs;
-    const splitIndex = geojson.features.findIndex((f) => new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf() || (nextImageFeatureId !== undefined && f.properties.id === nextImageFeatureId));
+    const splitIndex = geojson.features.findIndex((f) => 
+        new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf() || 
+        (nextImageFeatureId !== undefined && f.properties.id === nextImageFeatureId)
+    );
     const { currentPoint, currentPointBearing, currentPointSpeed } = getCurrentPoint(geojson, splitIndex, currentTime, bearingLineLengthInMeters);
-// TODO: Handle mid point in line
+
     return {
         currentPoint,
         currentPointBearing,
@@ -158,8 +161,9 @@ const getCurrentPoint = (
     currentPointBearing: number;
     currentPointSpeed: number;
 } => {
-    const currentLineStart = geojson.features[Math.max(0, splitIndex - 1)];
-    const currentLineEnd = geojson.features[Math.max(1, splitIndex)];
+    const indexes = [Math.max(0, splitIndex - 1), Math.max(1, splitIndex)];
+    const currentLineStart = geojson.features[indexes[0]];
+    const currentLineEnd = geojson.features[indexes[1]];
     const currentLineStartTime = new Date(currentLineStart.properties.time).valueOf();
     const currentLineEndTime = new Date(currentLineEnd.properties.time).valueOf();
 
@@ -169,7 +173,7 @@ const getCurrentPoint = (
     const line = turfLine([currentLineStartPos, currentLineEndPos]);
     const totalDistanceMeters = turfLength(line, { units: 'meters' });
     const totalTimeMs = (new Date(currentLineEnd.properties.time).valueOf() - new Date(currentLineStart.properties.time).valueOf());
-    const currentPoint = currentLineEnd;
+    const currentPoint = { ...currentLineEnd };
 
     if (!('featureId' in currentPoint.properties)) {
         currentPoint.geometry = turfAlong(line, totalDistanceMeters * fraction, { units: 'meters' }).geometry
