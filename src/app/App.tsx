@@ -2,8 +2,9 @@ import { FC, StrictMode, useEffect } from "react";
 import { useLocalStorageState, theOneAndOnlyStateWarden, StateWardenContext } from "@apparatus";
 import { ApplicationSettingsType, defaultApplicationSettings } from "@tinker-chest";
 import { routeGear } from "@gears";
-import { TopBar, Footer } from "./app/layout";
-import { Machine } from "./app/machine/Machine";
+import { TopBar, Footer } from "./layout";
+import { Machine } from "./machine/Machine";
+import { Notices } from "./notices/Notices";
 import './app.css';
 import "./themes.css";
 
@@ -28,6 +29,7 @@ export const App: FC = () => {
                 <TopBar />
                 <Machine applicationSettings={applicationSettings} onApplicationSettingsChange={setApplicationSettings} />
                 <Footer />
+                <Notices />
             </StateWardenContext.Provider>
         </StrictMode>
     );
