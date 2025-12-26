@@ -7,7 +7,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 module.exports = (env, argv) => merge(config(env, argv), {
     mode: 'production',
     entry: {
-        main: path.resolve('./src/index.tsx')
+        machine: path.resolve('./src/index.tsx')
     },
     target: 'web',
     module: Object.assign({}, config.module, {
