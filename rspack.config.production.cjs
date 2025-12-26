@@ -7,7 +7,7 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 module.exports = (env, argv) => merge(config(env, argv), {
     mode: 'production',
     entry: {
-        main: path.resolve('./src/index.tsx')
+        machine: path.resolve('./src/index.tsx')
     },
     target: 'web',
     module: Object.assign({}, config.module, {
@@ -83,6 +83,22 @@ module.exports = (env, argv) => merge(config(env, argv), {
                 node_modules: {
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendors-node-modules',
+                },
+                apparatus: {
+                    test: /[\\/]src[\\/]apparatus[\\/]/,
+                    name: 'apparatus',
+                },
+                ['tinker-chest']: {
+                    test: /[\\/]src[\\/]tinker-chest[\\/]/,
+                    name: 'tinker-chest',
+                },
+                gears: {
+                    test: /[\\/]src[\\/]gears[\\/]/,
+                    name: 'gears',
+                },
+                ui: {
+                    test: /[\\/]src[\\/]ui[\\/]/,
+                    name: 'ui',
                 },
             },
         },
