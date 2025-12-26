@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { OverlayComponentProps } from "../../../apparatus";
+import { OverlayComponentProps } from "@apparatus";
 import { ImageMarker, MarkerImageData } from "./ImageMarker";
 
 export const ImageMarkers: FC<OverlayComponentProps> = ({

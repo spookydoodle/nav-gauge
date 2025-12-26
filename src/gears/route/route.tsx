@@ -1,4 +1,4 @@
-import { Gear } from "../../apparatus";
+import { Gear } from "@apparatus";
 import { ImageMarkers } from "./images/ImageMarkers";
 import { RouteLayer } from "./RouteLayer";
 

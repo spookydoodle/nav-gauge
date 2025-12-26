@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useStateWarden } from "../../apparatus";
+import { useStateWarden } from "@apparatus";
 import findIcon from '../icons/find.svg';
 import * as styles from './route-layer.module.css';
 

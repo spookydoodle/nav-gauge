@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { FileInputStatus } from "../../components";
-import { FileToGeoJSONParser, GeoJson, parsers, ParsingResultWithError } from "../../apparatus";
+import { FileToGeoJSONParser, GeoJson, parsers, ParsingResultWithError } from "@apparatus";
+import { FileInputStatus } from "@ui";
 
 interface Props {
     routeName?: string;

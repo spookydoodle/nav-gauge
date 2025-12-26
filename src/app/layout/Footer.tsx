@@ -1,6 +1,5 @@
 import { FC } from "react";
-import { useSubjectState } from "../machine/hooks";
-import { useStateWarden } from "../apparatus";
+import { useStateWarden, useSubjectState } from "@apparatus";
 import * as styles from './layout.module.css';
 
 export const Footer: FC = () => {

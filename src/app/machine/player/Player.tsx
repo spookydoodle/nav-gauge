@@ -1,10 +1,9 @@
 import { CSSProperties, FC, useEffect } from "react";
-import { GeoJson, MarkerImage, SurveillanceState, useStateWarden } from "../../apparatus";
-import { RouteTimes, formatProgressMs, formatTimestamp, getProgressPercentage } from "../../tinker-chest";
-import { updateRouteLayer } from "../../gears";
-import { useSubjectState } from "../hooks";
-import * as styles from './player.module.css';
 import { pairwise } from "rxjs";
+import { GeoJson, MarkerImage, SurveillanceState, useStateWarden, useSubjectState } from "@apparatus";
+import { RouteTimes, formatProgressMs, formatTimestamp, getProgressPercentage } from "@tinker-chest";
+import { updateRouteLayer } from "@gears";
+import * as styles from './player.module.css';
 
 interface Props {
     geojson?: GeoJson;
