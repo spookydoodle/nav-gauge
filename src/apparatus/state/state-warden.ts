@@ -7,14 +7,15 @@ import { SignaliumBureau } from "./signalium-bureau";
 
 /**
  * Warden does what warden needs to do.
+ * Guards the state and provides access to control mechanisms.
  */
 export class StateWarden {
-    public signaliumBureau = new SignaliumBureau();
     public animatrix = new Animatrix();
-    public chronoLens = new ChronoLens(this.signaliumBureau);
+    public chronoLens = new ChronoLens();
     public attributionVault = new AttributionVault();
     public cartomancer = new Cartomancer();
     public engine = new Engine();
+    public signaliumBureau = new SignaliumBureau();
 
     public constructor() { }
 }

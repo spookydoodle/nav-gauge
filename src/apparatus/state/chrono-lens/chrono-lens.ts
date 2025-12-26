@@ -14,7 +14,7 @@ export class ChronoLens {
     public isPlaying$ = new BehaviorSubject(false);
     public donwloadName$ = new BehaviorSubject('Voyage Log');
 
-    public constructor() {}
+    public constructor() { }
 
     public startRecording = async (
         onError?: (stage: string, error: Error) => void
@@ -37,26 +37,15 @@ export class ChronoLens {
     };
 
     public stopRecording = () => {
-        this.recorder?.stop();
-    };
-
-    private stop = () => {
-        this.isPlaying$.next(false);
-        this.surveillanceState$.next(SurveillanceState.Stopped);
+        this.destroyRecording();
     };
 
     private setup = async (
         onError?: (stage: string, error: Error) => void
     ) => {
         try {
-            const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: {
-                    frameRate: this.frameRate$.value
-                },
-                audio: false
-            })
-            this.stream = stream;
-            this.recorder = this.setupRecording(stream, onError);
+            this.stream = await this.createStream();
+            this.recorder = this.createRecorder(this.stream, onError);
         } catch (error) {
             this.stream = undefined;
             this.recorder = undefined;
@@ -64,10 +53,28 @@ export class ChronoLens {
         }
     }
 
-    private setupRecording(
+    private createStream = async (): Promise<MediaStream> => {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+            video: {
+                frameRate: this.frameRate$.value
+            },
+            audio: false
+        })
+        const [videoTrack] = stream.getVideoTracks();
+
+        const handler = () => {
+            this.destroyRecording();
+            videoTrack.removeEventListener("ended", handler)
+        };
+        videoTrack.addEventListener("ended", handler);
+
+        return stream;
+    };
+
+    private createRecorder = (
         stream: MediaStream,
         onError?: (stage: string, error: Error) => void
-    ): MediaRecorder {
+    ): MediaRecorder => {
         const recorder = new MediaRecorder(stream, {
             mimeType: "video/webm; codecs=vp9",
         });
@@ -77,21 +84,26 @@ export class ChronoLens {
         }
 
         recorder.onpause = () => { }
+        recorder.onresume = () => { }
 
         recorder.onstop = () => {
+            this.stop();
             this.download();
             this.chunks = [];
-            this.stop();
         };
 
         recorder.onerror = (e) => {
-            this.stopRecording();
-            this.cleanup();
+            this.destroyRecording();
             onError?.("recording", e.error);
         };
 
         return recorder;
     }
+
+    private stop = () => {
+        this.isPlaying$.next(false);
+        this.surveillanceState$.next(SurveillanceState.Stopped);
+    };
 
     private download = () => {
         const blob = new Blob(this.chunks, {
@@ -117,13 +129,15 @@ export class ChronoLens {
     /**
      * Resets the recorder and stream completely.
      */
-    public cleanup = () => {
+    public destroyRecording = () => {
         this.recorder?.stop();
+
         for (const track of this.stream?.getTracks() ?? []) {
             track.stop();
         }
-        this.recorder = undefined;
+
         this.stream = undefined;
+        this.recorder = undefined;
         this.chunks = [];
     };
 }

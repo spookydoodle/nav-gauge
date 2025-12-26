@@ -34,6 +34,7 @@ export const Player: FC<Props> = ({
         chronoLens.surveillanceState$
             .pipe(pairwise())
             .subscribe(([prev, next]) => {
+                console.log({prev, next})
                 switch (next) {
                     case SurveillanceState.Stopped:
                         chronoLens.stopRecording();
@@ -60,7 +61,7 @@ export const Player: FC<Props> = ({
             });
 
         return () => { };
-    }, [surveillanceState]);
+    }, []);
 
     const handlePlayClick = () => setIsPlaying((prev) => !prev);
     const handleRecordClick = () => setSurveillanceState((prev) => prev === SurveillanceState.Stopped
@@ -135,7 +136,7 @@ export const Player: FC<Props> = ({
                         {surveillanceState === SurveillanceState.Paused ? 'Resume' : 'Pause'} recording
                     </button>
                 ) : null}
-                <button onClick={() => chronoLens.cleanup()}>Clear</button>
+                <button onClick={() => chronoLens.destroyRecording()}>Clear</button>
                 <p className={styles.text}>
                     {formatTimestamp(progressMs, routeTimes?.startTimeEpoch)}
                 </p>
