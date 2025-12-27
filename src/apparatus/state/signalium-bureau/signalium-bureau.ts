@@ -11,7 +11,7 @@ export class SignaliumBureau {
      * Time after which the notice should be automatically removed.
      */
     private defaultExpirationTime = 10000;
-    public notices$ = new BehaviorSubject<SignaliumNotice[]>([]);
+    public notices$ = new BehaviorSubject<(SignaliumNotice & { expirationTimeout?: NodeJS.Timeout })[]>([]);
 
     public constructor() { }
 
@@ -31,16 +31,21 @@ export class SignaliumBureau {
             keepAlive = false,
             expirationTime = this.defaultExpirationTime
         } = options;
-
-        const nextNotices = this.notices$.value.filter((n) => n.id !== notice.id).concat([notice]);
-        this.notices$.next(nextNotices);
+        let expirationTimeout: NodeJS.Timeout | undefined;
 
         if (notice.type !== 'error' && !keepAlive) {
-            setTimeout(() => this.removeNotice(notice.id), expirationTime);
+            expirationTimeout = setTimeout(() => this.removeNotice(notice.id), expirationTime);
         }
+
+        const nextNotices = this.notices$.value.filter((n) => n.id !== notice.id).concat([{ ...notice, expirationTimeout }]);
+        this.notices$.next(nextNotices);
     }
 
     public removeNotice = (noticeId: string) => {
+        const expirationTimeout = this.notices$.value.find((notice) => notice.id === noticeId)?.expirationTimeout;
+        if (expirationTimeout) {
+            clearTimeout(expirationTimeout);
+        }
         this.notices$.next(this.notices$.value.filter((n) => n.id !== noticeId));
     }
 }
