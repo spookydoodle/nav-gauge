@@ -45,6 +45,8 @@ export interface LoadedImageData extends Omit<MarkerImage, 'progress' | 'error' 
     data: ImageBitmap;
 }
 
+export const IMAGE_SIZE = 400;
+
 export const parseImage = async (
     file: File,
     e: ProgressEvent<FileReader>
@@ -59,8 +61,8 @@ export const parseImage = async (
 
     let data: ImageBitmap | undefined;
     try {
-        data = await resizeImage(e.target?.result?.toString(), {
-            targetSize: 400,
+        data = await resizeImage(e.target?.result, {
+            targetSize: IMAGE_SIZE,
             keepAspectRatio: false,
             shape: 'circle'
         });
@@ -83,7 +85,7 @@ export const parseImage = async (
  * @returns Resized image
  */
 const resizeImage = (
-    result?: string,
+    result?: FileReader['result'],
     options: {
         targetSize?: number;
         shape?: 'circle' | 'square',

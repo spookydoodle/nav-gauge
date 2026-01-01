@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { LoadedImageData, OverlayComponentProps, useMapImages, useStateWarden } from "@apparatus";
+import { LoadedImageData, OverlayComponentProps, useMapImages, useStateWarden, IMAGE_SIZE } from "@apparatus";
 import { useLoadedImages } from "../hooks/useLoadedImages";
 import { sourceIds, layerIds } from '../tinkers';
 
@@ -21,8 +21,8 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
         icon: image.data,
         name: getId(image),
         options: {
-            // width: 24,
-            // height: 24
+            width: IMAGE_SIZE,
+            height: IMAGE_SIZE
         }
     })))
 
@@ -52,25 +52,22 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
             type: 'symbol',
             layout: {
                 'icon-image': ['get', 'image'],
-                'icon-size': [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    5, 1,
-                    10, 1,
-                    15, 1
-                ],
+                'icon-size': 1 / (IMAGE_SIZE / 50),
                 'icon-allow-overlap': true
             },
             paint: {
             }
         });
 
+
+
         return () => {
             map.removeLayer(layerIds.images);
             map.removeSource(sourceIds.image);
         };
     }, [map, loadedImages]);
+
+    // TODO: Add drag handlers
 
     return null;
 };
