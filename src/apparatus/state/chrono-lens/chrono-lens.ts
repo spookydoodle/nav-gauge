@@ -106,7 +106,6 @@ export class ChronoLens {
         };
 
         recorder.onerror = (event) => {
-            console.log("Err", event)
             this.destroyRecording();
             onError?.("recording", event.error);
         };

@@ -1,7 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState } from "@apparatus";
+import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState, useMapImages } from "@apparatus";
 import { currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "./tinkers";
+import { useLoadedImages } from "./hooks/useLoadedImages";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({
     geojson,
@@ -31,12 +32,21 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
     } = animationControls;
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
-    const loadedImages: LoadedImageData[] = images.filter(({ progress, error, ...image }) =>
-        progress === 100 && image.data && image.featureId !== undefined
-    ) as LoadedImageData[];
+    const loadedImages = useLoadedImages(images);
+
+    useMapImages(loadedImages.map((image) => ({
+        icon: image.data,
+        name: `image-${image.id}`,
+    })));
 
     useEffect(() => {
-        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs, bearingLineLengthInMeters);
+        const { currentPoint, lines } = getRouteSourceData(
+            geojson,
+            routeTimes.startTimeEpoch,
+            progressMs,
+            bearingLineLengthInMeters
+        );
+
         if (showRouteLine || showRoutePoints) {
             map.addSource(sourceIds.line, {
                 type: 'geojson',

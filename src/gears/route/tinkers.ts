@@ -26,6 +26,7 @@ export const layerIds = {
     currentPoint: 'route-current-point',
     points: 'route-points',
     line: 'route-line',
+    images: 'route-images'
 }
 
 export const routeLineLayer: maplibregl.LineLayerSpecification = {

@@ -1,6 +1,7 @@
 import { Gear } from "@apparatus";
 import { ImageMarkers } from "./images/ImageMarkers";
 import { RouteLayer } from "./RouteLayer";
+import { ImagesLayer } from "./images/ImagesLayer";
 
 export const routeGear: Gear = {
     id: 'route',
@@ -11,7 +12,7 @@ export const routeGear: Gear = {
         });
         stateWarden.cartomancer.addOverlay({
             id: 'images',
-            component: ImageMarkers,
+            component: ImagesLayer,
         });
     },
     disengage: (stateWarden) => {

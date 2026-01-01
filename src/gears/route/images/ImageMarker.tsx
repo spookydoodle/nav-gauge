@@ -79,19 +79,21 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
         };
     }, [displayImageId, image.id]);
 
-    return ReactDOM.createPortal(
-        <img
-            src={image.data}
-            alt={`image ${image.id}`}
-            className={classNames(styles['image-marker'], {
-                [styles['in-display']]: displayImageId === image.id
-            })}
-            style={{
-                // TODO: Add ref client size observer to handle the "full screen" size
-                '--image-size': `${imageSize}px`,
-                '--image-display-scale': Math.ceil(Math.min(size.width, size.height) / imageSize)
-            } as CSSProperties}
-        />,
-        image.markerElement
-    );
+    // TODO: Check if string data should be supported
+    return null;
+    // return ReactDOM.createPortal(
+    //     <img
+    //         src={image.data}
+    //         alt={`image ${image.id}`}
+    //         className={classNames(styles['image-marker'], {
+    //             [styles['in-display']]: displayImageId === image.id
+    //         })}
+    //         style={{
+    //             // TODO: Add ref client size observer to handle the "full screen" size
+    //             '--image-size': `${imageSize}px`,
+    //             '--image-display-scale': Math.ceil(Math.min(size.width, size.height) / imageSize)
+    //         } as CSSProperties}
+    //     />,
+    //     image.markerElement
+    // );
 };
