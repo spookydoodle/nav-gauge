@@ -1,8 +1,8 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo } from "react";
 import maplibregl from "maplibre-gl";
-import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState } from "@apparatus";
+import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState, useMapLayerData } from "@apparatus";
 import { getRouteSourceData, updateRouteLayer } from "./tinkers";
-import { currentPointLayers, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "./layers";
+import { currentPointLayers, routeLineLayer, routePointsLayer, sourceIds } from "./layers";
 import { useLoadedImages } from "./hooks/useLoadedImages";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({
@@ -31,11 +31,11 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
         bearingLineLengthInMeters,
         maxBearingDiffPerFrame,
     } = animationControls;
-    const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     const loadedImages = useLoadedImages(images);
 
-    useEffect(() => {
+    const sources = useMemo((): { [key in string]: maplibregl.SourceSpecification } => {
+        console.log("getting sources")
         const { currentPoint, lines } = getRouteSourceData(
             geojson,
             routeTimes.startTimeEpoch,
@@ -43,41 +43,34 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
             bearingLineLengthInMeters
         );
 
-        if (showRouteLine || showRoutePoints) {
-            map.addSource(sourceIds.line, {
+        return {
+            [sourceIds.line]: {
                 type: 'geojson',
-                data: lines,
+                data: showRouteLine || showRoutePoints
+                    ? lines
+                    : { type: 'FeatureCollection', features: [] },
                 promoteId: 'id'
-            });
-        }
-
-        map.addSource(sourceIds.currentPoint, {
-            type: 'geojson',
-            data: currentPoint,
-        });
-
-        if (showRouteLine) {
-            map.addLayer(routeLineLayer);
-        }
-
-        if (showRoutePoints) {
-            map.addLayer(routePointsLayer);
-        }
-
-        currentPointLayers.forEach((layer) => map.addLayer(layer));
-
-        setIsLayerAdded(true);
-        return () => {
-            setIsLayerAdded(false);
-            cartomancer.clearLayersAndSources(
-                [layerIds.line, layerIds.points, layerIds.currentPointOutline, layerIds.currentPoint],
-                [sourceIds.line, sourceIds.currentPoint]
-            );
+            },
+            [sourceIds.currentPoint]: {
+                type: 'geojson',
+                data: currentPoint,
+            }
         };
-    }, [map, geojson, showRouteLine, showRoutePoints, bearingLineLengthInMeters]);
+    }, [geojson, routeTimes.startTimeEpoch, bearingLineLengthInMeters, showRouteLine, showRoutePoints]);
+
+    const layers = useMemo((): maplibregl.LayerSpecification[] => {
+        console.log("Getting layers")
+        return [
+            showRouteLine ? routeLineLayer : null,
+            showRoutePoints ? routePointsLayer : null,
+            ...currentPointLayers
+        ].reduce<maplibregl.LayerSpecification[]>((acc, val) => val ? acc.concat([val]) : acc, []);
+    }, [showRouteLine, showRoutePoints]);
+
+    useMapLayerData(sources, layers)
 
     useEffect(() => {
-        if (!isPlaying || !isLayerAdded) {
+        if (!isPlaying) {
             return;
         }
         let animation: number | undefined;
@@ -151,7 +144,6 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
         };
     }, [
         isPlaying,
-        isLayerAdded,
         followCurrentPoint,
         cameraAngle,
         cameraRoll,

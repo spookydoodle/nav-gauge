@@ -35,13 +35,8 @@ export const useMapLayerData = (
     const { buffer = 4 } = handlers?.options ?? {};
 
     useEffect(() => {
-        for (const [sourceId, source] of Object.entries(sources)) {
-            map.addSource(sourceId, source);
-        }
-
-        for (const layer of layers) {
-            map.addLayer(layer);
-        }
+        console.log("add", sources)
+        cartomancer.addSourcesAndLayers(sources, layers)
 
         const queryFeatures = (event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent): {
             features: maplibregl.MapGeoJSONFeature[];
@@ -101,14 +96,11 @@ export const useMapLayerData = (
 
             map.off('touchstart', mouseDownHandler);
             map.off('touchend', mouseUpHandler);
-
-            for (const layer of layers) {
-                map.removeLayer(layer.id);
-            }
-
-            for (const sourceId of Object.keys(sources)) {
-                map.removeSource(sourceId);
-            }
+console.log("remove", sources)
+            cartomancer.clearLayersAndSources(
+                layers.map((layer) => layer.id),
+                Object.keys(sources)
+            );
         };
     }, [map, sources, layers, handlers, buffer]);
 

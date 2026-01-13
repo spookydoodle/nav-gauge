@@ -68,11 +68,11 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
     }, [closestFeatureId]);
 
     useEffect(() => {
-        if ( displayImageId !== image.id) {
+        if (displayImageId !== image.id) {
             return;
         }
         image.markerElement.classList.add(styles['display-container']);
-        
+
         return () => {
             image.markerElement.classList.remove(styles['display-container']);
         };

@@ -98,9 +98,23 @@ export class Cartomancer {
     };
 
     /**
+     * Adds sources and afterwards layers.
+     */
+    public addSourcesAndLayers = (
+        sources: { [key in string]: maplibregl.SourceSpecification },
+        layers: maplibregl.LayerSpecification[],
+    ) => {
+        for (const [sourceId, source] of Object.entries(sources)) {
+            this.map.addSource(sourceId, source);
+        }
+
+        for (const layer of layers) {
+            this.map.addLayer(layer);
+        }
+    };
+
+    /**
      * Removes layers with given `layerIds` and afterwards sources with given `sourceIds`.
-     * @param layerIds 
-     * @param sourceIds 
      */
     public clearLayersAndSources = (
         layerIds: string[],
