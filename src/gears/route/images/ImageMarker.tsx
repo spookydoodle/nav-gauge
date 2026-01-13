@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import maplibregl from "maplibre-gl";
 import { Cartomancer, GeoJson, MarkerImage, useStateWarden, useSubjectState, FeatureStateProps, useGaugeContext } from "@apparatus";
-import { sourceIds } from '../tinkers';
+import { sourceIds } from '../layers';
 import * as styles from './images.module.css';
 
 const imageSize = 30;
@@ -28,12 +28,11 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
 
     useEffect(() => {
         const handleDrag = () => {
-            const lngLat = image.marker.getLngLat();
-            setClosestFeatureId(Cartomancer.getClosestFeature(geojson, lngLat)[0]);
+            setClosestFeatureId(Cartomancer.getClosestFeature(geojson, image.marker.getLngLat())[0]);
         };
+
         const handleDragEnd = () => {
-            const lngLat = image.marker.getLngLat();
-            const [id, feature] = Cartomancer.getClosestFeature(geojson, lngLat);
+            const [id, feature] = Cartomancer.getClosestFeature(geojson, image.marker.getLngLat());
             image.marker.setLngLat(new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]));
             onUpdateImageFeatureId(image.id, id);
 
@@ -80,20 +79,19 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
     }, [displayImageId, image.id]);
 
     // TODO: Check if string data should be supported
-    return null;
-    // return ReactDOM.createPortal(
-    //     <img
-    //         src={image.data}
-    //         alt={`image ${image.id}`}
-    //         className={classNames(styles['image-marker'], {
-    //             [styles['in-display']]: displayImageId === image.id
-    //         })}
-    //         style={{
-    //             // TODO: Add ref client size observer to handle the "full screen" size
-    //             '--image-size': `${imageSize}px`,
-    //             '--image-display-scale': Math.ceil(Math.min(size.width, size.height) / imageSize)
-    //         } as CSSProperties}
-    //     />,
-    //     image.markerElement
-    // );
+    return ReactDOM.createPortal(
+        <img
+            src={image.data}
+            alt={`image ${image.id}`}
+            className={classNames(styles['image-marker'], {
+                [styles['in-display']]: displayImageId === image.id
+            })}
+            style={{
+                // TODO: Add ref client size observer to handle the "full screen" size
+                '--image-size': `${imageSize}px`,
+                '--image-display-scale': Math.ceil(Math.min(size.width, size.height) / imageSize)
+            } as CSSProperties}
+        />,
+        image.markerElement
+    );
 };

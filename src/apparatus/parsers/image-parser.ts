@@ -31,7 +31,8 @@ export interface MarkerImage {
     name: string;
     progress: number;
     lngLat?: maplibregl.LngLat;
-    data?: ImageBitmap;
+    data?: string;
+    bitmap?: ImageBitmap;
     exif?: ExifData;
     error?: string;
     featureId?: number;
@@ -42,7 +43,8 @@ export interface MarkerImage {
 export interface LoadedImageData extends Omit<MarkerImage, 'progress' | 'error' | 'featureId' | 'data' | 'lngLat'> {
     lngLat: maplibregl.LngLat;
     featureId: number;
-    data: ImageBitmap;
+    data: string;
+    bitmap: ImageBitmap;
 }
 
 export const IMAGE_SIZE = 400;
@@ -51,7 +53,8 @@ export const parseImage = async (
     file: File,
     e: ProgressEvent<FileReader>
 ): Promise<{
-    data?: ImageBitmap;
+    data?: string;
+    bitmap?: ImageBitmap;
     exif?: ExifData;
     error?: string;
     lngLat?: maplibregl.LngLat;
@@ -59,9 +62,9 @@ export const parseImage = async (
     const buffer = await file.arrayBuffer();
     const exif = EXIF.readFromBinaryFile(buffer) as false | ExifData;
 
-    let data: ImageBitmap | undefined;
+    let bitmap: ImageBitmap | undefined;
     try {
-        data = await resizeImage(e.target?.result, {
+        bitmap = await resizeImage(e.target?.result, {
             targetSize: IMAGE_SIZE,
             keepAspectRatio: false,
             shape: 'circle'
@@ -72,7 +75,8 @@ export const parseImage = async (
 
     // TODO: Derive timezone
     return {
-        data,
+        data: e.target?.result?.toString(),
+        bitmap,
         exif: exif || undefined,
         lngLat: getLngLat(exif || undefined),
         error: getError(exif),

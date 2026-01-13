@@ -6,7 +6,7 @@ import { LoadedImageData, MarkerImage } from "@apparatus";
  */
 export const useLoadedImages = (images: MarkerImage[]) => {
     const loadedImages: LoadedImageData[] = useMemo(() => images.filter(({ progress, error, ...image }) =>
-        progress === 100 && image.data && image.featureId !== undefined
+        progress === 100 && image.bitmap && image.data && image.featureId !== undefined
     ) as LoadedImageData[], [images]);
 
     return loadedImages;

@@ -1,7 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState, useMapImages } from "@apparatus";
-import { currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "./tinkers";
+import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState } from "@apparatus";
+import { getRouteSourceData, updateRouteLayer } from "./tinkers";
+import { currentPointLayers, layerIds, routeLineLayer, routePointsLayer, sourceIds } from "./layers";
 import { useLoadedImages } from "./hooks/useLoadedImages";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({
@@ -33,11 +34,6 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
     const [isLayerAdded, setIsLayerAdded] = useState(false);
 
     const loadedImages = useLoadedImages(images);
-
-    useMapImages(loadedImages.map((image) => ({
-        icon: image.data,
-        name: `image-${image.id}`,
-    })));
 
     useEffect(() => {
         const { currentPoint, lines } = getRouteSourceData(
