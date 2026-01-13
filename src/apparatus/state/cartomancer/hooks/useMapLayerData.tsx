@@ -8,6 +8,14 @@ export interface MapLayerHandlerData {
     isTopRelated: boolean;
 }
 
+export interface MapDataHandlers {
+    onMouseMove?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent) => void,
+    onMouseDown?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => void,
+    onMouseUp?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => void,
+    onClick?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent) => void,
+    options?: MapLayerHandlerOptions;
+}
+
 export interface MapLayerHandlerOptions {
     /**
      * Buffer around cursor in pixels for feature detection. Defaults to 4px.
@@ -18,13 +26,7 @@ export interface MapLayerHandlerOptions {
 export const useMapLayerData = (
     sources: { [key in string]: maplibregl.SourceSpecification },
     layers: maplibregl.LayerSpecification[],
-    handlers?: {
-        onMouseMove?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent) => void,
-        onMouseDown?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => void,
-        onMouseUp?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => void,
-        onClick?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent) => void,
-        options?: MapLayerHandlerOptions;
-    },
+    handlers?: MapDataHandlers,
     /**
      * Tuple [sourceId, featureIds]
      */
@@ -96,7 +98,7 @@ export const useMapLayerData = (
 
             map.off('touchstart', mouseDownHandler);
             map.off('touchend', mouseUpHandler);
-console.log("remove", sources)
+            console.log("remove", sources)
             cartomancer.clearLayersAndSources(
                 layers.map((layer) => layer.id),
                 Object.keys(sources)

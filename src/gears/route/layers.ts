@@ -5,12 +5,11 @@ import { getImageIconSize } from "./tinkers";
 export const colorActive = '#003161';
 export const colorInactive = 'grey';
 
-export const sourceId = 'route';
-
 export const sourceIds = {
-    currentPoint: sourceId + '-current-point',
-    line: sourceId + '-line',
-    image: sourceId + '-image',
+    currentPoint: 'route-current-point',
+    line: 'route-line',
+    image: 'route-image',
+    imageInDisplay: 'route-image-in-display',
 }
 
 export const layerIds = {
@@ -21,6 +20,7 @@ export const layerIds = {
     images: 'route-images',
     imagesHighlight: 'route-images-highlight',
     imagesHighlightOutline: 'route-images-highlight-outline',
+    imageInDisplay: 'route-image-in-display',
 }
 
 export const routeLineLayer: maplibregl.LineLayerSpecification = {
@@ -83,6 +83,7 @@ export const currentPointLayers: maplibregl.CircleLayerSpecification[] = [
 
 const IMAGE_PROPERTY = 'image';
 const CIRCLE_RADIUS = 25;
+export const DEFAULT_IMAGE_SIZE = 2 * CIRCLE_RADIUS;
 
 export type ImageFeature = GeoJSON.Feature<GeoJSON.Point, ImageFeatureProperties>;
 export interface ImageFeatureProperties {
@@ -90,26 +91,28 @@ export interface ImageFeatureProperties {
     [IMAGE_PROPERTY]: string;
 }
 
+const getImageLayer = (): maplibregl.SymbolLayerSpecification => ({
+    id: layerIds.images,
+    source: sourceIds.image,
+    type: 'symbol',
+    layout: {
+        'icon-image': ['get', IMAGE_PROPERTY],
+        'icon-size': getImageIconSize(IMAGE_SIZE, DEFAULT_IMAGE_SIZE),
+        'icon-allow-overlap': true,
+    },
+    paint: {
+        'icon-opacity': [
+            'case',
+            ["==", ["feature-state", FeatureStateProps.Dragging], true],
+            0.5,
+            1
+        ]
+    }
+});
+
 // TODO: Depoendent on base map style
 export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] => {
-    const imageLayer: maplibregl.SymbolLayerSpecification = {
-        id: layerIds.images,
-        source: sourceIds.image,
-        type: 'symbol',
-        layout: {
-            'icon-image': ['get', IMAGE_PROPERTY],
-            'icon-size': getImageIconSize(IMAGE_SIZE, CIRCLE_RADIUS * 2),
-            'icon-allow-overlap': true,
-        },
-        paint: {
-            'icon-opacity': [
-                'case',
-                ["==", ["feature-state", FeatureStateProps.Dragging], true],
-                0.5,
-                1
-            ]
-        }
-    };
+    const imageLayer = getImageLayer();
 
     return [
         imageLayer,
@@ -125,8 +128,8 @@ export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] =
                 "circle-radius": CIRCLE_RADIUS,
                 'circle-stroke-opacity': [
                     'case',
-                ["==", ["feature-state", FeatureStateProps.Dragging], true],
-                0.5,
+                    ["==", ["feature-state", FeatureStateProps.Dragging], true],
+                    0.5,
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     1,
                     0
@@ -139,8 +142,8 @@ export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] =
             paint: {
                 'icon-opacity': [
                     'case',
-                ["==", ["feature-state", FeatureStateProps.Dragging], true],
-                0.5,
+                    ["==", ["feature-state", FeatureStateProps.Dragging], true],
+                    0.5,
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     1,
                     0
@@ -149,3 +152,16 @@ export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] =
         },
     ];
 }
+
+export const getInDisplayImageLayer = (): maplibregl.SymbolLayerSpecification => {
+    const imageLayer = getImageLayer();
+    
+    return {
+        ...imageLayer,
+        source: sourceIds.imageInDisplay,
+        id: layerIds.imageInDisplay,
+        paint: {
+            'icon-opacity': 1
+        }
+    };
+};

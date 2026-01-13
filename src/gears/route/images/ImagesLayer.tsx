@@ -1,8 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { LoadedImageData, OverlayComponentProps, useMapImages, useStateWarden, IMAGE_SIZE, Cartomancer, useGaugeContext, FeatureStateProps, useMapLayerData } from "@apparatus";
+import { LoadedImageData, OverlayComponentProps, useMapImages, useStateWarden, IMAGE_SIZE, Cartomancer, useGaugeContext, FeatureStateProps, useMapLayerData, useSubjectState, MapDataHandlers } from "@apparatus";
 import { useLoadedImages } from "../hooks/useLoadedImages";
-import { sourceIds, getImagesLayers, ImageFeature, ImageFeatureProperties } from '../layers';
+import { sourceIds, getImagesLayers, ImageFeature, ImageFeatureProperties, layerIds, DEFAULT_IMAGE_SIZE, getInDisplayImageLayer } from '../layers';
+import { getImageIconSize } from "../tinkers";
 
 const getId = (image: LoadedImageData): string => `image-${image.id}`;
 
@@ -12,11 +13,12 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
     onUpdateImageFeatureId,
 }) => {
     const { theme } = useGaugeContext();
-    const { cartomancer } = useStateWarden();
+    const { cartomancer, animatrix } = useStateWarden();
     const { map } = cartomancer;
     const loadedImages = useLoadedImages(images);
     const [highlightIds, setHighlightIds] = useState<Set<string>>(new Set());
     const [draggingId, setDraggingId] = useState<number | null>(null);
+    const [displayImageId] = useSubjectState(animatrix.displayImageId$);
 
     useMapImages(loadedImages.filter((image) => !!image.bitmap).map((image) => ({
         icon: image.bitmap,
@@ -27,7 +29,7 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
         }
     })))
 
-    const sourceDataGeojson: GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeatureProperties> = {
+    const sourceDataGeojson = useMemo((): GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeatureProperties> => ({
         type: 'FeatureCollection',
         features: loadedImages.reduce<ImageFeature[]>((acc, image) => {
             const feature = geojson.features.find((f) => f.properties.id === image.featureId);
@@ -43,18 +45,19 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
             }
             return acc;
         }, [])
-    };
+    }), [loadedImages, geojson]);
 
-    const sources: { [key in string]: maplibregl.SourceSpecification } = {
+    const sources = useMemo((): { [key in string]: maplibregl.SourceSpecification } => ({
         [sourceIds.image]: {
             type: "geojson",
             data: sourceDataGeojson,
             promoteId: 'imageId'
         }
-    };
-    const layers = getImagesLayers(theme);
+    }), [sourceDataGeojson]);
+    
+    const layers = useMemo(() => getImagesLayers(theme), [theme]);
 
-    useMapLayerData(sources, layers, {
+    const handlers = useMemo((): MapDataHandlers => ({
         onMouseMove: ({ features, isTopRelated }) => {
             if (!isTopRelated) {
                 return;
@@ -68,7 +71,9 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
             setDraggingId(features[0].properties.imageId);
         },
         onMouseUp: () => setDraggingId(null)
-    }, [[sourceIds.image, highlightIds]])
+    }), []);
+
+    useMapLayerData(sources, layers, handlers, [[sourceIds.image, highlightIds]])
 
     useEffect(() => {
         if (draggingId === null) {
@@ -79,11 +84,10 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
                 map.setFeatureState({ source: sourceIds.image, id: draggingId }, { [FeatureStateProps.Dragging]: value });
             }
         };
-
         update(true);
 
         return () => {
-            update(false)
+            update(false);
         };
     }, [draggingId]);
 
@@ -134,6 +138,75 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
             map.dragPan.enable();
         };
     }, [draggingId]);
+
+    const isInDisplay = displayImageId !== null;
+
+    const inDisplaySource = useMemo((): { [key in string]: maplibregl.SourceSpecification } => {
+        const image = loadedImages.find((image) => image.id === displayImageId);
+        const feature = geojson.features.find((f) => f.properties.id === image?.featureId);
+        console.log("indi")
+        return {
+            [sourceIds.imageInDisplay]: {
+                type: 'geojson',
+                data: image && feature ? {
+                    type: 'Feature',
+                    geometry: feature.geometry,
+                    properties: {
+                        imageId: image.id,
+                        image: getId(image)
+                    }
+                } : { type: 'FeatureCollection', features: [] }
+            }
+        };
+    }, [displayImageId, loadedImages]);
+
+    const inDisplayLayers = useMemo(() => [getInDisplayImageLayer()], [])
+
+    useMapLayerData(inDisplaySource, inDisplayLayers);
+
+    useEffect(() => {
+        function easeInOut(t: number) {
+            return t < 0.5
+                ? 2 * t * t
+                : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        }
+
+        function animateIconSize(
+            from: number,
+            to: number,
+            onFinish?: () => void,
+        ): void {
+            const duration = 250;
+            const start = performance.now();
+
+            const frame = (now: number) => {
+                const progress = Math.min((now - start) / duration, 1);
+                const value = from + (to - from) * easeInOut(progress);
+
+                if (map.getLayer(layerIds.imageInDisplay)) {
+                    map.setLayoutProperty(layerIds.imageInDisplay, 'icon-size', value);
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    onFinish?.();
+                }
+            };
+
+            requestAnimationFrame(frame);
+        }
+
+        const canvas = map.getCanvas();
+        const from = getImageIconSize(IMAGE_SIZE, DEFAULT_IMAGE_SIZE);
+        const to = getImageIconSize(IMAGE_SIZE, Math.min(canvas.width, canvas.height)) / 2;
+
+        if (isInDisplay) {
+            animateIconSize(from, to);
+        } else {
+            animateIconSize(to, from);
+        }
+    }, [isInDisplay]);
 
     return null;
 };

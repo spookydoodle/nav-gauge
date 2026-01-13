@@ -7,7 +7,8 @@ import turfLength from "@turf/length";
 import {
     GeoJson,
     // TODO: Move
-    CurrentPointData
+    CurrentPointData,
+    IMAGE_SIZE
 } from "@apparatus";
 import { sourceIds } from "./layers";
 
