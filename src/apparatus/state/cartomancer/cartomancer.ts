@@ -151,4 +151,17 @@ export class Cartomancer {
 
         return [feature.properties.id, feature];
     };
+
+    public updateFeatureState = (
+        source: string,
+        featureIds: Set<string | number>,
+        property: string,
+        value: boolean,
+    ) => {
+        for (const id of featureIds) {
+            if (this.map.getSource(source)) {
+                this.map.setFeatureState({ source, id: id }, { [property]: value });
+            }
+        }
+    };
 }

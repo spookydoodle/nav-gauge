@@ -125,6 +125,8 @@ export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] =
                 "circle-radius": CIRCLE_RADIUS,
                 'circle-stroke-opacity': [
                     'case',
+                ["==", ["feature-state", FeatureStateProps.Dragging], true],
+                0.5,
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     1,
                     0
@@ -137,6 +139,8 @@ export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] =
             paint: {
                 'icon-opacity': [
                     'case',
+                ["==", ["feature-state", FeatureStateProps.Dragging], true],
+                0.5,
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     1,
                     0
