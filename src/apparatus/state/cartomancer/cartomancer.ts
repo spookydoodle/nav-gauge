@@ -98,19 +98,39 @@ export class Cartomancer {
     };
 
     /**
-     * Removes layers with given `layerIds` and afterwards sources with given `sourceIds`.
-     * @param layerIds 
-     * @param sourceIds 
+     * Adds sources and afterwards layers.
      */
-    public clearLayersAndSources = (
-        layerIds: string[],
-        sourceIds: string[]
+    public addSourcesAndLayers = (
+        sources: { [key in string]: maplibregl.SourceSpecification },
+        layers: maplibregl.LayerSpecification[],
+        beforeId?: string,
     ) => {
-        for (const id of layerIds) {
+        for (const [sourceId, source] of Object.entries(sources)) {
+            this.map.addSource(sourceId, source);
+        }
+
+        for (const layer of layers) {
+            this.map.addLayer(layer, beforeId && this.map.getLayer(beforeId) ? beforeId : undefined);
+        }
+    };
+
+    /**
+     * Removes layers with given `layerIds` and afterwards sources with given `sourceIds`.
+     */
+    public clearLayersAndSources(layers: maplibregl.LayerSpecification[], sources: { [key: string]: maplibregl.SourceSpecification }): void;
+    public clearLayersAndSources(layers: string[], sources: string[]): void;
+    public clearLayersAndSources(
+        layers: maplibregl.LayerSpecification[] | string[],
+        sources: { [key: string]: maplibregl.SourceSpecification } | string[]
+    ): void {
+        for (const el of layers) {
+            const id: string = typeof el === 'string' ? el : el.id;
             if (this.map.getLayer(id)) {
                 this.map.removeLayer(id);
             }
         }
+
+        const sourceIds: string[] = Array.isArray(sources) ? sources : Object.keys(sources);
         for (const id of sourceIds) {
             if (this.map.getSource(id)) {
                 this.map.removeSource(id);
@@ -150,5 +170,18 @@ export class Cartomancer {
         }, Infinity]);
 
         return [feature.properties.id, feature];
+    };
+
+    public updateFeatureState = (
+        source: string,
+        featureIds: Set<string | number>,
+        property: string,
+        value: boolean,
+    ) => {
+        for (const id of featureIds) {
+            if (this.map.getSource(source)) {
+                this.map.setFeatureState({ source, id: id }, { [property]: value });
+            }
+        }
     };
 }

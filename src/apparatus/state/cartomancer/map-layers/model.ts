@@ -1,5 +1,6 @@
 export enum FeatureStateProps {
-    Highlight = 'highlight'
+    Highlight = 'highlight',
+    Dragging = 'dragging',
 }
 
 export interface CurrentPointData {

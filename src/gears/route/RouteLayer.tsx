@@ -1,7 +1,17 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo } from "react";
 import maplibregl from "maplibre-gl";
-import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState } from "@apparatus";
-import { currentPointLayers, getRouteSourceData, layerIds, routeLineLayer, routePointsLayer, sourceIds, updateRouteLayer } from "./tinkers";
+import {
+    OverlayComponentProps,
+    LoadedImageData,
+    useStateWarden,
+    useGaugeContext,
+    useSubjectState,
+    useMapLayerData,
+    MapLayerData
+} from "@apparatus";
+import { getRouteSourceData, updateRouteLayer } from "./tinkers";
+import { currentPointLayers, routeLineLayer, getRoutePointsLayer, sourceIds } from "./layers";
+import { useLoadedImages } from "./hooks/useLoadedImages";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({
     geojson,
@@ -29,49 +39,48 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
         bearingLineLengthInMeters,
         maxBearingDiffPerFrame,
     } = animationControls;
-    const [isLayerAdded, setIsLayerAdded] = useState(false);
 
-    const loadedImages: LoadedImageData[] = images.filter(({ progress, error, ...image }) =>
-        progress === 100 && image.data && image.featureId !== undefined
-    ) as LoadedImageData[];
+    const loadedImages = useLoadedImages(images);
 
-    useEffect(() => {
-        const { currentPoint, lines } = getRouteSourceData(geojson, routeTimes.startTimeEpoch, progressMs, bearingLineLengthInMeters);
-        if (showRouteLine || showRoutePoints) {
-            map.addSource(sourceIds.line, {
-                type: 'geojson',
-                data: lines,
-                promoteId: 'id'
-            });
-        }
+    const mapLayerData = useMemo((): MapLayerData => {
+        const { currentPoint, lines } = getRouteSourceData(
+            geojson,
+            routeTimes.startTimeEpoch,
+            progressMs,
+            bearingLineLengthInMeters
+        );
 
-        map.addSource(sourceIds.currentPoint, {
-            type: 'geojson',
-            data: currentPoint,
-        });
-
+        const layers: MapLayerData['layers'] = [];
         if (showRouteLine) {
-            map.addLayer(routeLineLayer);
+            layers.push(routeLineLayer);
         }
-
         if (showRoutePoints) {
-            map.addLayer(routePointsLayer);
+            layers.push(getRoutePointsLayer());
         }
+        layers.push(...currentPointLayers);
 
-        currentPointLayers.forEach((layer) => map.addLayer(layer));
-
-        setIsLayerAdded(true);
-        return () => {
-            setIsLayerAdded(false);
-            cartomancer.clearLayersAndSources(
-                [layerIds.line, layerIds.points, layerIds.currentPointOutline, layerIds.currentPoint],
-                [sourceIds.line, sourceIds.currentPoint]
-            );
+        return {
+            sources: {
+                [sourceIds.line]: {
+                    type: 'geojson',
+                    data: showRouteLine || showRoutePoints
+                        ? lines
+                        : { type: 'FeatureCollection', features: [] },
+                    promoteId: 'id'
+                },
+                [sourceIds.currentPoint]: {
+                    type: 'geojson',
+                    data: currentPoint,
+                }
+            },
+            layers,
         };
-    }, [map, geojson, showRouteLine, showRoutePoints, bearingLineLengthInMeters]);
+    }, [geojson, routeTimes.startTimeEpoch, bearingLineLengthInMeters, showRouteLine, showRoutePoints]);
+
+    useMapLayerData(mapLayerData)
 
     useEffect(() => {
-        if (!isPlaying || !isLayerAdded) {
+        if (!isPlaying) {
             return;
         }
         let animation: number | undefined;
@@ -145,7 +154,6 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
         };
     }, [
         isPlaying,
-        isLayerAdded,
         followCurrentPoint,
         cameraAngle,
         cameraRoll,

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import maplibregl from "maplibre-gl";
 import { Cartomancer, GeoJson, MarkerImage, useStateWarden, useSubjectState, FeatureStateProps, useGaugeContext } from "@apparatus";
-import { sourceIds } from '../tinkers';
+import { sourceIds } from '../layers';
 import * as styles from './images.module.css';
 
 const imageSize = 30;
@@ -28,12 +28,11 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
 
     useEffect(() => {
         const handleDrag = () => {
-            const lngLat = image.marker.getLngLat();
-            setClosestFeatureId(Cartomancer.getClosestFeature(geojson, lngLat)[0]);
+            setClosestFeatureId(Cartomancer.getClosestFeature(geojson, image.marker.getLngLat())[0]);
         };
+
         const handleDragEnd = () => {
-            const lngLat = image.marker.getLngLat();
-            const [id, feature] = Cartomancer.getClosestFeature(geojson, lngLat);
+            const [id, feature] = Cartomancer.getClosestFeature(geojson, image.marker.getLngLat());
             image.marker.setLngLat(new maplibregl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]));
             onUpdateImageFeatureId(image.id, id);
 
@@ -69,16 +68,17 @@ export const ImageMarker: FC<Props> = ({ image, geojson, onUpdateImageFeatureId 
     }, [closestFeatureId]);
 
     useEffect(() => {
-        if ( displayImageId !== image.id) {
+        if (displayImageId !== image.id) {
             return;
         }
         image.markerElement.classList.add(styles['display-container']);
-        
+
         return () => {
             image.markerElement.classList.remove(styles['display-container']);
         };
     }, [displayImageId, image.id]);
 
+    // TODO: Check if string data should be supported
     return ReactDOM.createPortal(
         <img
             src={image.data}

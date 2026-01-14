@@ -14,3 +14,4 @@ export { KmlParser } from './kml-parser';
 export * from './model';
 
 export * from './useImageReader';
+export { IMAGE_SIZE } from './image-parser';

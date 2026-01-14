@@ -7,84 +7,12 @@ import turfLength from "@turf/length";
 import {
     GeoJson,
     // TODO: Move
-    CurrentPointData, FeatureStateProps
+    CurrentPointData,
+    LoadedImageData
 } from "@apparatus";
+import { sourceIds } from "./layers";
 
-export const colorActive = '#003161';
-export const colorInactive = 'grey';
-
-export const sourceId = 'route';
-
-export const sourceIds = {
-    currentPoint: sourceId + '-current-point',
-    line: sourceId + '-line',
-    image: sourceId + '-image',
-}
-
-export const layerIds = {
-    currentPointOutline: 'route-current-point-outline',
-    currentPoint: 'route-current-point',
-    points: 'route-points',
-    line: 'route-line',
-}
-
-export const routeLineLayer: maplibregl.LineLayerSpecification = {
-    id: layerIds.line,
-    source: sourceIds.line,
-    type: 'line',
-    paint: {
-        'line-color': [
-            'case',
-            ['==', ['get', 'status'], 'before'],
-            colorActive,
-            colorInactive
-        ],
-        'line-width': 2,
-        'line-opacity': .6,
-    },
-    layout: {
-        'line-cap': 'round',
-        'line-join': 'round'
-    }
-};
-
-export const routePointsLayer: maplibregl.CircleLayerSpecification = {
-    id: layerIds.points,
-    source: sourceIds.line,
-    type: 'circle',
-    paint: {
-        'circle-color': [
-            'case',
-            ["==", ["feature-state", FeatureStateProps.Highlight], true],
-            'red',
-            ['==', ['get', 'status'], 'before'],
-            colorActive,
-            colorInactive
-        ],
-        'circle-radius': 2,
-    }
-};
-
-export const currentPointLayers: maplibregl.CircleLayerSpecification[] = [
-    {
-        id: layerIds.currentPointOutline,
-        source: sourceIds.currentPoint,
-        type: 'circle',
-        paint: {
-            'circle-color': 'white',
-            'circle-radius': 7,
-        }
-    },
-    {
-        id: layerIds.currentPoint,
-        source: sourceIds.currentPoint,
-        type: 'circle',
-        paint: {
-            'circle-color': colorActive,
-            'circle-radius': 5,
-        }
-    }
-];
+export const emptyCollection: GeoJSON.GeoJSON = { type: 'FeatureCollection', features: [] };
 
 /**
  * Gets current point data, updates map sources, and returns it.
@@ -227,3 +155,12 @@ const getFirstPointInDistance = (
     }
     return p;
 };
+
+export const getImageIconSize = (
+    imageSize: number,
+    desiredSize: number,
+): number => {
+    return 1 / (imageSize / desiredSize);
+};
+
+export const getIconImageId = (image: LoadedImageData): string => `image-${image.id}`;

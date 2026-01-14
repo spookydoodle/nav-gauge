@@ -1,0 +1,167 @@
+import { FeatureStateProps, IMAGE_SIZE } from "@apparatus";
+import { Theme } from "@ui";
+import { getImageIconSize } from "./tinkers";
+
+export const colorActive = '#003161';
+export const colorInactive = 'grey';
+
+export const sourceIds = {
+    currentPoint: 'route-current-point',
+    line: 'route-line',
+    image: 'route-image',
+    imageInDisplay: 'route-image-in-display',
+}
+
+export const layerIds = {
+    currentPointOutline: 'route-current-point-outline',
+    currentPoint: 'route-current-point',
+    points: 'route-points',
+    line: 'route-line',
+    images: 'route-images',
+    imagesHighlight: 'route-images-highlight',
+    imagesHighlightOutline: 'route-images-highlight-outline',
+    imageInDisplay: 'route-image-in-display',
+}
+
+export const routeLineLayer: maplibregl.LineLayerSpecification = {
+    id: layerIds.line,
+    source: sourceIds.line,
+    type: 'line',
+    paint: {
+        'line-color': [
+            'case',
+            ['==', ['get', 'status'], 'before'],
+            colorActive,
+            colorInactive
+        ],
+        'line-width': 2,
+        'line-opacity': .6,
+    },
+    layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+    }
+};
+
+export const getRoutePointsLayer = (): maplibregl.CircleLayerSpecification => ({
+    id: layerIds.points,
+    source: sourceIds.line,
+    type: 'circle',
+    paint: {
+        'circle-color': [
+            'case',
+            ["==", ["feature-state", FeatureStateProps.Highlight], true],
+            'red',
+            ['==', ['get', 'status'], 'before'],
+            colorActive,
+            colorInactive
+        ],
+        'circle-radius': 2,
+    }
+});
+
+export const currentPointLayers: maplibregl.CircleLayerSpecification[] = [
+    {
+        id: layerIds.currentPointOutline,
+        source: sourceIds.currentPoint,
+        type: 'circle',
+        paint: {
+            'circle-color': 'white',
+            'circle-radius': 7,
+        }
+    },
+    {
+        id: layerIds.currentPoint,
+        source: sourceIds.currentPoint,
+        type: 'circle',
+        paint: {
+            'circle-color': colorActive,
+            'circle-radius': 5,
+        }
+    }
+];
+
+const IMAGE_PROPERTY = 'iconImageId';
+const CIRCLE_RADIUS = 25;
+export const DEFAULT_IMAGE_SIZE = 2 * CIRCLE_RADIUS;
+
+export type ImageFeature = GeoJSON.Feature<GeoJSON.Point, ImageFeatureProperties>;
+export interface ImageFeatureProperties {
+    imageId: number;
+    [IMAGE_PROPERTY]: string;
+}
+
+const getImageLayer = (): maplibregl.SymbolLayerSpecification => ({
+    id: layerIds.images,
+    source: sourceIds.image,
+    type: 'symbol',
+    layout: {
+        'icon-image': ['get', IMAGE_PROPERTY],
+        'icon-size': getImageIconSize(IMAGE_SIZE, DEFAULT_IMAGE_SIZE),
+        'icon-allow-overlap': true,
+    },
+    paint: {
+        'icon-opacity': [
+            'case',
+            ["==", ["feature-state", FeatureStateProps.Dragging], true],
+            0.5,
+            1
+        ]
+    }
+});
+
+// TODO: Depoendent on base map style
+export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] => {
+    const imageLayer = getImageLayer();
+
+    return [
+        imageLayer,
+        {
+            id: layerIds.imagesHighlightOutline,
+            source: sourceIds.image,
+            type: 'circle',
+            layout: {},
+            paint: {
+                'circle-color': 'transparent',
+                'circle-stroke-color': 'white',
+                'circle-stroke-width': 2,
+                "circle-radius": CIRCLE_RADIUS,
+                'circle-stroke-opacity': [
+                    'case',
+                    ["==", ["feature-state", FeatureStateProps.Dragging], true],
+                    0.5,
+                    ["==", ["feature-state", FeatureStateProps.Highlight], true],
+                    1,
+                    0
+                ]
+            }
+        },
+        {
+            ...imageLayer,
+            id: layerIds.imagesHighlight,
+            paint: {
+                'icon-opacity': [
+                    'case',
+                    ["==", ["feature-state", FeatureStateProps.Dragging], true],
+                    0.5,
+                    ["==", ["feature-state", FeatureStateProps.Highlight], true],
+                    1,
+                    0
+                ]
+            }
+        },
+    ];
+}
+
+export const getDisplayImageLayers = (): maplibregl.SymbolLayerSpecification[] => {
+    const imageLayer = getImageLayer();
+
+    return [{
+        ...imageLayer,
+        source: sourceIds.imageInDisplay,
+        id: layerIds.imageInDisplay,
+        paint: {
+            'icon-opacity': 1
+        }
+    }];
+};

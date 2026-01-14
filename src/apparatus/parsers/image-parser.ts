@@ -32,6 +32,7 @@ export interface MarkerImage {
     progress: number;
     lngLat?: maplibregl.LngLat;
     data?: string;
+    bitmap?: ImageBitmap;
     exif?: ExifData;
     error?: string;
     featureId?: number;
@@ -43,20 +44,130 @@ export interface LoadedImageData extends Omit<MarkerImage, 'progress' | 'error' 
     lngLat: maplibregl.LngLat;
     featureId: number;
     data: string;
+    bitmap: ImageBitmap;
 }
 
-export const parseImage = async (file: File, e: ProgressEvent<FileReader>): Promise<{ data?: string; exif?: ExifData; error?: string; lngLat?: maplibregl.LngLat; }> => {
+export const IMAGE_SIZE = 800;
+
+export const parseImage = async (
+    file: File,
+    e: ProgressEvent<FileReader>
+): Promise<{
+    data?: string;
+    bitmap?: ImageBitmap;
+    exif?: ExifData;
+    error?: string;
+    lngLat?: maplibregl.LngLat;
+}> => {
     const buffer = await file.arrayBuffer();
     const exif = EXIF.readFromBinaryFile(buffer) as false | ExifData;
 
-    // TODO: Compress image stored in memory or use
+    let bitmap: ImageBitmap | undefined;
+    try {
+        bitmap = await resizeImage(e.target?.result, {
+            targetSize: IMAGE_SIZE,
+            keepAspectRatio: false,
+            shape: 'circle'
+        });
+    } catch (err) {
+        console.error(err);
+    }
+
     // TODO: Derive timezone
     return {
         data: e.target?.result?.toString(),
+        bitmap,
         exif: exif || undefined,
         lngLat: getLngLat(exif || undefined),
         error: getError(exif),
     };
+};
+
+/**
+ * @param e File progress event
+ * @param size Defaults to 200px
+ * @returns Resized image
+ */
+const resizeImage = (
+    result?: FileReader['result'],
+    options: {
+        targetSize?: number;
+        shape?: 'circle' | 'square',
+        keepAspectRatio?: boolean,
+    } = {}
+): Promise<ImageBitmap> => {
+    const {
+        targetSize = 200,
+        shape = 'square',
+        keepAspectRatio = false
+    } = options;
+
+    return new Promise((resolve, reject) => {
+        if (!result) {
+            reject();
+            return;
+        }
+
+        let img = new Image();
+
+        img.onload = () => {
+            const sourceSize = Math.min(img.width, img.height);
+            const sourceX = (img.width - sourceSize) / 2;
+            const sourceY = (img.height - sourceSize) / 2;
+            let sourceWidth = sourceSize;
+            let sourceHeight = sourceSize;
+            let targetWidth = targetSize;
+            let targetHeight = targetSize;
+
+            if (keepAspectRatio) {
+                sourceWidth = img.width;
+                sourceHeight = img.height;
+                const scale = Math.min(targetSize / img.width, targetSize / img.height, 1);
+                targetWidth = img.width * scale;
+                targetHeight = img.height * scale;
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext("2d")!;
+
+            if (shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(
+                    targetWidth / 2,
+                    targetHeight / 2,
+                    Math.min(targetWidth, targetHeight) / 2,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.closePath();
+                ctx.clip();
+            }
+
+            ctx.drawImage(
+                img,
+                sourceX,
+                sourceY,
+                sourceWidth,
+                sourceHeight,
+                0,
+                0,
+                targetWidth,
+                targetHeight
+            );
+
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    reject();
+                    return;
+                }
+                createImageBitmap(blob).then(resolve);
+            }, "image/png");
+        };
+
+        img.src = result.toString();
+    });
 };
 
 const getLngLat = (exif?: ExifData): maplibregl.LngLat | undefined => {

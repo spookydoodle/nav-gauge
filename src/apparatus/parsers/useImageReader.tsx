@@ -41,7 +41,7 @@ export const useImageReader = (): ImageReaderResult => {
         };
 
         reader.onload = async (e) => {
-            const { data, exif, lngLat, error } = await parseImage(file, e);
+            const { data, bitmap, exif, lngLat, error } = await parseImage(file, e);
             setImages((prev) => {
                 const nextImages = prev.slice();
                 const index = prev.findIndex((el) => el.name === file.name);
@@ -52,6 +52,7 @@ export const useImageReader = (): ImageReaderResult => {
                     progress: 100,
                     lngLat,
                     data,
+                    bitmap,
                     exif,
                     error,
                     featureId,
