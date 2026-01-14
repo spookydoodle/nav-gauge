@@ -91,5 +91,8 @@
         "typescript": "^5.9.3",
         "webpack-bundle-analyzer": "^5.1.1",
         "webpack-merge": "^6.0.1"
+    },
+    "resolutions": {
+        "qs": "^6.14.1"
     }
 }
