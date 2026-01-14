@@ -2,6 +2,16 @@ import { useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import { useStateWarden, FeatureStateProps } from "@apparatus";
 
+export interface MapLayerData {
+    sources: { [key in string]: maplibregl.SourceSpecification };
+    /**
+     * Tuples [layer specification, before id]
+     */
+    layers: maplibregl.LayerSpecification[];
+    beforeLayerId?: string;
+    handlers?: MapDataHandlers;
+}
+
 export interface MapLayerHandlerData {
     features: maplibregl.MapGeoJSONFeature[];
     allFeatures: maplibregl.MapGeoJSONFeature[];
@@ -13,24 +23,25 @@ export interface MapDataHandlers {
     onMouseDown?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => void,
     onMouseUp?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => void,
     onClick?: (data: MapLayerHandlerData, event: maplibregl.MapMouseEvent) => void,
-    options?: MapLayerHandlerOptions;
-}
-
-export interface MapLayerHandlerOptions {
-    /**
-     * Buffer around cursor in pixels for feature detection. Defaults to 4px.
-     */
-    buffer?: number;
+    options?: {
+        /**
+         * Buffer around cursor in pixels for feature detection. Defaults to 4px.
+         */
+        buffer?: number;
+    };
 }
 
 export const useMapLayerData = (
-    sources: { [key in string]: maplibregl.SourceSpecification },
-    layers: maplibregl.LayerSpecification[],
-    handlers?: MapDataHandlers,
+    {
+        sources,
+        layers,
+        handlers,
+    }: MapLayerData,
     /**
-     * Tuple [sourceId, featureIds]
+     * Tuple [sourceId, featureIds] to apply highlight feature state.
      */
-    highlightIds: [string, Set<(string | number)>][] = []
+    highlightIds: [string, Set<(string | number)>][] = [],
+    onUpdateData?: () => void
 ) => {
     const { cartomancer } = useStateWarden();
     const { map } = cartomancer;
@@ -98,15 +109,16 @@ export const useMapLayerData = (
 
             map.off('touchstart', mouseDownHandler);
             map.off('touchend', mouseUpHandler);
+
             console.log("remove", sources)
-            cartomancer.clearLayersAndSources(
-                layers.map((layer) => layer.id),
-                Object.keys(sources)
-            );
+            cartomancer.clearLayersAndSources(layers, sources);
         };
     }, [map, sources, layers, handlers, buffer]);
 
     useEffect(() => {
+        if (highlightIds.length === 0) {
+            return;
+        }
         const update = (value: boolean) => {
             for (const [source, featureIds] of highlightIds) {
                 cartomancer.updateFeatureState(source, featureIds, FeatureStateProps.Highlight, value)

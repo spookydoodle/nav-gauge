@@ -8,7 +8,8 @@ import {
     GeoJson,
     // TODO: Move
     CurrentPointData,
-    IMAGE_SIZE
+    IMAGE_SIZE,
+    LoadedImageData
 } from "@apparatus";
 import { sourceIds } from "./layers";
 
@@ -160,3 +161,5 @@ export const getImageIconSize = (
 ): number => {
     return 1 / (imageSize / desiredSize);
 };
+
+export const getIconImageId = (image: LoadedImageData): string => `image-${image.id}`;

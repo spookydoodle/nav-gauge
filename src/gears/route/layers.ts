@@ -81,7 +81,7 @@ export const currentPointLayers: maplibregl.CircleLayerSpecification[] = [
     }
 ];
 
-const IMAGE_PROPERTY = 'image';
+const IMAGE_PROPERTY = 'iconImageId';
 const CIRCLE_RADIUS = 25;
 export const DEFAULT_IMAGE_SIZE = 2 * CIRCLE_RADIUS;
 
@@ -153,15 +153,15 @@ export const getImagesLayers = (theme: Theme): maplibregl.LayerSpecification[] =
     ];
 }
 
-export const getInDisplayImageLayer = (): maplibregl.SymbolLayerSpecification => {
+export const getDisplayImageLayers = (): maplibregl.SymbolLayerSpecification[] => {
     const imageLayer = getImageLayer();
-    
-    return {
+
+    return [{
         ...imageLayer,
         source: sourceIds.imageInDisplay,
         id: layerIds.imageInDisplay,
         paint: {
             'icon-opacity': 1
         }
-    };
+    }];
 };

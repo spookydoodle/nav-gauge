@@ -3,7 +3,7 @@ import { useStateWarden } from "@apparatus";
 
 export interface MapImageData {
     icon: string | ImageBitmap;
-    name: string;
+    iconImageId: string;
     options?: {
         width?: number;
         height?: number;
@@ -19,30 +19,30 @@ export const useMapImages = (
     useEffect(() => {
         const imagesData = Array.isArray(data) ? data : [data];
         (async () => {
-            for (const { icon, name, options: { width, height, ...metadata } = {} } of imagesData) {
-                if (map.hasImage(name)) {
-                    map.removeImage(name);
+            for (const { icon, iconImageId, options: { width, height, ...metadata } = {} } of imagesData) {
+                if (map.hasImage(iconImageId)) {
+                    map.removeImage(iconImageId);
                 }
 
                 if (typeof icon === 'string') {
                     const image = new Image(width, height);
                     image.onload = () => {
-                        if (map.hasImage(name)) {
-                            map.removeImage(name);
+                        if (map.hasImage(iconImageId)) {
+                            map.removeImage(iconImageId);
                         }
-                        map.addImage(name, image, metadata);
+                        map.addImage(iconImageId, image, metadata);
                     }
                     image.src = icon;
                 } else {
-                    map.addImage(name, icon, metadata);
+                    map.addImage(iconImageId, icon, metadata);
                 }
             }
         })();
 
         return () => {
-            for (const { name } of imagesData) {
-                if (map.hasImage(name)) {
-                    map.removeImage(name);
+            for (const { iconImageId } of imagesData) {
+                if (map.hasImage(iconImageId)) {
+                    map.removeImage(iconImageId);
                 }
             }
         };

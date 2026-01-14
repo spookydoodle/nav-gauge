@@ -1,6 +1,14 @@
 import { FC, useEffect, useMemo } from "react";
 import maplibregl from "maplibre-gl";
-import { OverlayComponentProps, LoadedImageData, useStateWarden, useGaugeContext, useSubjectState, useMapLayerData } from "@apparatus";
+import {
+    OverlayComponentProps,
+    LoadedImageData,
+    useStateWarden,
+    useGaugeContext,
+    useSubjectState,
+    useMapLayerData,
+    MapLayerData
+} from "@apparatus";
 import { getRouteSourceData, updateRouteLayer } from "./tinkers";
 import { currentPointLayers, routeLineLayer, routePointsLayer, sourceIds } from "./layers";
 import { useLoadedImages } from "./hooks/useLoadedImages";
@@ -34,8 +42,8 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
 
     const loadedImages = useLoadedImages(images);
 
-    const sources = useMemo((): { [key in string]: maplibregl.SourceSpecification } => {
-        console.log("getting sources")
+    const mapLayerData = useMemo((): MapLayerData => {
+        console.log("Getting layers")
         const { currentPoint, lines } = getRouteSourceData(
             geojson,
             routeTimes.startTimeEpoch,
@@ -43,31 +51,34 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
             bearingLineLengthInMeters
         );
 
+        const layers: MapLayerData['layers'] = [];
+        if (showRouteLine) {
+            layers.push(routeLineLayer);
+        }
+        if (showRoutePoints) {
+            layers.push(routePointsLayer);
+        }
+        layers.push(...currentPointLayers);
+
         return {
-            [sourceIds.line]: {
-                type: 'geojson',
-                data: showRouteLine || showRoutePoints
-                    ? lines
-                    : { type: 'FeatureCollection', features: [] },
-                promoteId: 'id'
+            sources: {
+                [sourceIds.line]: {
+                    type: 'geojson',
+                    data: showRouteLine || showRoutePoints
+                        ? lines
+                        : { type: 'FeatureCollection', features: [] },
+                    promoteId: 'id'
+                },
+                [sourceIds.currentPoint]: {
+                    type: 'geojson',
+                    data: currentPoint,
+                }
             },
-            [sourceIds.currentPoint]: {
-                type: 'geojson',
-                data: currentPoint,
-            }
+            layers,
         };
     }, [geojson, routeTimes.startTimeEpoch, bearingLineLengthInMeters, showRouteLine, showRoutePoints]);
 
-    const layers = useMemo((): maplibregl.LayerSpecification[] => {
-        console.log("Getting layers")
-        return [
-            showRouteLine ? routeLineLayer : null,
-            showRoutePoints ? routePointsLayer : null,
-            ...currentPointLayers
-        ].reduce<maplibregl.LayerSpecification[]>((acc, val) => val ? acc.concat([val]) : acc, []);
-    }, [showRouteLine, showRoutePoints]);
-
-    useMapLayerData(sources, layers)
+    useMapLayerData(mapLayerData)
 
     useEffect(() => {
         if (!isPlaying) {
