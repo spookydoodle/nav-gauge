@@ -10,7 +10,7 @@ import {
     MapLayerData
 } from "@apparatus";
 import { getRouteSourceData, updateRouteLayer } from "./tinkers";
-import { currentPointLayers, routeLineLayer, routePointsLayer, sourceIds } from "./layers";
+import { currentPointLayers, routeLineLayer, getRoutePointsLayer, sourceIds } from "./layers";
 import { useLoadedImages } from "./hooks/useLoadedImages";
 
 export const RouteLayer: FC<OverlayComponentProps> = ({
@@ -43,7 +43,6 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
     const loadedImages = useLoadedImages(images);
 
     const mapLayerData = useMemo((): MapLayerData => {
-        console.log("Getting layers")
         const { currentPoint, lines } = getRouteSourceData(
             geojson,
             routeTimes.startTimeEpoch,
@@ -56,7 +55,7 @@ export const RouteLayer: FC<OverlayComponentProps> = ({
             layers.push(routeLineLayer);
         }
         if (showRoutePoints) {
-            layers.push(routePointsLayer);
+            layers.push(getRoutePointsLayer());
         }
         layers.push(...currentPointLayers);
 

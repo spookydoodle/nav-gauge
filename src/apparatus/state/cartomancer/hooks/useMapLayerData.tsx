@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import { useStateWarden, FeatureStateProps } from "@apparatus";
+import { useUpdateSourceData } from "./useUpdateData";
+import { emptyCollection } from "@gears";
+
+const DEFAULT_BUFFER = 4;
 
 export interface MapLayerData {
     sources: { [key in string]: maplibregl.SourceSpecification };
@@ -31,25 +35,23 @@ export interface MapDataHandlers {
     };
 }
 
+/**
+ * @param data Sources, layers and event handlers. When this dependency changes, layers will be removed and added again.
+ * @param highlightIds Tuple `[sourceId, featureIds]` to apply highlight feature state to.
+ * @param updatedData Tuple `[sourceId, data, delay in ms (optional)]` Changes to this dependency will trigger `source.setData` event (without removing the layers and sources).
+ */
 export const useMapLayerData = (
-    {
-        sources,
-        layers,
-        handlers,
-    }: MapLayerData,
-    /**
-     * Tuple [sourceId, featureIds] to apply highlight feature state.
-     */
+    data: MapLayerData,
     highlightIds: [string, Set<(string | number)>][] = [],
-    onUpdateData?: () => void
+    updatedData?: [string, GeoJSON.GeoJSON, number | undefined]
 ) => {
     const { cartomancer } = useStateWarden();
     const { map } = cartomancer;
-    const { buffer = 4 } = handlers?.options ?? {};
 
     useEffect(() => {
-        console.log("add", sources)
-        cartomancer.addSourcesAndLayers(sources, layers)
+        const { sources, layers, beforeLayerId, handlers } = data;
+        const { buffer = DEFAULT_BUFFER } = data.handlers?.options ?? {};
+        cartomancer.addSourcesAndLayers(sources, layers, beforeLayerId)
 
         const queryFeatures = (event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent): {
             features: maplibregl.MapGeoJSONFeature[];
@@ -110,10 +112,11 @@ export const useMapLayerData = (
             map.off('touchstart', mouseDownHandler);
             map.off('touchend', mouseUpHandler);
 
-            console.log("remove", sources)
             cartomancer.clearLayersAndSources(layers, sources);
         };
-    }, [map, sources, layers, handlers, buffer]);
+    }, [map, data]);
+
+    useUpdateSourceData(updatedData?.[0] ?? '', updatedData?.[1] ?? emptyCollection, updatedData?.[2]);
 
     useEffect(() => {
         if (highlightIds.length === 0) {

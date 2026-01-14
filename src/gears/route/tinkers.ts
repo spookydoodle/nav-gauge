@@ -8,10 +8,11 @@ import {
     GeoJson,
     // TODO: Move
     CurrentPointData,
-    IMAGE_SIZE,
     LoadedImageData
 } from "@apparatus";
 import { sourceIds } from "./layers";
+
+export const emptyCollection: GeoJSON.GeoJSON = { type: 'FeatureCollection', features: [] };
 
 /**
  * Gets current point data, updates map sources, and returns it.

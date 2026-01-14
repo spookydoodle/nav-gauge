@@ -47,7 +47,7 @@ export interface LoadedImageData extends Omit<MarkerImage, 'progress' | 'error' 
     bitmap: ImageBitmap;
 }
 
-export const IMAGE_SIZE = 400;
+export const IMAGE_SIZE = 800;
 
 export const parseImage = async (
     file: File,

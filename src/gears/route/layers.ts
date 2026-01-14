@@ -43,7 +43,7 @@ export const routeLineLayer: maplibregl.LineLayerSpecification = {
     }
 };
 
-export const routePointsLayer: maplibregl.CircleLayerSpecification = {
+export const getRoutePointsLayer = (): maplibregl.CircleLayerSpecification => ({
     id: layerIds.points,
     source: sourceIds.line,
     type: 'circle',
@@ -58,7 +58,7 @@ export const routePointsLayer: maplibregl.CircleLayerSpecification = {
         ],
         'circle-radius': 2,
     }
-};
+});
 
 export const currentPointLayers: maplibregl.CircleLayerSpecification[] = [
     {

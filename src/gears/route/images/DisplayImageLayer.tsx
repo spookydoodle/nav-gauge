@@ -15,7 +15,36 @@ import {
     getDisplayImageLayers,
     ImageFeatureProperties
 } from '../layers';
-import { getImageIconSize, getIconImageId } from "../tinkers";
+import { getImageIconSize, getIconImageId, emptyCollection } from "../tinkers";
+
+const ANIMATION_DURATION = 250;
+
+const getData = (
+    geojson: GeoJson,
+    loadedImages: LoadedImageData[],
+    displayImageId: number | null
+): GeoJSON.GeoJSON => {
+    const image = loadedImages.find((image) => image.id === displayImageId);
+    if (!image) {
+        return emptyCollection;
+    }
+
+    const geometry = geojson.features.find((f) => f.properties.id === image.featureId)?.geometry;
+    if (!geometry) {
+        return emptyCollection;
+    }
+
+    const properties: ImageFeatureProperties = {
+        imageId: image.id,
+        iconImageId: getIconImageId(image)
+    };
+
+    return {
+        type: 'Feature',
+        geometry,
+        properties
+    };
+};
 
 interface Props {
     geojson: GeoJson;
@@ -29,34 +58,30 @@ export const DisplayImageLayer: FC<Props> = ({
     const { cartomancer, animatrix } = useStateWarden();
     const { map } = cartomancer;
     const [displayImageId] = useSubjectState(animatrix.displayImageId$);
-
     const isInDisplay = displayImageId !== null;
 
-    // Use set data on dependency change - do not remove/add layer
-    const imageDisplayMapLayerData = useMemo((): MapLayerData => {
-        const image = loadedImages.find((image) => image.id === displayImageId);
-        const feature = geojson.features.find((f) => f.properties.id === image?.featureId);
-        const properties: ImageFeatureProperties | undefined = image ? {
-            imageId: image.id,
-            iconImageId: getIconImageId(image)
-        } : undefined;
-
+    const mapLayerData = useMemo((): MapLayerData => {
         return {
             sources: {
                 [sourceIds.imageInDisplay]: {
                     type: 'geojson',
-                    data: feature && properties ? {
-                        type: 'Feature',
-                        geometry: feature.geometry,
-                        properties
-                    } : { type: 'FeatureCollection', features: [] }
+                    data: getData(geojson, loadedImages, displayImageId)
                 }
             },
             layers: getDisplayImageLayers()
         };
     }, [])
 
-    useMapLayerData(imageDisplayMapLayerData);
+    const updateData = useMemo(
+        (): [string, GeoJSON.GeoJSON, number | undefined] => [
+            sourceIds.imageInDisplay, 
+            getData(geojson, loadedImages, displayImageId),
+            displayImageId === null ? ANIMATION_DURATION : undefined
+        ],
+        [geojson, loadedImages, displayImageId]
+    );
+
+    useMapLayerData(mapLayerData, [], updateData);
 
     useEffect(() => {
         function easeInOut(t: number) {
@@ -70,11 +95,10 @@ export const DisplayImageLayer: FC<Props> = ({
             to: number,
             onFinish?: () => void,
         ): void {
-            const duration = 250;
             const start = performance.now();
 
             const frame = (now: number) => {
-                const progress = Math.min((now - start) / duration, 1);
+                const progress = Math.min((now - start) / ANIMATION_DURATION, 1);
                 const value = from + (to - from) * easeInOut(progress);
 
                 if (map.getLayer(layerIds.imageInDisplay)) {
