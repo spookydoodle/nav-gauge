@@ -61,7 +61,6 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
         }, [])
     }), [loadedImages, geojson]);
 
-    // Use set data on dependency change - do not remove/add layer
     const mapLayerData = useMemo((): MapLayerData => {
         return {
             sources: {
@@ -119,28 +118,33 @@ export const ImagesLayer: FC<OverlayComponentProps> = ({
             const [_id, feature] = Cartomancer.getClosestFeature(geojson, event.lngLat);
             const image = loadedImages.find((image) => image.id === draggingId);
             const source = map.getSource(sourceIds.image) as maplibregl.GeoJSONSource | undefined;
-            if (source && image) {
-                source.setData({
-                    ...sourceDataGeojson,
-                    features: sourceDataGeojson.features.concat([{
-                        type: 'Feature',
-                        geometry: feature.geometry,
-                        properties: {
-                            imageId: -1,
-                            iconImageId: getIconImageId(image)
-                        }
-                    }])
-                });
+
+            if (!source || !image) {
+                return;
             }
+
+            source.setData({
+                ...sourceDataGeojson,
+                features: sourceDataGeojson.features.concat([{
+                    type: 'Feature',
+                    geometry: feature.geometry,
+                    properties: {
+                        imageId: -1,
+                        iconImageId: getIconImageId(image)
+                    }
+                }])
+            });
         };
 
         const handleDragEnd = (event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) => {
             event.preventDefault();
             const [id, _feature] = Cartomancer.getClosestFeature(geojson, event.lngLat);
             const image = loadedImages.find((image) => image.id === draggingId)
-            if (image) {
-                onUpdateImageFeatureId(image.id, id);
+            if (!image) {
+                return;
             }
+            onUpdateImageFeatureId(image.id, id);
+
         };
 
         map.on('mousemove', handleDrag);

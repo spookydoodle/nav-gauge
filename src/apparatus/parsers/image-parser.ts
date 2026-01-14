@@ -157,7 +157,6 @@ const resizeImage = (
                 targetHeight
             );
 
-            // resolve(canvas.toDataURL("image/jpeg", 0.8));
             canvas.toBlob((blob) => {
                 if (!blob) {
                     reject();
