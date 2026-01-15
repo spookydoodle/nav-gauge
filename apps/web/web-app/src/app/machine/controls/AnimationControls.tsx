@@ -2,7 +2,7 @@ import { FC } from "react";
 import classNames from "classnames";
 import { useSubjectState, Animatrix, useStateWarden } from "@apparatus";
 import { clamp, defaultZoomInToImages, } from "@tinker-chest";
-import { Fieldset, Input } from "@ui-web";
+import { Fieldset, Input } from "@web-ui";
 import * as styles from './controls.module.css';
 
 interface Props { }

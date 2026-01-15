@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { MapLayout } from "@tinker-chest";
-import { Fieldset, Input, TextArea } from "@ui-web";
+import { Fieldset, Input, TextArea } from "@web-ui";
 import * as styles from './controls.module.css';
 
 interface Props {

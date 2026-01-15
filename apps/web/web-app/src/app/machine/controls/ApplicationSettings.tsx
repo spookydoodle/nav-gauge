@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { ApplicationSettingsType } from "@tinker-chest";
 import { themeOptions, Theme } from "@ui";
-import { Fieldset, Input } from "@ui-web";
+import { Fieldset, Input } from "@web-ui";
 import * as styles from './controls.module.css';
 
 interface Props {

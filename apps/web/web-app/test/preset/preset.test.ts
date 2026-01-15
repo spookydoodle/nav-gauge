@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 // TODO: Move to test in apparatus or tinker chest - fix import direction?
-import { validateGaugeControls, validateMapLayout } from "../../../packages/tinker-chest/src/validation/controls.js";
-import { GaugeControlsType, MapLayout } from "../../../packages/tinker-chest/src/controls/model";
-import { AnimationControlsType } from "../../../packages/apparatus/src/state/animatrix/model";
-import { Animatrix } from "../../../packages/apparatus/src/state/animatrix/animatrix.js";
+import { validateGaugeControls, validateMapLayout } from "../../../../packages/tinker-chest/src/validation/controls.js";
+import { GaugeControlsType, MapLayout } from "../../../../packages/tinker-chest/src/controls/model";
+import { AnimationControlsType } from "../../../../packages/apparatus/src/state/animatrix/model";
+import { Animatrix } from "../../../../packages/apparatus/src/state/animatrix/animatrix.js";
 
 describe("Preset", () => {
     describe("File upload validation", () => {

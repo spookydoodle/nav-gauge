@@ -97,7 +97,7 @@ module.exports = (env, argv) => merge(config(env, argv), {
                     name: 'gears',
                 },
                 ui: {
-                    test: /[\\/](ui|ui-web)[\\/]src[\\/]/,
+                    test: /[\\/](ui|web-ui)[\\/]src[\\/]/,
                     name: 'ui',
                 },
             },

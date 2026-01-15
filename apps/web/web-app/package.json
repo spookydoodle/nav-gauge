@@ -1,5 +1,5 @@
 {
-    "name": "web",
+    "name": "web-app",
     "version": "1.0.0",
     "description": "Navigation gauge and story generator with map component with customization options with data from a .gpx file and uploaded images.",
     "homepage": "https://nav-gauge.spookydoodle.com",

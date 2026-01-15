@@ -12,10 +12,10 @@
         "url": "https://github.com/spookydoodle/nav-gauge/issues"
     },
     "scripts": {
-        "dev": "yarn workspace web dev",
-        "build": "yarn workspace web build",
-        "start": "yarn workspace web start",
-        "test": "yarn workspace web test"
+        "dev": "yarn workspace web-app dev",
+        "build": "yarn workspace web-app build",
+        "start": "yarn workspace web-app start",
+        "test": "yarn workspace web-app test"
     },
     "dependencies": {
         "@turf/along": "^7.3.2",
@@ -45,10 +45,10 @@
         "typescript": "^5.9.3"
     },
     "workspaces": [
-        "app-web",
-        "app-mobile",
-        "packages/*",
         "ui",
-        "ui-web"
+        "web/web-app",
+        "web/web-ui",
+        "mobile",
+        "packages/*"
     ]
 }

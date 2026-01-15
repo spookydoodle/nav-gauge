@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import { ControlPlacement, controlsPositions, GaugeControlsType } from "@tinker-chest";
-import { Input, Fieldset } from "@ui-web";
+import { Input, Fieldset } from "@web-ui";
 import * as styles from './controls.module.css';
 
 interface Props {

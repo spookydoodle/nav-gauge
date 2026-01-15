@@ -1,22 +1,22 @@
 {
-    "extends": "../tsconfig.base.json",
+    "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "outDir": "dist",
         "paths": {
             "@apparatus": [
-                "../packages/apparatus/src/index.ts"
+                "../../packages/apparatus/src/index.ts"
             ],
             "@tinker-chest": [
-                "../packages/tinker-chest/src/index.ts"
+                "../../packages/tinker-chest/src/index.ts"
             ],
             "@gears": [
-                "../packages/gears/src/index.ts"
+                "../../packages/gears/src/index.ts"
             ],
             "@ui": [
-                "../ui/src/index.ts"
+                "../../ui/src/index.ts"
             ],
-            "@ui-web": [
-                "../ui-web/src/index.ts"
+            "@web-ui": [
+                "../web-ui/src/index.ts"
             ]
         },
     },
@@ -24,7 +24,7 @@
         "src/**/*",
         "test/**/*",
         "types/**/*",
-        "../types/**/*",
+        "../../types/**/*",
     ],
     "exclude": [
         "node_modules",

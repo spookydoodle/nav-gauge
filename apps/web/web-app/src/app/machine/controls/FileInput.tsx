@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { FileToGeoJSONParser, GeoJson, parsers, ParsingResultWithError } from "@apparatus";
-import { FileInputStatus } from "@ui-web";
+import { FileInputStatus } from "@web-ui";
 
 interface Props {
     routeName?: string;
