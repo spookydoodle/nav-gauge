@@ -14,19 +14,23 @@ module.exports = () => {
                 dependOn: ['react-vendors']
             },
             apparatus: {
-                import: path.resolve('./src/apparatus/index.ts'),
+                import: path.resolve('../packages/apparatus/src/index.ts'),
                 dependOn: ['react-vendors']
             },
             ['tinker-chest']: {
-                import: path.resolve('./src/tinker-chest/index.ts'),
+                import: path.resolve('../packages/tinker-chest/src/index.ts'),
                 dependOn: ['react-vendors']
             },
             gears: {
-                import: path.resolve('./src/gears/index.ts'),
+                import: path.resolve('../packages/gears/src/index.ts'),
                 dependOn: ['react-vendors']
             },
             ui: {
-                import: path.resolve('./src/ui/index.ts'),
+                import: path.resolve('../ui/src/index.ts'),
+                dependOn: ['react-vendors']
+            },
+            ['ui-web']: {
+                import: path.resolve('../ui-web/src/index.ts'),
                 dependOn: ['react-vendors']
             },
             'react-vendors': ['react', 'react-dom']

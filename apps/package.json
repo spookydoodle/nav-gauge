@@ -1,5 +1,5 @@
 {
-    "name": "nav-gauge",
+    "name": "apps",
     "version": "1.0.0",
     "description": "Navigation gauge and story generator with map component with customization options with data from a .gpx file and uploaded images.",
     "homepage": "https://nav-gauge.spookydoodle.com",
@@ -17,8 +17,33 @@
         "start": "yarn workspace web start",
         "test": "yarn workspace web test"
     },
-    "dependencies": {},
-    "devDependencies": {},
+    "dependencies": {
+        "@turf/along": "^7.3.2",
+        "@turf/bbox": "^7.3.2",
+        "@turf/bearing": "^7.3.2",
+        "@turf/distance": "^7.3.2",
+        "@turf/helpers": "^7.3.2",
+        "@turf/length": "^7.3.2",
+        "classnames": "^2.5.1",
+        "luxon": "^3.7.2",
+        "rxjs": "^7.8.2"
+    },
+    "devDependencies": {
+        "@types/chai": "^5.2.3",
+        "@types/eslint": "^9.6.1",
+        "@types/luxon": "^3.7.1",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "^25.0.8",
+        "@typescript-eslint/eslint-plugin": "^8.53.0",
+        "@typescript-eslint/parser": "^8.53.0",
+        "add": "^2.0.6",
+        "chai": "^6.2.2",
+        "eslint": "^9.39.2",
+        "mocha": "^11.7.5",
+        "path": "^0.12.7",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
+    },
     "workspaces": [
         "app-web",
         "app-mobile",
