@@ -1,6 +1,5 @@
+import maplibregl from "maplibre-gl";
 import { Theme } from "@ui";
-
-export type ControlPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
 export interface MapLayout {
     size: MapLayoutSize;
@@ -32,7 +31,7 @@ export interface GaugeControlsType {
     showCurrentZoom: boolean;
     showCompass: boolean;
     showGreenScreen: boolean;
-    controlPosition: ControlPosition;
+    controlPosition: maplibregl.ControlPosition;
     controlPlacement: ControlPlacement;
     showRouteLine: boolean;
     showRoutePoints: boolean;
