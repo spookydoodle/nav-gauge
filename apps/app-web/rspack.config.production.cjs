@@ -85,19 +85,19 @@ module.exports = (env, argv) => merge(config(env, argv), {
                     name: 'vendors-node-modules',
                 },
                 apparatus: {
-                    test: /[\\/]src[\\/]apparatus[\\/]/,
+                    test: /[\\/]apparatus[\\/]src[\\/]/,
                     name: 'apparatus',
                 },
                 ['tinker-chest']: {
-                    test: /[\\/]src[\\/]tinker-chest[\\/]/,
+                    test: /[\\/]tinker-chest[\\/]src[\\/]/,
                     name: 'tinker-chest',
                 },
                 gears: {
-                    test: /[\\/]src[\\/]gears[\\/]/,
+                    test: /[\\/]gears[\\/]src[\\/]/,
                     name: 'gears',
                 },
                 ui: {
-                    test: /[\\/]src[\\/]ui[\\/]/,
+                    test: /[\\/](ui|ui-web)[\\/]src[\\/]/,
                     name: 'ui',
                 },
             },

@@ -1,4 +1,4 @@
-import { ControlPlacement, defaultGaugeControls, defaultMapLayout, GaugeControlsType, MapLayout } from "../../../tinker-chest/src";
+import { ControlPlacement, defaultGaugeControls, defaultMapLayout, GaugeControlsType, MapLayout } from "@tinker-chest";
 import { AnimationControlsType, Animatrix } from "../state";
 
 export type Preset = 'default' | 'racing-game' | '';

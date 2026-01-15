@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { validateBoolean, validateNumber } from "../../../../tinker-chest/src";
+import { validateBoolean, validateNumber } from "@tinker-chest";
 import { AnimationControlsType } from "./model";
 
 /**

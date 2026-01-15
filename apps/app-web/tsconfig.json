@@ -1,33 +1,36 @@
 {
-    "extends": "../tsconfig.json",
+    "extends": "../tsconfig.base.json",
     "compilerOptions": {
-        "typeRoots": [
-            "types",
-            "node_modules/@types"
-        ],
+        "outDir": "dist",
         "paths": {
-            // "@apparatus": [
-            //     "./packages/apparatus/index.ts"
-            // ],
-            // "@tinker-chest": [
-            //     "./packages/tinker-chest/index.ts"
-            // ],
-            // "@gears": [
-            //     "./packages/gears/index.ts"
-            // ],
-            "@ui": [
-                "./ui-web/index.ts"
+            "@apparatus": [
+                "../packages/apparatus/src/index.ts"
             ],
+            "@tinker-chest": [
+                "../packages/tinker-chest/src/index.ts"
+            ],
+            "@gears": [
+                "../packages/gears/src/index.ts"
+            ],
+            "@ui": [
+                "../ui/src/index.ts"
+            ],
+            "@ui-web": [
+                "../ui-web/src/index.ts"
+            ]
         },
     },
     "include": [
-        "types",
-        "src",
-        "test"
+        "src/**/*",
+        "test/**/*",
+        "types/**/*",
+        "../types/**/*",
     ],
     "exclude": [
         "node_modules",
-        "cypress",
         "dist",
+        "cypress",
+        "**/*.spec.ts",
+        "**/*.test.ts"
     ]
 }

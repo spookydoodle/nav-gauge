@@ -28,11 +28,14 @@
                 "./packages/gears/src/index.ts"
             ],
             "@ui": [
-                "./ui-web/src/index.ts"
-            ],
+                "./ui/src/index.ts"
+            ]
         }
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist",
+        "**/*.spec.ts",
+        "**/*.test.ts"
     ]
 }

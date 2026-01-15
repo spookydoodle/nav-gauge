@@ -16,7 +16,7 @@ import {
     MapLayout,
     validateGaugeControls,
     validateMapLayout,
-} from "../../../../../packages/tinker-chest/src";
+} from "@tinker-chest";
 import * as styles from './controls.module.css';
 
 interface Props {

@@ -14,7 +14,7 @@
         "url": "https://github.com/spookydoodle/nav-gauge/issues"
     },
     "scripts": {
-        "analyze": "source-map-explorer 'build/static/js/*.js'",
+        "analyze": "source-map-explorer 'dist/static/js/*.js'",
         "dev": "rspack serve --mode development --config rspack.config.development.cjs",
         "start": "rspack serve --mode production --config rspack.config.production.cjs",
         "build": "tsc --noEmit && rspack --mode production --config rspack.config.production.cjs",

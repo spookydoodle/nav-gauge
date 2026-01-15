@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { GeoJson, MarkerImage, useStateWarden, useSubjectState } from "@apparatus";
-import { RouteTimes } from "../../../../packages/tinker-chest/src";
+import { RouteTimes } from "@tinker-chest";
 import { MapTools } from "./map-tools/MapTools";
 import { RouteLayerFitBounds } from "./layers/RouteLayerFitBounds";
 import { Player } from "./player/Player";

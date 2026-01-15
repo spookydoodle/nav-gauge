@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import { useStateWarden, FeatureStateProps } from "@apparatus";
 import { useUpdateSourceData } from "./useUpdateData";
-import { emptyCollection } from "../../../../../gears/src";
+import { emptyCollection } from "@gears";
 
 const DEFAULT_BUFFER = 4;
 

@@ -1,7 +1,7 @@
-import { Theme } from "../../ui/theme";
-import { ApplicationSettingsType, ControlPlacement, GaugeControlsType, MapLayout } from "./model";
+import { Theme } from "@ui";
+import { ApplicationSettingsType, GaugeControlsType, MapLayout, ControlPosition } from "./model";
 
-export const controlsPositions: maplibregl.ControlPosition[] = [
+export const controlsPositions: ControlPosition[] = [
     "top-left",
     "top-right",
     "bottom-left",

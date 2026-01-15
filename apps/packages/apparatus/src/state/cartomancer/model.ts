@@ -1,5 +1,5 @@
 import { ComponentType, Dispatch, SetStateAction } from "react";
-import { RouteTimes } from "../../../../tinker-chest/src";
+import { RouteTimes } from "@tinker-chest";
 import { GeoJson, MarkerImage } from "../../parsers";
 
 export interface Overlay {

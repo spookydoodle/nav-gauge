@@ -1,8 +1,8 @@
 import { FC } from "react";
 import classNames from "classnames";
 import { useSubjectState, Animatrix, useStateWarden } from "@apparatus";
-import { clamp, defaultZoomInToImages, } from "../../../../../packages/tinker-chest/src";
-import { Fieldset, Input } from "@ui";
+import { clamp, defaultZoomInToImages, } from "@tinker-chest";
+import { Fieldset, Input } from "@ui-web";
 import * as styles from './controls.module.css';
 
 interface Props { }

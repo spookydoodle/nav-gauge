@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { formatTimestamp } from "../../../../tinker-chest/src";
+import { formatTimestamp } from "@tinker-chest";
 import { FrameRate, SurveillanceState } from "./model";
 
 /**

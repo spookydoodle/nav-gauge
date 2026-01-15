@@ -19,7 +19,7 @@ import {
     GaugeControlsType,
     MapLayout,
     RouteTimes
-} from "../../../../packages/tinker-chest/src";
+} from "@tinker-chest";
 import { Presets } from "./controls/Presets";
 import { AnimationControls } from "./controls/AnimationControls";
 import { MapLayoutControls } from "./controls/MapLayoutControls";

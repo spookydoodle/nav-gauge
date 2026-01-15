@@ -1,7 +1,7 @@
 import { FC, StrictMode, useEffect } from "react";
 import { useLocalStorageState, theOneAndOnlyStateWarden, StateWardenContext } from "@apparatus";
-import { ApplicationSettingsType, defaultApplicationSettings } from "../../../packages/tinker-chest/src";
-import { routeGear } from "../../../packages/gears/src";
+import { ApplicationSettingsType, defaultApplicationSettings } from "@tinker-chest";
+import { routeGear } from "@gears";
 import { TopBar, Footer } from "./layout";
 import { Machine } from "./machine/Machine";
 import { Notices } from "./notices/Notices";

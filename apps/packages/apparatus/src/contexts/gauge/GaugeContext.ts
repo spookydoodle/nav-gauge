@@ -6,7 +6,7 @@ import {
     defaultMapLayout,
     GaugeControlsType,
     MapLayout,
-} from "../../../../tinker-chest/src";
+} from "@tinker-chest";
 
 export type GaugeContext = GaugeControlsType & MapLayout & ApplicationSettingsType;
 
