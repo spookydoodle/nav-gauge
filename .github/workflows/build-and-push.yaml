@@ -124,5 +124,6 @@ jobs:
 
       - name: Run tests e2e prod
         continue-on-error: true
-        run: yarn --cwd apps test:e2e:prod
+        run: yarn test:e2e:prod
+        working-directory: apps/app-web/web-app
 
