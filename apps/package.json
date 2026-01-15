@@ -15,7 +15,15 @@
         "dev": "yarn workspace web-app dev",
         "build": "yarn workspace web-app build",
         "start": "yarn workspace web-app start",
-        "test": "yarn workspace web-app test",
+        "test:web-app": "yarn workspace web-app test",
+        "test:web-ui": "yarn workspace web-ui test",
+        "test:mobile-app": "yarn workspace mobile-app test",
+        "test:mobile-ui": "yarn workspace mobile-ui test",
+        "test:apparatus": "yarn workspace apparatus test",
+        "test:gears": "yarn workspace gears test",
+        "test:tinker-chest": "yarn workspace tinker-chest test",
+        "test:ui": "yarn workspace ui test",
+        "test": "concurrently \"yarn test:web-app\" \"yarn test:web-ui\" \"yarn test:mobile-app\" \"yarn test:mobile-ui\" \"yarn test:apparatus\" \"yarn test:gears\" \"yarn test:tinker-chest\" \"yarn test:ui\"",
         "test:e2e:prod": "yarn workspace web-app test:e2e:prod"
     },
     "dependencies": {
@@ -40,6 +48,7 @@
         "@typescript-eslint/parser": "^8.53.0",
         "add": "^2.0.6",
         "chai": "^6.2.2",
+        "concurrently": "^9.2.1",
         "eslint": "^9.39.2",
         "mocha": "^11.7.5",
         "path": "^0.12.7",
@@ -47,10 +56,11 @@
         "typescript": "^5.9.3"
     },
     "workspaces": [
-        "ui",
-        "web/web-app",
-        "web/web-ui",
-        "mobile",
-        "packages/*"
+        "app-web/web-app",
+        "app-web/web-ui",
+        "app-mobile/mobile-app",
+        "app-mobile/mobile-ui",
+        "packages/*",
+        "ui"
     ]
 }
