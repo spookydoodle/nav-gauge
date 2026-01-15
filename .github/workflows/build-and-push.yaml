@@ -38,15 +38,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          build: yarn --cwd apps build
+          start: yarn --cwd apps start
+          working-directory: apps
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-        working-directory: apps
-
-      - name: Run Cypress
-        run: yarn test:e2e:prod
-        working-directory: apps/web-app
-       
   build-and-push:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' 
