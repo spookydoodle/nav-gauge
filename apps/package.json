@@ -15,7 +15,8 @@
         "dev": "yarn workspace web-app dev",
         "build": "yarn workspace web-app build",
         "start": "yarn workspace web-app start",
-        "test": "yarn workspace web-app test"
+        "test": "yarn workspace web-app test",
+        "test:e2e:prod": "yarn workspace web-app test:e2e:prod"
     },
     "dependencies": {
         "@turf/along": "^7.3.2",
