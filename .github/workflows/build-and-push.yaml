@@ -41,8 +41,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: yarn --cwd apps build
-          start: yarn --cwd apps start
+          build: yarn build
+          start: yarn start
+        working-directory: apps
 
   build-and-push:
     runs-on: ubuntu-latest
