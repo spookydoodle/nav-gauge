@@ -39,7 +39,6 @@
         ]
     },
     "dependencies": {
-        "maplibre-gl": "^5.16.0",
         "pmtiles": "^4.3.2",
         "react": "^19.2.3",
         "react-dom": "^19.2.3"
