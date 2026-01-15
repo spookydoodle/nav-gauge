@@ -43,7 +43,7 @@ jobs:
         with:
           build: yarn build
           start: yarn start
-          working-directory: apps
+          working-directory: apps/app-web/web-app
 
   build-and-push:
     runs-on: ubuntu-latest
