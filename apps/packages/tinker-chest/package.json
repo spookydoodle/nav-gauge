@@ -1,0 +1,11 @@
+{
+    "name": "tinker-chest",
+    "version": "1.0.0",
+    "private": true,
+    "main": "src/index.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "test": "mocha"
+    }
+}

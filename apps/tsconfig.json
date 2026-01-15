@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "strict": true,
+        "esModuleInterop": true,
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "skipLibCheck": true,
+        "lib": [
+            "ESNext",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "typeRoots": [
+            "types",
+            "node_modules/@types"
+        ],
+        "paths": {
+            "@apparatus": [
+                "./packages/apparatus/src/index.ts"
+            ],
+            "@tinker-chest": [
+                "./packages/tinker-chest/src/index.ts"
+            ],
+            "@gears": [
+                "./packages/gears/src/index.ts"
+            ],
+            "@ui": [
+                "./ui-web/src/index.ts"
+            ],
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
