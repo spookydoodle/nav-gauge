@@ -40,10 +40,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Cypress run
         uses: cypress-io/github-action@v6
-        with:
-          build: yarn build
-          start: yarn start
         working-directory: apps
+        with:
+          build: yarn --cwd apps build
+          start: yarn --cwd apps start
 
   build-and-push:
     runs-on: ubuntu-latest
