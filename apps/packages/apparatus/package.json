@@ -1,0 +1,19 @@
+{
+    "name": "apparatus",
+    "version": "1.0.0",
+    "private": true,
+    "main": "src/index.ts",
+    "scripts": {
+        "build": "tsc -b",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "test": "mocha"
+    },
+    "dependencies": {
+        "@tmcw/togeojson": "^7.1.2",
+        "@xmldom/xmldom": "^0.8.11",
+        "exif-js": "^2.3.0"
+    },
+    "devDependencies": {
+        "@types/exif-js": "^2.3.1"
+    }
+}
