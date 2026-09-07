@@ -1,6 +1,8 @@
 export * from './clock-input';
+export * from './color-picker';
 export * from './button';
 export * from './checkbox';
+export * from './radio';
 export * from './chip';
 export * from './slider';
 export * from './color-input';
@@ -24,6 +26,7 @@ export * from './theme';
 export * from './tinkers';
 export * from './tooltip';
 export * from './toggle-switch';
+export * from './popup';
 export * from './resize-handle';
 export * from './transition';
 export * from './typography';

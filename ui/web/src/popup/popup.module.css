@@ -1,0 +1,11 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.popup {
+    position: absolute;
+    pointer-events: auto;
+}

@@ -4,7 +4,6 @@ import classNames from "classnames";
 import { ToolPanelProps } from "@apparatus";
 import { Divider } from "@web-ui";
 import { RecordingButtons } from "./RecordingButtons";
-import { ConfigurationButtons } from "./ConfigurationButtons";
 import { useTheme } from "@ui";
 import { useSubjectState } from "@tinker-chest";
 import { PlayButton } from "./player-slider/PlayButton";
@@ -52,7 +51,6 @@ export const Player: FC<ToolPanelProps<maplibregl.Map> & WebRouteStoryProps> = (
         />
     );
     const markerButton = <MarkerButton gearId={gearId} translationKey={translationKey} playerOperator={playerOperator} />;
-    const configurationButtons = <ConfigurationButtons gearId={gearId} translationKey={translationKey} state$={state$} />;
 
     if (media.isLessThanMd) {
         return (
@@ -64,7 +62,6 @@ export const Player: FC<ToolPanelProps<maplibregl.Map> & WebRouteStoryProps> = (
                     {playButton}
                     <div>
                         {markerButton}
-                        {configurationButtons}
                     </div>
                 </div>
                 <div className={styles['slider']}>
@@ -83,8 +80,6 @@ export const Player: FC<ToolPanelProps<maplibregl.Map> & WebRouteStoryProps> = (
                 {sliderWithMarkers}
                 {markerButton}
             </div>
-            <Divider color="neutral" orientation="vertical" mh="sm" mv="lg" />
-            {configurationButtons}
         </div>
     );
 };

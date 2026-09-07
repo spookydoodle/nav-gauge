@@ -18,6 +18,8 @@ export const NumberInput: FC<Omit<ComponentProps<'input'>, 'onChange' | 'value' 
     step,
     disabled = false,
     autoSelect = false,
+    ariaLabel,
+    unit,
     className,
     ...props
 }) => {
@@ -71,19 +73,23 @@ export const NumberInput: FC<Omit<ComponentProps<'input'>, 'onChange' | 'value' 
                 </label>
             ) : label}
             <div className={styles['input-wrapper']}>
-                <input
-                    id={id}
-                    type="number"
-                    value={value}
-                    onChange={handleChange}
-                    onClick={handleClick}
-                    min={min}
-                    max={max}
-                    step={step}
-                    disabled={disabled}
-                    className={classNames(styles.input, className)}
-                    {...props}
-                />
+                <div className={styles['input-with-unit']}>
+                    <input
+                        id={id}
+                        type="number"
+                        value={value}
+                        onChange={handleChange}
+                        onClick={handleClick}
+                        min={min}
+                        max={max}
+                        step={step}
+                        disabled={disabled}
+                        aria-label={ariaLabel || (typeof label === 'string' ? label : undefined)}
+                        className={classNames(styles.input, className)}
+                        {...props}
+                    />
+                    {unit ? <span className={styles['unit']}>{unit}</span> : null}
+                </div>
                 <div className={styles.steppers}>
                     <Button
                         icon={Icons.NounProject.ChevronDownSingle}

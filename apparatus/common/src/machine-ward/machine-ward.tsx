@@ -33,7 +33,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
     public readonly translatron = new Translatron();
     public readonly cartomancer: Cartomancer<TMap>;
     public readonly chronoLens: TChronoLens;
-    public readonly toolsStation = new ToolsStation<TMap>()
+    public readonly toolsStation = new ToolsStation<TMap>();
 
     private attributionVaultSubscription: Subscription | null = null;
 

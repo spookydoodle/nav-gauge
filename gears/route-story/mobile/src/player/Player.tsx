@@ -6,7 +6,6 @@ import { useSubjectState } from "@tinker-chest";
 import { Divider } from "@mobile-ui";
 import { MobileMap } from "@mobile-apparatus";
 import { RecordingButtons } from "./RecordingButtons";
-import { ConfigurationButtons } from "./ConfigurationButtons";
 import { PlayButton } from "./player-slider/PlayButton";
 import { SliderWithMarkers } from "./player-slider/SliderWithMarkers";
 import { MarkerButton } from "./player-slider/MarkerButton";
@@ -90,7 +89,6 @@ export const Player: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps
         />
     );
     const markerButton = <MarkerButton gearId={gearId} translationKey={translationKey} playerOperator={playerOperator} />;
-    const configurationButtons = <ConfigurationButtons gearId={gearId} translationKey={translationKey} state$={state$} />;
 
     if (media.isLessThanMd) {
         return (
@@ -102,7 +100,6 @@ export const Player: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps
                     {playButton}
                     <View style={[styles.buttonGroup, styles.buttonGroupEnd]}>
                         {markerButton}
-                        {configurationButtons}
                     </View>
                 </View>
                 <View style={styles.slider}>
@@ -123,8 +120,6 @@ export const Player: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps
                 </View>
                 {markerButton}
             </View>
-            <Divider color="neutral" orientation="vertical" mh="sm" mv="lg" />
-            {configurationButtons}
         </View>
     );
 };

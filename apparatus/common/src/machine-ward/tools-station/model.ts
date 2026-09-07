@@ -1,4 +1,4 @@
-import { ComponentType } from "react";
+import { ComponentType, RefObject } from "react";
 import { BehaviorSubject } from "rxjs";
 import { TranslationId } from "../translatron";
 
@@ -28,6 +28,7 @@ export interface ObservedToolPanel<TMap> {
 }
 
 export interface ToolIcon<TMap> {
+    anchorRef$: BehaviorSubject<ToolIconAnchorRef>;
     icon?: string;
     value$: BehaviorSubject<string | null>;
     placement$: BehaviorSubject<ToolIconPlacement>;
@@ -41,6 +42,7 @@ export interface ToolIcon<TMap> {
 
 export interface ObservedToolIcon<TMap> {
     id: string;
+    anchorRef$: BehaviorSubject<ToolIconAnchorRef>;
     icon?: string;
     tooltip: TranslationId | ((value: string | null) => TranslationId);
     placement: ToolIconPlacement;
@@ -50,6 +52,18 @@ export interface ObservedToolIcon<TMap> {
     rotate$: BehaviorSubject<number>;
     pitch$: BehaviorSubject<number>;
     onClick?: (map: TMap) => void;
+}
+
+export interface ToolPopup<TMap> {
+    icon?: string;
+    title: TranslationId;
+    contentComponent: ComponentType<ToolPopupProps<TMap>>;
+    onClose: () => void;
+}
+
+export interface ToolPopupProps<TMap> {
+    map?: TMap;
+    onClose: () => void;
 }
 
 export interface TopToolsProps<TMap> {
@@ -62,3 +76,23 @@ export interface ToolbarSizeRef {
         clientWidth: number;
     } | null;
 }
+
+/**
+ * The tool icon button element. Both web (HTMLElement) and mobile (RN HostInstance)
+ * expose `getBoundingClientRect(): DOMRect`, so consumers can position anchored popovers
+ * without platform casts.
+ */
+export interface ToolIconAnchor {
+    getBoundingClientRect(): {
+        height: number;
+        width: number;
+        left: number;
+        right: number;
+        top: number;
+        bottom: number;
+        x: number;
+        y: number;
+    };
+}
+
+export type ToolIconAnchorRef = RefObject<ToolIconAnchor | null>;

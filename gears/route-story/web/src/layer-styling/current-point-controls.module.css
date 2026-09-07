@@ -1,0 +1,28 @@
+.container {
+    padding: 10px;
+    display: grid;
+    row-gap: 10px;
+}
+
+.section {
+    display: grid;
+    row-gap: 4px;
+}
+
+.control-label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.size-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.radio-buttons {
+    display: grid;
+    row-gap: 4px;
+}

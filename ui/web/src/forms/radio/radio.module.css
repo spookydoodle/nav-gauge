@@ -1,0 +1,179 @@
+.radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1.1;
+    font-family: var(--font-default);
+}
+
+.radio.disabled {
+    cursor: not-allowed;
+    opacity: .4;
+}
+
+.input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    background-color: transparent;
+    border-radius: 50%;
+    transition: border-color .15s ease;
+}
+
+.box-checked {
+    border-color: var(--radio-color);
+}
+
+.dot {
+    border-radius: 50%;
+    background-color: var(--radio-color-light);
+}
+
+.label {
+    flex: 1;
+}
+
+.mode-light .label {
+    color: var(--radio-color-dark);
+}
+
+.mode-dark .label {
+    color: var(--radio-color-light);
+}
+
+.color-primary {
+    --radio-color: var(--color-primary);
+    --radio-color-dark: var(--color-primary-900);
+    --radio-color-light: var(--color-primary-100);
+}
+
+.color-secondary {
+    --radio-color: var(--color-secondary);
+    --radio-color-dark: var(--color-secondary-900);
+    --radio-color-light: var(--color-secondary-100);
+}
+
+.color-tertiary {
+    --radio-color: var(--color-tertiary);
+    --radio-color-dark: var(--color-tertiary-900);
+    --radio-color-light: var(--color-tertiary-100);
+}
+
+.color-neutral {
+    --radio-color: var(--color-neutral);
+    --radio-color-dark: var(--color-neutral-800);
+    --radio-color-light: var(--color-neutral-100);
+}
+
+.highlight-primary {
+    --radio-highlight-color: var(--color-primary);
+    --radio-highlight-color-accent-lighter: var(--color-primary-300);
+    --radio-highlight-color-accent-darker: var(--color-primary-600);
+}
+
+.highlight-secondary {
+    --radio-highlight-color: var(--color-secondary);
+    --radio-highlight-color-accent-lighter: var(--color-secondary-300);
+    --radio-highlight-color-accent-darker: var(--color-secondary-600);
+}
+
+.highlight-tertiary {
+    --radio-highlight-color: var(--color-tertiary);
+    --radio-highlight-color-accent-lighter: var(--color-tertiary-300);
+    --radio-highlight-color-accent-darker: var(--color-tertiary-600);
+}
+
+.highlight-neutral {
+    --radio-highlight-color: var(--color-neutral);
+    --radio-highlight-color-accent-lighter: var(--color-neutral-300);
+    --radio-highlight-color-accent-darker: var(--color-neutral-600);
+}
+
+.mode-light {
+    --radio-highlight-color-accent: var(--radio-highlight-color-accent-darker);
+}
+
+.mode-dark {
+    --radio-highlight-color-accent: var(--radio-highlight-color-accent-lighter);
+}
+
+.color-primary .box {
+    border-color: var(--color-primary);
+}
+
+.color-secondary .box {
+    border-color: var(--color-secondary);
+}
+
+.color-tertiary .box {
+    border-color: var(--color-tertiary);
+}
+
+.color-neutral .box {
+    border-color: var(--color-neutral);
+}
+
+.size-md .box {
+    width: 16px;
+    height: 16px;
+}
+
+.size-md .dot {
+    width: 8px;
+    height: 8px;
+}
+
+.size-md .label {
+    font-size: 14px;
+}
+
+.size-sm .box {
+    width: 14px;
+    height: 14px;
+}
+
+.size-sm .dot {
+    width: 6px;
+    height: 6px;
+}
+
+.size-sm .label {
+    font-size: 12px;
+}
+
+.size-xs .box {
+    width: 12px;
+    height: 12px;
+}
+
+.size-xs .dot {
+    width: 4px;
+    height: 4px;
+}
+
+.size-xs .label {
+    font-size: 11px;
+}
+
+.radio:hover .box {
+    border-color: var(--radio-highlight-color-accent);
+}
+
+.radio:has(:focus-visible) .box {
+    outline: 2px solid var(--radio-color);
+    outline-offset: 2px;
+}

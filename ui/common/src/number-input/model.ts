@@ -14,4 +14,6 @@ export interface NumberInputProps {
     step?: number;
     disabled?: boolean;
     autoSelect?: boolean;
+    ariaLabel?: string;
+    unit?: string;
 }

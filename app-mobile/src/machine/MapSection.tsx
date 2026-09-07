@@ -8,6 +8,7 @@ import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MapToolsGridAreas } from "./map-tools-grid/MapToolsGridAreas";
 import { GearsTopToolbar } from "./GearsTopToolbar";
+import { Popups } from "./Popups";
 import {
     MapCanvas,
     dragPan$,
@@ -69,6 +70,7 @@ export const MapSection: FC = () => {
             </ErrorBoundary>
             <GearsTopToolbar />
             <MapToolsGridAreas map={map} />
+            <Popups map={map} />
         </View>
     );
 };

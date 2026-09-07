@@ -60,7 +60,7 @@ export enum AnimatrixTranslationKey {
     Pitch = 'pitch',
     Zoom = 'zoom',
     ImagePauseDuration = 'image-pause-duration',
-    RouteAnimationDuration = 'route-animation-duration',
+    RoutePlaybackDuration = 'route-playback-duration',
     TotalRecordingDuration = 'total-recording-duration',
     EaseDuration = 'ease-duration',
     PanToWholeRouteAtEnd = 'pan-to-whole-route-at-end',

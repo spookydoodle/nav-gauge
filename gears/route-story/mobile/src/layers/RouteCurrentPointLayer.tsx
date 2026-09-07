@@ -1,33 +1,24 @@
 import { FC } from "react";
-import { Layer, GeoJSONSource } from "@maplibre/maplibre-react-native";
-import { routeSourceIds, routeLayerIds, RouteLayers } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { GeoJSONSource } from "@maplibre/maplibre-react-native";
+import {
+    getCurrentPointLayers,
+    RouteStoryState,
+    routeSourceIds,
+} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { renderLayerSpec } from "./render-layer-spec";
 
 interface Props {
-    source: GeoJSON.GeoJSON
+    source: GeoJSON.GeoJSON;
+    state: RouteStoryState;
 }
 
-export const RouteCurrentPointLayer: FC<Props> = ({ source }) => {
+export const RouteCurrentPointLayer: FC<Props> = ({ source, state }) => {
     return (
         <GeoJSONSource
             id={routeSourceIds.currentPoint}
             data={source}
         >
-            <Layer
-                type="circle"
-                id={routeLayerIds.currentPointOutline}
-                paint={{
-                    "circle-color": RouteLayers.currentPointOutline.circleColor,
-                    "circle-radius": RouteLayers.currentPointOutline.circleRadius,
-                }}
-            />
-            <Layer
-                type="circle"
-                id={routeLayerIds.currentPoint}
-                paint={{
-                    "circle-color": RouteLayers.currentPoint.circleColor,
-                    "circle-radius": RouteLayers.currentPoint.circleRadius,
-                }}
-            />
+            {getCurrentPointLayers(state).map(renderLayerSpec)}
         </GeoJSONSource>
     );
 };

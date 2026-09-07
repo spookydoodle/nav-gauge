@@ -2,7 +2,7 @@ import { FC, useMemo } from "react";
 import * as maplibregl from "maplibre-gl";
 import { MapLayerData, MapSourceAndLayers, } from "@web-apparatus";
 import { layerOrder, routeSourceIds, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { routeLineLayers, routePointsLayer } from "./route-layers";
+import { getWebRouteLineLayers, getWebRoutePointsLayers } from "./route-layers";
 
 interface Props {
     map: maplibregl.Map;
@@ -13,16 +13,16 @@ interface Props {
 export const RouteLineLayer: FC<Props> = ({
     map,
     source,
-    state: { showRouteLine, showRoutePoints },
+    state,
 }) => {
     const mapLayerData = useMemo((): MapLayerData => {
         const routeLayers: MapLayerData['layers'] = [];
 
-        if (showRouteLine) {
-            routeLayers.push(...routeLineLayers);
+        if (state.routeStyleActive.showRouteLine || state.routeStyleInactive.showRouteLine) {
+            routeLayers.push(...getWebRouteLineLayers(state));
         }
-        if (showRoutePoints) {
-            routeLayers.push(routePointsLayer);
+        if (state.routeStyleActive.showRoutePoints || state.routeStyleInactive.showRoutePoints) {
+            routeLayers.push(...getWebRoutePointsLayers(state));
         }
 
         return {
@@ -34,7 +34,7 @@ export const RouteLineLayer: FC<Props> = ({
             },
             layers: routeLayers,
         };
-    }, [source, showRouteLine, showRoutePoints]);
+    }, [source, state]);
 
     return (
         <MapSourceAndLayers

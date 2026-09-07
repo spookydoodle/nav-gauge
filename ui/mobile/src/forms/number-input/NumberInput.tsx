@@ -9,6 +9,7 @@ export const NumberInput: FC<NumberInputProps> = ({
     value,
     onChange,
     disabled = false,
+    unit,
 }) => {
     const theme = useTheme();
 
@@ -26,22 +27,26 @@ export const NumberInput: FC<NumberInputProps> = ({
 
     return (
         <View style={styles.container}>
-            <Text style={[styles.label, { color: baseColor, fontSize: labelFontSize }]}>{label}</Text>
-            <TextInput
-                style={[
-                    styles.input,
-                    {
-                        color: baseColor,
-                        borderColor: baseColor,
-                        fontSize: inputFontSize,
-                        padding,
-                    },
-                ]}
-                value={String(value)}
-                onChangeText={handleChange}
-                keyboardType="numeric"
-                editable={!disabled}
-            />
+            {label ? <Text style={[styles.label, { color: baseColor, fontSize: labelFontSize }]}>{label}</Text> : null}
+            <View style={styles['input-wrapper']}>
+                <TextInput
+                    style={[
+                        styles.input,
+                        unit && styles['input-with-unit'],
+                        {
+                            color: baseColor,
+                            borderColor: baseColor,
+                            fontSize: inputFontSize,
+                            padding,
+                        },
+                    ]}
+                    value={String(value)}
+                    onChangeText={handleChange}
+                    keyboardType="numeric"
+                    editable={!disabled}
+                />
+                {unit ? <Text style={[styles.unit, { color: baseColor, fontSize: inputFontSize }]}>{unit}</Text> : null}
+            </View>
         </View>
     );
 };
@@ -53,10 +58,22 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 12,
     },
+    'input-wrapper': {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     input: {
         width: '100%',
         borderWidth: 1,
         borderRadius: 4,
         fontSize: 14,
+    },
+    'input-with-unit': {
+        flex: 1,
+    },
+    unit: {
+        fontSize: 14,
+        marginLeft: 4,
+        opacity: 0.6,
     },
 });

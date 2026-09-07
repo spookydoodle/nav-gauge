@@ -23,6 +23,14 @@
     box-shadow: 0 0 0 1px var(--ni-highlight-color);
 }
 
+.input-with-unit {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+}
+
 .input {
     flex: 1;
     border: none;
@@ -33,6 +41,13 @@
     background: transparent;
     color: inherit;
     min-width: 0;
+}
+
+.unit {
+    flex-shrink: 0;
+    margin-left: 4px;
+    opacity: 0.6;
+    pointer-events: none;
 }
 
 .input::-webkit-inner-spin-button,
@@ -134,6 +149,10 @@
     font-size: 11px;
 }
 
+.size-xs .unit {
+    font-size: 11px;
+}
+
 .size-xs .steppers {
     min-width: 16px;
 }
@@ -144,6 +163,10 @@
 }
 
 .size-sm .label {
+    font-size: 12px;
+}
+
+.size-sm .unit {
     font-size: 12px;
 }
 
@@ -158,6 +181,10 @@
 
 .size-md .label {
     font-size: 13px;
+}
+
+.size-md .unit {
+    font-size: 14px;
 }
 
 .size-md .steppers {
@@ -199,6 +226,14 @@
 
 .variant-fill-inverse .input-wrapper {
     color: var(--ni-color);
+}
+
+.container.mode-light.variant-fill-inverse .input-wrapper {
+    color: var(--ni-color-dark);
+}
+
+.container.mode-dark.variant-fill-inverse .input-wrapper {
+    color: var(--ni-color-light);
 }
 
 .variant-fill-translucent .input-wrapper {

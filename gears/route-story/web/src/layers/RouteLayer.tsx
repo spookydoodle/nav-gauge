@@ -83,7 +83,7 @@ export const RouteLayer: FC<OverlayComponentProps<maplibregl.Map> & WebRouteStor
                 <DebugRouteCameraLineLayer map={map} spline={splineData} />
             ) : null}
             <RouteLineLayer map={map} source={sources.line} state={state} />
-            <RouteCurrentPointLayer map={map} source={sources.currentPoint} />
+            <RouteCurrentPointLayer map={map} source={sources.currentPoint} state={state} />
         </>
     );
 };

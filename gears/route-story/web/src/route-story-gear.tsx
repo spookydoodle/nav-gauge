@@ -13,6 +13,7 @@ import { RouteName } from './file-input/RouteName';
 import { AnimationControlsSearch } from './animation-controls/AnimationControlsSearch';
 import { WebChronoLens } from '@web-apparatus';
 import { RecChip } from './top-bar/RecChip';
+import { LayerStylingPopup } from './layer-styling/LayerStylingPopup';
 
 const SAMPLE_IMAGE_NAMES = [
    'IMG20260403173904.jpg',
@@ -32,6 +33,7 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
    public routeLayerComponent = RouteLayer;
    public imagesLayerComponent = ImagesLayer;
    public topBarChipComponent = RecChip;
+   public layerStylingComponent = LayerStylingPopup;
 
    public constructor(apparatus: GearApparatus<maplibregl.Map, WebChronoLens>) {
       super(apparatus);

@@ -59,7 +59,7 @@ export const AnimationControls: FC<ToolPanelProps<maplibregl.Map> & WebRouteStor
         { n: animatrix.namespace, t: animatrix.translationKey.Pitch },
         { n: animatrix.namespace, t: animatrix.translationKey.Zoom },
         { n: animatrix.namespace, t: animatrix.translationKey.ImagePauseDuration },
-        { n: animatrix.namespace, t: animatrix.translationKey.RouteAnimationDuration },
+        { n: animatrix.namespace, t: animatrix.translationKey.RoutePlaybackDuration },
         { n: animatrix.namespace, t: animatrix.translationKey.TotalRecordingDuration },
         { n: animatrix.namespace, t: animatrix.translationKey.EaseDuration },
         { n: animatrix.namespace, t: animatrix.translationKey.PanToWholeRouteAtEnd },
@@ -121,11 +121,11 @@ export const AnimationControls: FC<ToolPanelProps<maplibregl.Map> & WebRouteStor
                         }))}
                     />
                     <Span tabular>{Math.round(displayImageDuration / 1000)}s</Span>
-                    <Label htmlFor="animation-controls-route-animation-duration" align="right">
+                    <Label htmlFor="animation-controls-route-playback-duration" align="right">
                         {routePlaybackDurationLabel}
                     </Label>
                     <DurationClockInput
-                        id="animation-controls-route-animation-duration"
+                        id="animation-controls-route-playback-duration"
                         value={routePlaybackDuration}
                         min={Animatrix.routePlaybackDurationRange[0]}
                         onChange={(value) => setAnimationControls((prev) => ({

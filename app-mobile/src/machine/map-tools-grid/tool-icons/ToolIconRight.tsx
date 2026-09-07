@@ -14,6 +14,7 @@ interface Props {
 export const ToolIconRight: FC<ObservedToolIcon<MobileMap> & Props> = ({
     map,
     icon,
+    anchorRef$,
     value$,
     disabled$,
     active$,
@@ -33,6 +34,9 @@ export const ToolIconRight: FC<ObservedToolIcon<MobileMap> & Props> = ({
 
     return (
         <Button
+            forwardRef={(r) => {
+                anchorRef$.next({ current: r });
+            }}
             accessibilityLabel={ariaLabel}
             icon={icon as unknown as ComponentType<SvgProps>}
             iconRotateX={pitch}

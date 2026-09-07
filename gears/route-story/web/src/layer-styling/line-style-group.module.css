@@ -1,0 +1,17 @@
+.top-controls {
+    display: grid;
+    row-gap: 6px;
+    margin-bottom: 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 8px;
+    row-gap: 12px;
+    align-items: center;
+}
+
+.row {
+    align-items: center;
+}

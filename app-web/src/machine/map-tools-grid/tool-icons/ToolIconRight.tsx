@@ -14,6 +14,7 @@ interface Props {
 export const ToolIconRight: FC<ObservedToolIcon<maplibregl.Map> & Props> = ({
     map,
     icon,
+    anchorRef$,
     value$,
     disabled$,
     active$,
@@ -35,6 +36,9 @@ export const ToolIconRight: FC<ObservedToolIcon<maplibregl.Map> & Props> = ({
     return (
         <Transition fade render>
             <Button
+                ref={(r) => {
+                    anchorRef$.next({ current: r });
+                }}
                 aria-label={ariaLabel}
                 icon={icon}
                 iconRotateZ={pitch}

@@ -14,6 +14,7 @@ import { RouteName } from './player/RouteName';
 import { AnimationControlsSearch } from './animation-controls/AnimationControlsSearch';
 import { AnimationControls } from './animation-controls/AnimationControls';
 import { RecChip } from './top-bar/RecChip';
+import { LayerStylingPopup } from './layer-styling/LayerStylingPopup';
 
 const SAMPLE_ROUTE = {
    name: 'Lisboa walk.kml',
@@ -49,6 +50,7 @@ export class MobileRouteStoryGear extends RouteStoryGear<MobileMap, MobileChrono
    public routeLayerComponent = RouteLayer;
    public imagesLayerComponent = ImagesLayer;
       public topBarChipComponent = RecChip;
+   public layerStylingComponent = LayerStylingPopup;
 
    public constructor(apparatus: GearApparatus<MobileMap, MobileChronoLens>) {
       super(apparatus);

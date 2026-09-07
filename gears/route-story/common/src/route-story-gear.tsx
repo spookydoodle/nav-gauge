@@ -1,15 +1,29 @@
 import { ComponentType, FC } from "react";
 import { BehaviorSubject, combineLatest, Subscription } from "rxjs";
-import { ToolPanelProps, MarkerImage, OverlayComponentProps, Gear, TranslationTable, GearTranslationKey, Cartomancer, MapLayout, GaugeControlsType, GearApparatus, TopToolsProps, ChronoLens } from "@apparatus";
+import {
+    ToolPanelProps,
+    MarkerImage,
+    OverlayComponentProps,
+    Gear,
+    TranslationTable,
+    GearTranslationKey,
+    Cartomancer,
+    MapLayout,
+    GaugeControlsType,
+    GearApparatus,
+    TopToolsProps,
+    ChronoLens,
+    ToolPopupProps,
+} from "@apparatus";
 import { GeoJson, ParsingResultWithError } from "@tinker-chest";
-import { RouteStoryProps, RouteTimes, RouteStoryFile, RouteStoryTranslationKey, RouteStoryState, PresetOption, Preset } from "./model";
+import { RouteStoryProps, RouteTimes, RouteStoryFile, RouteStoryTranslationKey, RouteStoryState, PresetOption, Preset, RouteStoryLayerStylingPopupProps } from "./model";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
 import { getSplineData, SplineData } from "./tinkers";
 import { Icons } from "@ui";
 import * as Translations from "./translations";
 import { AnimationControlsType, Animatrix } from "./animatrix";
-
+import { defaultRouteStoryState } from "./layer-specification";
 
 export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> extends Gear<TMap, TChronoLens> {
     public readonly id = 'route-story';
@@ -22,7 +36,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     private dataSubscription: Subscription | null = null;
     public readonly data$ = new BehaviorSubject<ParsingResultWithError>({});
     public readonly splineData$ = new BehaviorSubject<SplineData | null>(null);
-    public readonly state$ = new BehaviorSubject<RouteStoryState>({ showRouteLine: true, showRoutePoints: false });
+    public readonly state$ = new BehaviorSubject<RouteStoryState>(defaultRouteStoryState);
     public readonly routeTimes$ = new BehaviorSubject<RouteTimes | null>(null);
     public readonly images$ = new BehaviorSubject<MarkerImage<TImageData>[]>([]);
     public readonly progressMs$ = new BehaviorSubject(0);
@@ -81,9 +95,13 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
 
     public recTopBarToolId = 'rec';
     public abstract topBarChipComponent: ComponentType<RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
-    
+
     private routeNameToolId = 'route-upload';
     public abstract routeUploadComponent: ComponentType<TopToolsProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
+
+    private layerStylingToolIconId = 'layer-styling';
+    private layerStylingToolPopupId = 'layer-styling';
+    public abstract layerStylingComponent: ComponentType<ToolPopupProps<TMap> & RouteStoryLayerStylingPopupProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
 
     private playerToolId = 'player';
     public abstract playerComponent: ComponentType<ToolPanelProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
@@ -137,6 +155,39 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
         }, 1000);
         this.dataSubscription = this.subscribeToDataUpdates();
 
+        const layerStylingIcon = this.apparatus.toolsStation.addToolIcon(
+            this.layerStylingToolIconId,
+            {
+                placement: 'left',
+                icon: Icons.NounProject.Paint as unknown as string,
+                tooltip: { n: this.id, t: this.internalTranslationKey.OpenLayerAestheticOptions },
+                onClick: (_map) => {
+                    const onClose = () => {
+                        layerStylingIcon.active$.next(false);
+                        this.apparatus.toolsStation.removeToolPopup(this.layerStylingToolPopupId);
+                    };
+
+                    if (!layerStylingIcon.active$.value) {
+                        layerStylingIcon.active$.next(true);
+                        
+                        this.apparatus.toolsStation.addToolPopup(
+                            this.layerStylingToolPopupId,
+                            {
+                                title: { n: this.id, t: this.internalTranslationKey.LayerAestheticOptions },
+                                onClose,
+                                contentComponent: this.wrapProps<RouteStoryLayerStylingPopupProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>, ToolPopupProps<TMap>>(this.layerStylingComponent, {
+                                    ...this.getProps(),
+                                    icon: layerStylingIcon,
+                                })
+                            }
+                        );
+                    } else {
+                        onClose();
+                    }
+                },
+            }
+        );
+
         this.apparatus.toolsStation.addTopTool(
             this.routeNameToolId,
             this.wrapProps<RouteStoryProps<TMap, TChronoLens, TFile, TImageData>, TopToolsProps<TMap>>(this.routeUploadComponent, this.getProps())
@@ -181,6 +232,8 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
         this.apparatus.toolsStation.removeToolPanel(this.animatrixToolId);
         this.apparatus.toolsStation.removeToolPanel(this.playerToolId);
         this.apparatus.toolsStation.removeTopTool(this.routeNameToolId);
+        this.apparatus.toolsStation.removeToolIcon(this.layerStylingToolIconId);
+        this.apparatus.toolsStation.removeToolPopup(this.layerStylingToolPopupId);
         this.dataSubscription?.unsubscribe();
         this.disengageRouteStory?.();
         this.presetActiveSubscription?.unsubscribe();

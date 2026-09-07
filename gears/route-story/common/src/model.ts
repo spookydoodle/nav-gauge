@@ -1,10 +1,11 @@
-import { ChronoLens, GaugeControlsType, MapLayout, MarkerImage } from "@apparatus";
-import { ParsingResultWithError } from "@tinker-chest";
 import { BehaviorSubject } from "rxjs";
+import { ChronoLens, GaugeControlsType, MapLayout, MarkerImage, ToolIcon } from "@apparatus";
+import { ParsingResultWithError } from "@tinker-chest";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
 import { Animatrix } from "./animatrix";
 import { SplineData } from "./tinkers";
+import { Icons } from "@ui";
 
 export interface RouteTimes {
     startTime: string;
@@ -15,8 +16,53 @@ export interface RouteTimes {
 }
 
 export interface RouteStoryState {
+    /**
+     * Applied to the route line part after current point.
+     */
+    routeStyleInactive: RouteStoryLineStyle;
+    /**
+     * Applied to the route line part before current point.
+     */
+    routeStyleActive: RouteStoryLineStyle;
+    currentPoint: CurrentPointStyle;
+}
+
+export interface RouteStoryLineStyle {
     showRouteLine: boolean;
     showRoutePoints: boolean;
+    color: string;
+    width: number;
+    outlineColor: string;
+    outlineWidth: number;
+    variant: 'solid' | 'dashed';
+}
+
+export interface CurrentPointStyle {
+    fillColor: string;
+    outlineColor: string;
+    /**
+     * Radius in pixels.
+     */
+    size: number;
+    shape: CurrentPointStyleShape | CurrentPointStyleIcon;
+}
+
+export interface CurrentPointStyleShape {
+    type: 'simple';
+    shape: 'circle' | 'triangle';
+}
+
+export interface CurrentPointStyleIcon {
+    type: 'icon';
+    icon: typeof Icons.NounProject.AlienGun;
+    /**
+     * When `true` will rotate according to the current point heading.
+     */
+    rotate: boolean;
+}
+
+export interface RouteStoryLayerStylingPopupProps<TMap> {
+    icon: ToolIcon<TMap>;
 }
 
 export interface RouteStoryProps<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> {
@@ -57,9 +103,30 @@ export enum RouteStoryTranslationKey {
     StopRecording = 'stop-recording',
     PauseRecording = 'pause-recording',
     ResumeRecording = 'resume-recording',
-    LayerConfiguration = 'layer-configuration',
+    LayerAestheticOptions = 'layer-aesthetic-options',
+    OpenLayerAestheticOptions = 'open-layer-aesthetic-options',
     Lines = 'lines',
     Points = 'points',
+    Line = 'line',
+    Outline = 'outline',
+    LineStyle = 'line-style',
+    CurrentPoint = 'current-point',
+    Active = 'active',
+    Inactive = 'inactive',
+    Color = 'color',
+    Width = 'width',
+    OutlineColor = 'outline-color',
+    OutlineWidth = 'outline-width',
+    Variant = 'variant',
+    Solid = 'solid',
+    Dashed = 'dashed',
+    Size = 'size',
+    Shape = 'shape',
+    Circle = 'circle',
+    Triangle = 'triangle',
+    Opacity = 'opacity',
+    RestoreDefaults = 'restore-defaults',
+    Close = 'close',
     Slider = 'slider',
     Play = 'play',
     Pause = 'pause',

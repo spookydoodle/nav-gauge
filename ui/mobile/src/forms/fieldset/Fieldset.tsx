@@ -36,7 +36,7 @@ export const Fieldset: FC<Props> = ({
     append,
     size = 'md',
     color,
-    expandable,
+    expandable = true,
     expanded: controlledExpanded,
     onExpandedChange,
     children,

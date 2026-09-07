@@ -11,7 +11,7 @@ const nl: TranslationTable<AnimatrixTranslationKey>['nl'] = {
     "pitch": 'Helling',
     "zoom": 'Zoom',
     "image-pause-duration": 'Beeldpauzeduur',
-    "route-animation-duration": 'Duur van routeafspelen',
+    "route-playback-duration": 'Duur van routeafspelen',
     "total-recording-duration": 'Totale opnameduur',
     "ease-duration": 'Overgangsduur',
     "pan-to-whole-route-at-end": 'Aan het einde naar de hele route pannen',

@@ -11,7 +11,7 @@ const it: TranslationTable<AnimatrixTranslationKey>['it'] = {
     "pitch": 'Inclinazione',
     "zoom": 'Zoom',
     "image-pause-duration": 'Durata pausa immagine',
-    "route-animation-duration": 'Durata riproduzione percorso',
+    "route-playback-duration": 'Durata riproduzione percorso',
     "total-recording-duration": 'Durata totale registrazione',
     "ease-duration": 'Durata transizione',
     "pan-to-whole-route-at-end": 'Sposta all\'intera rotta alla fine',
