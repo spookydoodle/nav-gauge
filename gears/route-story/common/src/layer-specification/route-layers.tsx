@@ -1,5 +1,6 @@
 import { FeatureStateProps } from "@apparatus";
 import { RGBColor, Theme } from "@ui";
+import { EqualBooleanFeatureState, GetProperty, LineCap } from "./model";
 import { RouteStoryLineStyle, RouteStoryState } from "../model";
 
 export const defaultRouteStoryState: RouteStoryState = {
@@ -107,15 +108,22 @@ export const currentPointSizeOptions: { label: string; radius: number }[] = [
 ];
 
 type RouteStatus = 'before' | 'after';
+type RouteStatusFilter = ['==', GetProperty, RouteStatus];
+type HighlightOrStatusColor = [
+    'case',
+    EqualBooleanFeatureState, string,
+    ['==', GetProperty, RouteStatus], string,
+    string
+];
 
 export interface RouteLineLayerSpec {
     id: string;
     type: 'line';
     source: string;
-    filter?: unknown[];
+    filter?: RouteStatusFilter;
     layout: {
-        'line-cap': 'round' | 'butt' | 'square';
-        'line-join': 'round' | 'miter' | 'bevel';
+        'line-cap': LineCap;
+        'line-join': LineCap;
     };
     paint: {
         'line-color': string;
@@ -129,14 +137,14 @@ export interface RouteCircleLayerSpec {
     id: string;
     type: 'circle';
     source: string;
-    filter?: unknown[];
+    filter?: RouteStatusFilter;
     paint: {
-        'circle-color': string | unknown[];
+        'circle-color': string | HighlightOrStatusColor;
         'circle-radius': number;
     };
 }
 
-const statusFilter = (status: RouteStatus): unknown[] => ['==', ['get', 'status'], status];
+const statusFilter = (status: RouteStatus): RouteStatusFilter => ['==', ['get', 'status'], status];
 
 const getLinePart = (status: RouteStatus, style: RouteStoryLineStyle, isOutline: boolean): RouteLineLayerSpec => ({
     id: routeLayerIds[

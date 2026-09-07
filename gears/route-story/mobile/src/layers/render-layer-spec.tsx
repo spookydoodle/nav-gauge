@@ -8,9 +8,9 @@ export const renderLayerSpec = (spec: RouteLineLayerSpec | RouteCircleLayerSpec)
                 key={spec.id}
                 type="line"
                 id={spec.id}
-                filter={spec.filter as never}
-                layout={spec.layout as never}
-                paint={spec.paint as never}
+                filter={spec.filter}
+                layout={spec.layout}
+                paint={spec.paint}
             />
         );
     }
@@ -20,8 +20,8 @@ export const renderLayerSpec = (spec: RouteLineLayerSpec | RouteCircleLayerSpec)
             key={spec.id}
             type="circle"
             id={spec.id}
-            filter={spec.filter as never}
-            paint={spec.paint as never}
+            filter={spec.filter}
+            paint={spec.paint}
         />
     );
 };

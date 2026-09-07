@@ -16,10 +16,14 @@ export const RouteLineLayer: FC<Props> = ({
     state,
 }) => {
     const mapLayerData = useMemo((): MapLayerData => {
-        const routeLayers: MapLayerData['layers'] = [
-            ...getWebRouteLineLayers(state),
-            ...getWebRoutePointsLayers(state),
-        ];
+        const routeLayers: MapLayerData['layers'] = [];
+
+        if (state.routeStyleActive.showRouteLine || state.routeStyleInactive.showRouteLine) {
+            routeLayers.push(...getWebRouteLineLayers(state));
+        }
+        if (state.routeStyleActive.showRoutePoints || state.routeStyleInactive.showRoutePoints) {
+            routeLayers.push(...getWebRoutePointsLayers(state));
+        }
 
         return {
             sourceId: routeSourceIds.line,
