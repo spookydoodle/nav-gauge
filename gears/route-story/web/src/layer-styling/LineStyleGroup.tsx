@@ -3,6 +3,7 @@ import { DropdownOption } from "@ui";
 import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { Checkbox, Dropdown, Fieldset, Label, NumberInput } from "@web-ui";
 import { ColorSelectField } from "./ColorSelectField";
+import { useMultipleTranslations } from "@apparatus";
 import styles from './line-style-group.module.css';
 
 interface Props {
@@ -10,17 +11,6 @@ interface Props {
     style: RouteStoryLineStyle;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
-    linesLabel: string;
-    pointsLabel: string;
-    colorLabel: string;
-    widthLabel: string;
-    outlineColorLabel: string;
-    outlineWidthLabel: string;
-    solidLabel: string;
-    dashedLabel: string;
-    lineStyleLabel: string;
-    lineLabel: string;
-    outlineLabel: string;
     expanded?: boolean;
     onExpandedChange?: (expanded: boolean) => void;
     onChange: (patch: Partial<RouteStoryLineStyle>) => void;
@@ -31,17 +21,28 @@ export const LineStyleGroup: FC<Props> = ({
     style,
     gearId,
     translationKey,
-    linesLabel,
-    pointsLabel,
-    lineStyleLabel,
-    lineLabel,
-    outlineLabel,
-    solidLabel,
-    dashedLabel,
     onChange,
     expanded,
     onExpandedChange,
 }) => {
+    const [
+        linesLabel,
+        pointsLabel,
+        lineStyleLabel,
+        solidLabel,
+        dashedLabel,
+        lineLabel,
+        outlineLabel,
+    ] = useMultipleTranslations([
+        { n: gearId, t: translationKey.Lines },
+        { n: gearId, t: translationKey.Points },
+        { n: gearId, t: translationKey.LineStyle },
+        { n: gearId, t: translationKey.Solid },
+        { n: gearId, t: translationKey.Dashed },
+        { n: gearId, t: translationKey.Line },
+        { n: gearId, t: translationKey.Outline },
+    ]);
+
     const variantOptions: DropdownOption<'solid' | 'dashed'>[] = [
         { label: solidLabel, value: 'solid' as const },
         { label: dashedLabel, value: 'dashed' as const },

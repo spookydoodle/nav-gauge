@@ -17,6 +17,7 @@ const ru: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['ru'] 
     "stop-recording": 'Остановить наблюдение',
     "pause-recording": 'Приостановить наблюдение',
     "resume-recording": 'Возобновить наблюдение',
+    "layer-aesthetic-options": 'Эстетические параметры слоёв',
     "open-layer-aesthetic-options": 'Открыть эстетические параметры слоёв',
     "lines": 'Линии',
     "points": 'Точки',

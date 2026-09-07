@@ -17,6 +17,7 @@ const it: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['it'] 
     "stop-recording": 'Fermare sorveglianza',
     "pause-recording": 'Mettere in pausa sorveglianza',
     "resume-recording": 'Riprendere sorveglianza',
+    "layer-aesthetic-options": 'Opzioni estetiche dei livelli',
     "open-layer-aesthetic-options": 'Apri le opzioni estetiche dei livelli',
     "lines": 'Linee',
     "points": 'Punti',

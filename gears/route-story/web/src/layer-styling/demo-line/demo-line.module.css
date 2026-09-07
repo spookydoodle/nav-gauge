@@ -1,0 +1,9 @@
+.demo-line {
+    width: 100%;
+    padding: 10px 10px 4px 10px;
+    box-sizing: border-box;
+}
+
+.demo-point {
+    cursor: pointer;
+}

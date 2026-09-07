@@ -17,6 +17,7 @@ const pl: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['pl'] 
     "stop-recording": 'Zatrzymaj obserwację',
     "pause-recording": 'Wstrzymaj obserwację',
     "resume-recording": 'Wznów obserwację',
+    "layer-aesthetic-options": 'Opcje estetyczne warstw',
     "open-layer-aesthetic-options": 'Otwórz opcje estetyczne warstw',
     "lines": 'Linie',
     "points": 'Punkty',

@@ -54,6 +54,18 @@ export interface ObservedToolIcon<TMap> {
     onClick?: (map: TMap) => void;
 }
 
+export interface ToolPopup<TMap> {
+    icon?: string;
+    title: TranslationId;
+    contentComponent: ComponentType<ToolPopupProps<TMap>>;
+    onClose: () => void;
+}
+
+export interface ToolPopupProps<TMap> {
+    map?: TMap;
+    onClose: () => void;
+}
+
 export interface TopToolsProps<TMap> {
     map: TMap;
 }

@@ -1,23 +1,13 @@
 .popup {
     width: 360px;
-    max-height: min(75vh, 640px);
+}
+
+.content {
+    max-height: 60dvh;
     overflow-y: auto;
-    padding: 12px;
-    border: 1px solid;
+    padding: 0 10px 10px 10px;
     display: grid;
     row-gap: 10px;
-}
-
-.demo-line {
-    width: 100%;
-    height: 20px;
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-}
-
-.demo-point {
-    cursor: pointer;
 }
 
 .style-row {
@@ -30,4 +20,6 @@
     display: flex;
     justify-content: flex-end;
     column-gap: 8px;
+    padding: 10px;
+    background-color: var(--color-background);
 }

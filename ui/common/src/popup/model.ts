@@ -7,7 +7,10 @@ export interface PopupProps {
     position?: { x: number; y: number };
     variant?: PanelProps['variant'];
     shape?: PanelProps['shape'];
-    placement?: MenuAnchor;
+    /** Which corner of the trigger the popup attaches to. */
+    triggerAnchor?: MenuAnchor;
+    /** Which corner of the popup sits at the trigger's anchor corner. */
+    popupAnchor?: MenuAnchor;
     dismissOnClickAway?: boolean;
     visible: boolean;
     onClose: () => void;

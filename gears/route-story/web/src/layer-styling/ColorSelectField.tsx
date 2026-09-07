@@ -46,7 +46,8 @@ export const ColorSelectField: FC<Props> = ({ label, value, gearId, translationK
                 visible={open}
                 anchor={anchorRef}
                 variant="fill-inverse"
-                placement="bottom-left"
+                triggerAnchor="bottom-left"
+                popupAnchor="top-left"
                 onClose={() => setOpen(false)}
                 popupClassName={styles['color-popup']}
             >

@@ -1,70 +1,22 @@
 import { FC, useMemo, useState } from "react";
 import { Dimensions, Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { OverlayComponentProps, useMultipleTranslations } from "@apparatus";
+import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
 import { getIconAnchorPoint, getMenuPosition, MenuPosition, useTheme } from "@ui";
-import { getDefaultRouteStoryState, CurrentPointStyle, LayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MobileRouteStoryProps } from "../model";
 import { Button, Fieldset } from "@mobile-ui";
-import { CurrentPointControls } from "../player/player-configuration/CurrentPointControls";
-import { LineStyleGroup } from "../player/player-configuration/LineStyleGroup";
+import { CurrentPointControls } from "./CurrentPointControls";
+import { LineStyleGroup } from "./LineStyleGroup";
+import { DemoLine } from "./demo-line/DemoLine";
 
 const hasCustomStyling = (current: RouteStoryState, defaults: RouteStoryState): boolean =>
     JSON.stringify(current.routeStyleActive) !== JSON.stringify(defaults.routeStyleActive) ||
     JSON.stringify(current.routeStyleInactive) !== JSON.stringify(defaults.routeStyleInactive) ||
     JSON.stringify(current.currentPoint) !== JSON.stringify(defaults.currentPoint);
 
-const DemoLineSegment: FC<RouteStoryLineStyle> = ({ color, outlineColor, width, outlineWidth, variant }) => {
-    const lineWidth = Math.max(2, Math.min(width, 10));
-    const outlineSize = lineWidth + outlineWidth * 2;
-
-    if (variant === 'dashed') {
-        return (
-            <View style={{ flex: 1, height: 0, borderTopWidth: outlineSize, borderTopColor: outlineColor, borderStyle: 'dashed', justifyContent: 'center' }}>
-                <View style={{ height: 0, borderTopWidth: lineWidth, borderTopColor: color, borderStyle: 'dashed' }} />
-            </View>
-        );
-    }
-
-    return (
-        <View style={{ flex: 1, height: outlineSize, backgroundColor: outlineColor, justifyContent: 'center' }}>
-            <View style={{ height: lineWidth, backgroundColor: color }} />
-        </View>
-    );
-};
-
-const LineStyleDemo: FC<{ state: RouteStoryState; onCurrentPointClick: () => void; currentPointMenuLabel: string }> = ({ state, onCurrentPointClick, currentPointMenuLabel }) => {
-    const radius = state.currentPoint.size;
-
-    return (
-        <View style={styles['demo-line']} pointerEvents="box-none">
-            <DemoLineSegment {...state.routeStyleActive} />
-            <DemoLineSegment {...state.routeStyleInactive} />
-            <Pressable
-                style={styles['demo-point']}
-                accessibilityRole="button"
-                accessibilityLabel={currentPointMenuLabel}
-                onPress={onCurrentPointClick}
-            >
-                <View style={[styles['demo-point-outline'], {
-                    width: (radius + 2) * 2,
-                    height: (radius + 2) * 2,
-                    borderRadius: radius + 2,
-                    backgroundColor: state.currentPoint.outlineColor,
-                }]} pointerEvents="none" />
-                <View style={[styles['demo-point-fill'], {
-                    width: radius * 2,
-                    height: radius * 2,
-                    borderRadius: radius,
-                    backgroundColor: state.currentPoint.fillColor,
-                }]} pointerEvents="none" />
-            </Pressable>
-        </View>
-    );
-};
-
-export const LayerStylingOverlay: FC<OverlayComponentProps<MobileMap> & LayerStylingPopupProps<MobileMap> & MobileRouteStoryProps> = ({
+export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerStylingPopupProps<MobileMap> & MobileRouteStoryProps> = ({
     icon,
     onClose,
     gearId,
@@ -81,28 +33,16 @@ export const LayerStylingOverlay: FC<OverlayComponentProps<MobileMap> & LayerSty
         currentPointLabel,
         activeLabel,
         inactiveLabel,
-        linesLabel,
-        pointsLabel,
-        lineStyleLabel,
-        solidLabel,
-        dashedLabel,
-        lineLabel,
-        outlineLabel,
         restoreDefaultsLabel,
         closeLabel,
+        dialogLabel,
     ] = useMultipleTranslations([
         { n: gearId, t: translationKey.CurrentPoint },
         { n: gearId, t: translationKey.Active },
         { n: gearId, t: translationKey.Inactive },
-        { n: gearId, t: translationKey.Lines },
-        { n: gearId, t: translationKey.Points },
-        { n: gearId, t: translationKey.LineStyle },
-        { n: gearId, t: translationKey.Solid },
-        { n: gearId, t: translationKey.Dashed },
-        { n: gearId, t: translationKey.Line },
-        { n: gearId, t: translationKey.Outline },
         { n: gearId, t: translationKey.RestoreDefaults },
         { n: gearId, t: translationKey.Close },
+        { n: gearId, t: translationKey.OpenLayerAestheticOptions },
     ]);
 
     const setActiveLine = (patch: Partial<RouteStoryLineStyle>) => setState((prev) => ({ ...prev, routeStyleActive: { ...prev.routeStyleActive, ...patch } }));
@@ -142,30 +82,36 @@ export const LayerStylingOverlay: FC<OverlayComponentProps<MobileMap> & LayerSty
                                 borderColor: theme.color('neutral', theme.isDark ? 500 : 400),
                             },
                         ]}
+                        accessibilityRole="dialog"
+                        accessibilityLabel={dialogLabel}
                     >
-                        <LineStyleDemo state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
+                        <DemoLine state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
                         <ScrollView contentContainerStyle={styles.content}>
                             <Fieldset size="xs" label={currentPointLabel} expanded={currentPointExpanded} onExpandedChange={setCurrentPointExpanded}>
                                 <CurrentPointControls gearId={gearId} translationKey={translationKey} value={state.currentPoint} onChange={setCurrentPoint} />
                             </Fieldset>
                             <View style={styles['style-row']}>
                                 <View style={styles['style-col']}>
-                                    <LineStyleGroup label={activeLabel} style={state.routeStyleActive}
-                                        gearId={gearId} translationKey={translationKey}
-                                        linesLabel={linesLabel} pointsLabel={pointsLabel}
-                                        lineStyleLabel={lineStyleLabel} lineLabel={lineLabel} outlineLabel={outlineLabel} solidLabel={solidLabel} dashedLabel={dashedLabel}
+                                    <LineStyleGroup
+                                        label={activeLabel}
+                                        style={state.routeStyleActive}
+                                        gearId={gearId}
+                                        translationKey={translationKey}
                                         expanded={stylesExpanded}
                                         onExpandedChange={setStylesExpanded}
-                                        onChange={setActiveLine} />
+                                        onChange={setActiveLine}
+                                    />
                                 </View>
                                 <View style={styles['style-col']}>
-                                    <LineStyleGroup label={inactiveLabel} style={state.routeStyleInactive}
-                                        gearId={gearId} translationKey={translationKey}
-                                        linesLabel={linesLabel} pointsLabel={pointsLabel}
-                                        lineStyleLabel={lineStyleLabel} lineLabel={lineLabel} outlineLabel={outlineLabel} solidLabel={solidLabel} dashedLabel={dashedLabel}
+                                    <LineStyleGroup
+                                        label={inactiveLabel}
+                                        style={state.routeStyleInactive}
+                                        gearId={gearId}
+                                        translationKey={translationKey}
                                         expanded={stylesExpanded}
                                         onExpandedChange={setStylesExpanded}
-                                        onChange={setInactiveLine} />
+                                        onChange={setInactiveLine}
+                                    />
                                 </View>
                             </View>
                         </ScrollView>

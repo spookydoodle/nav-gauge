@@ -11,12 +11,22 @@ import {
     TopToolsProps,
     ToolbarSizeRef,
     ToolIconAnchorRef,
+    ToolPopup,
+    ToolPopupProps,
 } from "./model";
 import { type TranslationId } from "../translatron";
 import { type PanelLayout } from "../machine-layout";
 
 export class ToolsStation<TMap> {
     public static placements: ToolPanelPlacement[] = ["right", "bottom", "left"];
+
+    /**
+     * Tool popups to display
+     * Tools have access to map context and will not be unmounted for the duration of the style updates. 
+     * Do not update sources and layers in components passed in this prop as it might lead to MapLibre's `Style is not done loading` errors.
+     * If a tool popup with a given `id` already exists, it will be overwritten.
+     */
+    public toolPopups$ = new BehaviorSubject<Map<string, ToolPopup<TMap>>>(new Map());
 
     /**
      * Tools to display in panels.
@@ -152,6 +162,35 @@ export class ToolsStation<TMap> {
     };
 
     /**
+     * Adds a new tool popup.
+     * Have access to map context and will not be unmounted for the duration of the style updates. 
+     * Do not add/remove sources and layers in components passed in this prop as it might lead to MapLibre's `Style is not done loading` errors.
+     * If a tool popup with a given `id` already exists, it will be overwritten.
+     */
+    public addToolPopup = (
+        id: string,
+        { title, icon, contentComponent, onClose }: {
+            title: TranslationId;
+            icon?: string;
+            contentComponent: ComponentType<ToolPopupProps<TMap>>;
+            onClose: () => void;
+        }
+    ) => {
+        const nextToolPopups = new Map(this.toolPopups$.value);
+        nextToolPopups.set(id, { title, icon, contentComponent, onClose });
+        this.toolPopups$.next(nextToolPopups);
+    };
+
+    /**
+     * Removes the tool  popup with a given `id`.
+     */
+    public removeToolPopup = (id: string) => {
+        const nextToolPopups = new Map(this.toolPopups$.value);
+        nextToolPopups.delete(id);
+        this.toolPopups$.next(nextToolPopups);
+    };
+
+    /**
      * Adds a new tool panel to display.
      * Have access to map context and will not be unmounted for the duration of the style updates. 
      * Do not update sources and layers in components passed in this prop as it might lead to MapLibre's `Style is not done loading` errors.
@@ -160,10 +199,10 @@ export class ToolsStation<TMap> {
     public addToolPanel = (
         id: string,
         { title, icon, placement, headerComponent, contentComponent }: {
-            title: TranslationId, icon: string,
-            placement: ToolPanelPlacement,
-            headerComponent?: ComponentType<ToolPanelProps<TMap>>,
-            contentComponent: ComponentType<ToolPanelProps<TMap>>,
+            title: TranslationId, icon: string;
+            placement: ToolPanelPlacement;
+            headerComponent?: ComponentType<ToolPanelProps<TMap>>;
+            contentComponent: ComponentType<ToolPanelProps<TMap>>;
         }
     ) => {
         const nextToolPanels = new Map(this.toolPanels$.value);

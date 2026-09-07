@@ -3,19 +3,13 @@ import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/
 import { Checkbox, Dropdown, Fieldset, NumberInput } from "@mobile-ui";
 import { ColorSelectField } from "./ColorSelectField";
 import { View, Text, StyleSheet } from "react-native";
+import { useMultipleTranslations } from "@apparatus";
 
 interface Props {
     label: string;
     style: RouteStoryLineStyle;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
-    linesLabel: string;
-    pointsLabel: string;
-    solidLabel: string;
-    dashedLabel: string;
-    lineStyleLabel: string;
-    lineLabel: string;
-    outlineLabel: string;
     expanded?: boolean;
     onExpandedChange?: (expanded: boolean) => void;
     onChange: (patch: Partial<RouteStoryLineStyle>) => void;
@@ -26,17 +20,28 @@ export const LineStyleGroup: FC<Props> = ({
     style,
     gearId,
     translationKey,
-    linesLabel,
-    pointsLabel,
-    lineStyleLabel,
-    lineLabel,
-    outlineLabel,
-    solidLabel,
-    dashedLabel,
     onChange,
     expanded,
     onExpandedChange,
 }) => {
+    const [
+        linesLabel,
+        pointsLabel,
+        lineStyleLabel,
+        solidLabel,
+        dashedLabel,
+        lineLabel,
+        outlineLabel,
+    ] = useMultipleTranslations([
+        { n: gearId, t: translationKey.Lines },
+        { n: gearId, t: translationKey.Points },
+        { n: gearId, t: translationKey.LineStyle },
+        { n: gearId, t: translationKey.Solid },
+        { n: gearId, t: translationKey.Dashed },
+        { n: gearId, t: translationKey.Line },
+        { n: gearId, t: translationKey.Outline },
+    ]);
+
     const variantOptions = [
         { label: solidLabel, value: 'solid' as const },
         { label: dashedLabel, value: 'dashed' as const },

@@ -17,6 +17,7 @@ const en: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['en'] 
     "stop-recording": 'Stop surveilling',
     "pause-recording": 'Pause surveilling',
     "resume-recording": 'Resume surveilling',
+    "layer-aesthetic-options": 'Layer aesthetic options',
     "open-layer-aesthetic-options": 'Open layer aesthetic options',
     "lines": 'Lines',
     "points": 'Points',

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, CSSProperties, FC } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import { getMenuPosition, MenuPosition, MenuAnchor, getIconAnchorPoint, PopupProps } from '@ui';
+import { MenuPosition, getIconAnchorPoint, placePopup, PopupProps } from '@ui';
 import { Transition } from '../transition';
 import type { TransitionProps } from '@ui';
 import styles from './popup.module.css';
@@ -18,7 +18,8 @@ interface Props extends PopupProps {
 export const Popup: FC<Props> = ({
     anchor,
     position,
-    placement = 'top-left',
+    triggerAnchor = 'top-left',
+    popupAnchor = 'bottom-left',
     dismissOnClickAway = true,
     variant,
     shape,
@@ -53,42 +54,51 @@ export const Popup: FC<Props> = ({
         }
 
         const computePosition = () => {
-            let anchorRect: DOMRect;
             let iconAnchor: { x: number; y: number };
 
             if (anchor && anchor.current) {
-                anchorRect = anchor.current.getBoundingClientRect();
-                iconAnchor = getIconAnchorPoint(placement, anchorRect.left, anchorRect.top, anchorRect.width, anchorRect.height);
+                const rect = anchor.current.getBoundingClientRect();
+                iconAnchor = getIconAnchorPoint(triggerAnchor, rect.left, rect.top, rect.width, rect.height);
             } else if (position) {
                 iconAnchor = position;
             } else {
                 return;
             }
 
-            const menuAnchor = placement.startsWith('top') ? 'bottom' : 'top';
-            const horizontal = placement.endsWith('right') ? 'right' : 'left';
-            const menuAnchorKey = `${menuAnchor}-${horizontal}` as MenuAnchor;
-
-            setMenuPosition(getMenuPosition(menuAnchorKey, iconAnchor, window.innerWidth, window.innerHeight));
+            const rect = containerRef.current?.getBoundingClientRect();
+            const size = rect ? { width: rect.width, height: rect.height } : null;
+            const { position: nextPosition } = placePopup(
+                popupAnchor,
+                iconAnchor,
+                size,
+                window.innerWidth,
+                window.innerHeight,
+            );
+            setMenuPosition(nextPosition);
         };
 
         computePosition();
         window.addEventListener('scroll', computePosition, true);
         window.addEventListener('resize', computePosition);
 
-        let resizeObserver: ResizeObserver | null = null;
+        const resizeObservers: ResizeObserver[] = [];
         if (anchor?.current) {
-            const observedElement = anchor.current.parentElement ?? anchor.current;
-            resizeObserver = new ResizeObserver(() => computePosition());
-            resizeObserver.observe(observedElement);
+            const anchorObserver = new ResizeObserver(computePosition);
+            anchorObserver.observe(anchor.current.parentElement ?? anchor.current);
+            resizeObservers.push(anchorObserver);
+        }
+        if (containerRef.current) {
+            const popupObserver = new ResizeObserver(computePosition);
+            popupObserver.observe(containerRef.current);
+            resizeObservers.push(popupObserver);
         }
 
         return () => {
             window.removeEventListener('scroll', computePosition, true);
             window.removeEventListener('resize', computePosition);
-            resizeObserver?.disconnect();
+            resizeObservers.forEach((observer) => observer.disconnect());
         };
-    }, [visible, anchor, position, placement]);
+    }, [visible, anchor, position, triggerAnchor, popupAnchor]);
 
     useEffect(() => {
         if (!visible) {
@@ -130,7 +140,7 @@ export const Popup: FC<Props> = ({
     if (menuPosition.right !== undefined) positionStyle.right = menuPosition.right;
     if (menuPosition.bottom !== undefined) positionStyle.bottom = menuPosition.bottom;
 
-    const slide: TransitionProps['slide'] = placement.includes('top') ? 'to-top' : 'to-bottom';
+    const slide: TransitionProps['slide'] = popupAnchor.startsWith('top') ? 'to-bottom' : 'to-top';
 
     return createPortal(
         <div className={classNames(styles.overlay, overlayClassName)}>

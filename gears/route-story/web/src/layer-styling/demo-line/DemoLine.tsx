@@ -1,6 +1,6 @@
 import { FC, useRef } from "react";
 import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import styles from './layer-styling.module.css';
+import styles from './demo-line.module.css';
 
 interface Props {
     state: RouteStoryState;
@@ -8,7 +8,7 @@ interface Props {
     currentPointMenuLabel: string;
 }
 
-export const LineStyleDemo: FC<Props> = ({
+export const DemoLine: FC<Props> = ({
     state,
     onCurrentPointClick,
     currentPointMenuLabel,
@@ -22,10 +22,6 @@ export const LineStyleDemo: FC<Props> = ({
     const inactiveOutlineWidth = Math.max(2, inactiveWidth + inactive.outlineWidth * 2);
     const radius = state.currentPoint.size;
     const svgRef = useRef<SVGSVGElement | null>(null);
-
-    const handleCurrentPointClick = () => {
-        onCurrentPointClick();
-    };
 
     return (
         <svg
@@ -43,11 +39,11 @@ export const LineStyleDemo: FC<Props> = ({
                 role="button"
                 tabIndex={0}
                 aria-label={currentPointMenuLabel}
-                onClick={handleCurrentPointClick}
+                onClick={onCurrentPointClick}
                 onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault();
-                        handleCurrentPointClick();
+                        onCurrentPointClick();
                     }
                 }}
             >

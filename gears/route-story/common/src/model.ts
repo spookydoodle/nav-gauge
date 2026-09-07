@@ -61,9 +61,8 @@ export interface CurrentPointStyleIcon {
     rotate: boolean;
 }
 
-export interface LayerStylingPopupProps<TMap> {
+export interface RouteStoryLayerStylingPopupProps<TMap> {
     icon: ToolIcon<TMap>;
-    onClose: () => void;
 }
 
 export interface RouteStoryProps<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> {
@@ -104,6 +103,7 @@ export enum RouteStoryTranslationKey {
     StopRecording = 'stop-recording',
     PauseRecording = 'pause-recording',
     ResumeRecording = 'resume-recording',
+    LayerAestheticOptions = 'layer-aesthetic-options',
     OpenLayerAestheticOptions = 'open-layer-aesthetic-options',
     Lines = 'lines',
     Points = 'points',

@@ -1,10 +1,11 @@
-import { FC } from "react";
+import { ComponentType, FC } from "react";
 import { ObservedToolIcon, useTranslation } from "@apparatus";
 import { useMobileMachineWard } from "@mobile-apparatus";
 import { useSubjectState } from "@tinker-chest";
 import { useTheme } from "@ui";
 import { Button } from "@mobile-ui";
 import { MobileMap } from "@mobile-apparatus";
+import { SvgProps } from "react-native-svg";
 
 interface Props {
     map: MobileMap;
@@ -40,7 +41,7 @@ export const ToolIconLeft: FC<ObservedToolIcon<MobileMap> & Props> = ({
                 anchorRef$.next({ current: r });
             }}
             accessibilityLabel={ariaLabel}
-            icon={icon as never}
+            icon={icon as unknown as ComponentType<SvgProps>}
             tooltip={resolvedTooltip}
             tooltipPlacement="right"
             showTooltipConnection

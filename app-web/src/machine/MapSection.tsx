@@ -6,6 +6,7 @@ import { useSubjectState } from "@tinker-chest";
 import { MapCanvas } from "./map-canvas/MapCanvas";
 import { MapToolsGridAreas } from "./map-tools-grid/MapToolsGridAreas";
 import { GearsTopToolbar } from "./GearsTopToolbar";
+import { Popups } from "./Popups";
 import { createMap } from "./map";
 import { ErrorBoundary } from "@ui";
 import styles from './machine.module.css';
@@ -43,6 +44,7 @@ export const MapSection: FC = () => {
                 </ErrorBoundary>
             ) : null}
             <MapToolsGridAreas map={map} />
+            <Popups map={map} />
         </div>
     );
 };
