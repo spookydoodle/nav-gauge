@@ -27,7 +27,7 @@ export const NumberInput: FC<NumberInputProps> = ({
 
     return (
         <View style={styles.container}>
-            <Text style={[styles.label, { color: baseColor, fontSize: labelFontSize }]}>{label}</Text>
+            {label ? <Text style={[styles.label, { color: baseColor, fontSize: labelFontSize }]}>{label}</Text> : null}
             <View style={styles['input-wrapper']}>
                 <TextInput
                     style={[

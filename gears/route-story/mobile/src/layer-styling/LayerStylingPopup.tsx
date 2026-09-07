@@ -1,5 +1,5 @@
-import { FC, useMemo, useState } from "react";
-import { Dimensions, Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { BackHandler, Dimensions, HostInstance, ScrollView, StyleSheet, View } from "react-native";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
 import { getIconAnchorPoint, getMenuPosition, MenuPosition, useTheme } from "@ui";
 import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
@@ -29,6 +29,8 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
     const [state, setState] = useSubjectState(state$);
     const [currentPointExpanded, setCurrentPointExpanded] = useState(false);
     const [stylesExpanded, setStylesExpanded] = useState(true);
+    const [overlayOrigin, setOverlayOrigin] = useState({ x: 0, y: 0 });
+    const overlayRef = useRef<HostInstance>(null);
     const [
         currentPointLabel,
         activeLabel,
@@ -62,17 +64,36 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
         const rect = anchor.getBoundingClientRect();
         const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
         const point = getIconAnchorPoint('top-right', rect.left, rect.top, rect.width, rect.height);
+        const position = getMenuPosition('top-left', point, windowWidth, windowHeight);
 
-        return getMenuPosition('top-left', point, windowWidth, windowHeight);
-    }, [active, anchorRef]);
+        return {
+            left: (position.left ?? 0) - overlayOrigin.x,
+            top: (position.top ?? 0) - overlayOrigin.y,
+        };
+    }, [active, anchorRef, overlayOrigin]);
+
+    const handleOverlayLayout = () => {
+        overlayRef.current?.measureInWindow((x, y) => setOverlayOrigin({ x, y }));
+    };
+
+    useEffect(() => {
+        const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+            if (active) {
+                onClose();
+                return true;
+            }
+            return false;
+        });
+        return () => subscription.remove();
+    }, [active, onClose]);
 
     const defaults = getDefaultRouteStoryState(theme);
     const isDirty = hasCustomStyling(state, defaults);
 
     return (
         <>
-            <Modal visible={!!active} transparent animationType="fade" onRequestClose={onClose}>
-                <Pressable style={styles.overlay}>
+            {active ? (
+                <View style={styles.overlay} pointerEvents="box-none" ref={overlayRef} onLayout={handleOverlayLayout}>
                     <View
                         style={[
                             styles.popup,
@@ -82,11 +103,12 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
                                 borderColor: theme.color('neutral', theme.isDark ? 500 : 400),
                             },
                         ]}
-                        accessibilityRole="dialog"
                         accessibilityLabel={dialogLabel}
                     >
-                        <DemoLine state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
-                        <ScrollView contentContainerStyle={styles.content}>
+                        <View style={styles['demo-section']}>
+                            <DemoLine state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
+                        </View>
+                        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
                             <Fieldset size="xs" label={currentPointLabel} expanded={currentPointExpanded} onExpandedChange={setCurrentPointExpanded}>
                                 <CurrentPointControls gearId={gearId} translationKey={translationKey} value={state.currentPoint} onChange={setCurrentPoint} />
                             </Fieldset>
@@ -115,26 +137,30 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
                                 </View>
                             </View>
                         </ScrollView>
-                        <View style={styles.footer}>
+                        <View style={[styles.footer, { backgroundColor: theme.color('neutral', theme.isDark ? 900 : 100) }]}>
                             {isDirty && (
-                                <Button size="xs" onPress={() => setState(defaults)}>
+                                <Button size="xs" variant="ghost" onPress={() => setState(defaults)}>
                                     {restoreDefaultsLabel}
                                 </Button>
                             )}
-                            <Button size="xs" onPress={onClose}>
+                            <Button size="xs" variant="fill" onPress={onClose}>
                                 {closeLabel}
                             </Button>
                         </View>
                     </View>
-                </Pressable>
-            </Modal>
+                </View>
+            ) : null}
         </>
     );
 };
 
 const styles = StyleSheet.create({
     overlay: {
-        flex: 1,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -143,8 +169,14 @@ const styles = StyleSheet.create({
         width: Math.min(300, Dimensions.get('window').width - 16),
         maxHeight: '70%',
         borderWidth: 1,
-        padding: 12,
-        gap: 10,
+    },
+    'demo-section': {
+        paddingTop: 10,
+        paddingHorizontal: 10,
+        paddingBottom: 4,
+    },
+    scroll: {
+        flexShrink: 1,
     },
     'current-point-panel': {
         position: 'relative',
@@ -185,5 +217,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         gap: 8,
+        padding: 10,
     },
 });

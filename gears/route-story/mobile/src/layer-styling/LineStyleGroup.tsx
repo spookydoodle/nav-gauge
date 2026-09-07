@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { Checkbox, Dropdown, Fieldset, NumberInput } from "@mobile-ui";
+import { Checkbox, Dropdown, Fieldset, Label, NumberInput } from "@mobile-ui";
 import { ColorSelectField } from "./ColorSelectField";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useMultipleTranslations } from "@apparatus";
 
 interface Props {
@@ -57,16 +57,16 @@ export const LineStyleGroup: FC<Props> = ({
                     {pointsLabel}
                 </Checkbox>
             </View>
-            <Text style={styles['variant-label']}>{lineStyleLabel}</Text>
+            <Label style={styles['variant-label']}>{lineStyleLabel}</Label>
             <Dropdown size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
-            <Text style={styles['section-label']}>{lineLabel}</Text>
+            <Label style={styles['section-label']}>{lineLabel}</Label>
             <View style={styles['grid']}>
                 <ColorSelectField value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
                 <View style={styles['grid-fill']}>
                     <NumberInput size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
                 </View>
             </View>
-            <Text style={styles['section-label']}>{outlineLabel}</Text>
+            <Label style={styles['section-label']}>{outlineLabel}</Label>
             <View style={styles['grid']}>
                 <ColorSelectField value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
                 <View style={styles['grid-fill']}>
@@ -84,21 +84,14 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     'variant-label': {
-        fontSize: 11,
-        fontWeight: '600',
-        color: '#666',
-        marginBottom: 4,
+        marginBottom: -4,
     },
     'section-label': {
-        fontSize: 11,
-        fontWeight: '600',
-        color: '#666',
-        marginBottom: 8,
+        marginBottom: -6,
     },
     grid: {
         flexDirection: 'row',
         gap: 8,
-        marginBottom: 12,
         alignItems: 'center',
     },
     'grid-fill': {

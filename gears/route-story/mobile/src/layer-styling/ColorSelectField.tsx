@@ -1,8 +1,8 @@
-import { FC, useState } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { FC, useRef, useState } from "react";
+import { Dimensions, HostInstance, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useTranslation } from "@apparatus";
-import { useTheme } from "@ui";
-import { ColorPicker } from "@mobile-ui";
+import { getIconAnchorPoint, getMenuPosition, MenuPosition, useTheme } from "@ui";
+import { ColorPicker, Label } from "@mobile-ui";
 import { RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 
 interface Props {
@@ -16,12 +16,24 @@ interface Props {
 export const ColorSelectField: FC<Props> = ({ label, value, gearId, translationKey, onChange }) => {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
+    const [position, setPosition] = useState<MenuPosition>({});
+    const swatchRef = useRef<HostInstance>(null);
     const opacityLabel = useTranslation({ n: gearId, t: translationKey.Opacity });
+
+    const handleOpen = () => {
+        swatchRef.current?.measureInWindow((x, y, width, height) => {
+            const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
+            const point = getIconAnchorPoint('bottom-left', x, y, width, height);
+            setPosition(getMenuPosition('top-left', point, windowWidth, windowHeight));
+        });
+        setOpen(true);
+    };
 
     return (
         <>
             <View style={styles.field}>
                 <Pressable
+                    ref={swatchRef}
                     style={[styles.swatch, {
                         backgroundColor: value,
                         borderColor: theme.color('neutral', theme.isDark ? 500 : 400),
@@ -29,13 +41,13 @@ export const ColorSelectField: FC<Props> = ({ label, value, gearId, translationK
                     accessibilityRole="button"
                     accessibilityLabel={label}
                     accessibilityState={{ expanded: open }}
-                    onPress={() => setOpen(true)}
+                    onPress={handleOpen}
                 />
-                {label ? <Text style={styles.label}>{label}</Text> : null}
+                {label ? <Label>{label}</Label> : null}
             </View>
             <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
                 <Pressable style={styles.modalOverlay} onPress={() => setOpen(false)}>
-                    <Pressable style={[styles.modalPanel, {
+                    <Pressable style={[styles.modalPanel, position, {
                         backgroundColor: theme.color('neutral', theme.isDark ? 800 : 200),
                         borderColor: theme.color('neutral', theme.isDark ? 500 : 400),
                     }]} onPress={() => {}}>
@@ -59,9 +71,6 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderWidth: 1,
     },
-    label: {
-        fontSize: 12,
-    },
     modalOverlay: {
         flex: 1,
         justifyContent: 'center',
@@ -69,6 +78,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.4)',
     },
     modalPanel: {
+        position: 'absolute',
         width: 260,
         padding: 12,
         borderRadius: 8,
