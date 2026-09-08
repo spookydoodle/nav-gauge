@@ -29,6 +29,7 @@ export const MenuColors = () => (
 
 export const MenuPlacements = () => (
     <View>
+        <Text>Requested placements flip automatically when a menu would overflow the viewport.</Text>
         <View>
             <Text>placement="bottom-right" (default)</Text>
             <View style={styles.wrapper}>

@@ -12,6 +12,10 @@ export interface PanelProps {
     padding?: SizeVariant;
     highlightColor?: ColorVariant;
     variant?: SurfaceFillVariant;
+    /**
+     * Defaults to 2
+     */
+    borderWidth?: number;
     themeMode?: ThemeMode;
     active?: boolean;
     children?: ReactNode;

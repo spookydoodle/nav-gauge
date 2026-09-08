@@ -13,6 +13,7 @@ export interface MenuPosition {
 
 export interface MenuProps {
     color?: ColorVariant;
+    /** Where the menu opens relative to its trigger. Placement may flip to stay inside the viewport. */
     placement?: MenuAnchor;
     icon?: string;
     iconSize?: SizeVariant;

@@ -1,12 +1,12 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { BackHandler, Dimensions, HostInstance, ScrollView, StyleSheet, View } from "react-native";
+import { FC, useEffect, useState } from "react";
+import { BackHandler, ScrollView, StyleSheet, View } from "react-native";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
-import { getIconAnchorPoint, getMenuPosition, MenuPosition, useTheme } from "@ui";
+import { useTheme } from "@ui";
 import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MobileRouteStoryProps } from "../model";
-import { Button, Fieldset } from "@mobile-ui";
+import { Button, Fieldset, Popup } from "@mobile-ui";
 import { CurrentPointControls } from "./CurrentPointControls";
 import { LineStyleGroup } from "./LineStyleGroup";
 import { DemoLine } from "./demo-line/DemoLine";
@@ -29,8 +29,6 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
     const [state, setState] = useSubjectState(state$);
     const [currentPointExpanded, setCurrentPointExpanded] = useState(false);
     const [stylesExpanded, setStylesExpanded] = useState(true);
-    const [overlayOrigin, setOverlayOrigin] = useState({ x: 0, y: 0 });
-    const overlayRef = useRef<HostInstance>(null);
     const [
         currentPointLabel,
         activeLabel,
@@ -53,29 +51,6 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
 
     const toggleCurrentPointExpanded = () => setCurrentPointExpanded((prev) => !prev);
 
-    const menuPosition = useMemo<MenuPosition>(() => {
-        if (!active) {
-            return {};
-        }
-        const anchor = anchorRef?.current;
-        if (!anchor) {
-            return {};
-        }
-        const rect = anchor.getBoundingClientRect();
-        const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
-        const point = getIconAnchorPoint('top-right', rect.left, rect.top, rect.width, rect.height);
-        const position = getMenuPosition('top-left', point, windowWidth, windowHeight);
-
-        return {
-            left: (position.left ?? 0) - overlayOrigin.x,
-            top: (position.top ?? 0) - overlayOrigin.y,
-        };
-    }, [active, anchorRef, overlayOrigin]);
-
-    const handleOverlayLayout = () => {
-        overlayRef.current?.measureInWindow((x, y) => setOverlayOrigin({ x, y }));
-    };
-
     useEffect(() => {
         const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
             if (active) {
@@ -91,82 +66,71 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
     const isDirty = hasCustomStyling(state, defaults);
 
     return (
-        <>
-            {active ? (
-                <View style={styles.overlay} pointerEvents="box-none" ref={overlayRef} onLayout={handleOverlayLayout}>
-                    <View
-                        style={[
-                            styles.popup,
-                            {
-                                ...menuPosition,
-                                backgroundColor: theme.color('neutral', theme.isDark ? 800 : 200),
-                                borderColor: theme.color('neutral', theme.isDark ? 500 : 400),
-                            },
-                        ]}
-                        accessibilityLabel={dialogLabel}
-                    >
-                        <View style={styles['demo-section']}>
-                            <DemoLine state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
-                        </View>
-                        <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-                            <Fieldset size="xs" label={currentPointLabel} expanded={currentPointExpanded} onExpandedChange={setCurrentPointExpanded}>
-                                <CurrentPointControls gearId={gearId} translationKey={translationKey} value={state.currentPoint} onChange={setCurrentPoint} />
-                            </Fieldset>
-                            <View style={styles['style-row']}>
-                                <View style={styles['style-col']}>
-                                    <LineStyleGroup
-                                        label={activeLabel}
-                                        style={state.routeStyleActive}
-                                        gearId={gearId}
-                                        translationKey={translationKey}
-                                        expanded={stylesExpanded}
-                                        onExpandedChange={setStylesExpanded}
-                                        onChange={setActiveLine}
-                                    />
-                                </View>
-                                <View style={styles['style-col']}>
-                                    <LineStyleGroup
-                                        label={inactiveLabel}
-                                        style={state.routeStyleInactive}
-                                        gearId={gearId}
-                                        translationKey={translationKey}
-                                        expanded={stylesExpanded}
-                                        onExpandedChange={setStylesExpanded}
-                                        onChange={setInactiveLine}
-                                    />
-                                </View>
-                            </View>
-                        </ScrollView>
-                        <View style={[styles.footer, { backgroundColor: theme.color('neutral', theme.isDark ? 900 : 100) }]}>
-                            {isDirty && (
-                                <Button size="xs" variant="ghost" onPress={() => setState(defaults)}>
-                                    {restoreDefaultsLabel}
-                                </Button>
-                            )}
-                            <Button size="xs" variant="fill" onPress={onClose}>
-                                {closeLabel}
-                            </Button>
-                        </View>
+        <Popup
+            visible={active && !!anchorRef?.current}
+            anchor={anchorRef as unknown as React.RefObject<HTMLElement | null>}
+            triggerAnchor="bottom-left"
+            popupAnchor="top-left"
+            dismissOnClickAway={false}
+            onClose={onClose}
+            popupStyle={[
+                styles.popup,
+                {
+                    backgroundColor: theme.color('neutral', theme.isDark ? 800 : 200),
+                    borderColor: theme.color('neutral', theme.isDark ? 500 : 400),
+                },
+            ]}
+        >
+            <View style={styles['demo-section']} accessibilityLabel={dialogLabel}>
+                <DemoLine state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
+            </View>
+            <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
+                <Fieldset size="xs" label={currentPointLabel} color="neutral" variant="fill-inverse" expanded={currentPointExpanded} onExpandedChange={setCurrentPointExpanded}>
+                    <CurrentPointControls gearId={gearId} translationKey={translationKey} value={state.currentPoint} onChange={setCurrentPoint} />
+                </Fieldset>
+                <View style={styles['style-row']}>
+                    <View style={styles['style-col']}>
+                        <LineStyleGroup
+                            label={activeLabel}
+                            style={state.routeStyleActive}
+                            gearId={gearId}
+                            translationKey={translationKey}
+                            expanded={stylesExpanded}
+                            onExpandedChange={setStylesExpanded}
+                            onChange={setActiveLine}
+                        />
+                    </View>
+                    <View style={styles['style-col']}>
+                        <LineStyleGroup
+                            label={inactiveLabel}
+                            style={state.routeStyleInactive}
+                            gearId={gearId}
+                            translationKey={translationKey}
+                            expanded={stylesExpanded}
+                            onExpandedChange={setStylesExpanded}
+                            onChange={setInactiveLine}
+                        />
                     </View>
                 </View>
-            ) : null}
-        </>
+            </ScrollView>
+            <View style={[styles.footer, { backgroundColor: theme.color('neutral', theme.isDark ? 900 : 100) }]}>
+                {isDirty && (
+                    <Button size="xs" variant="ghost" onPress={() => setState(defaults)}>
+                        {restoreDefaultsLabel}
+                    </Button>
+                )}
+                <Button size="xs" variant="fill" onPress={onClose}>
+                    {closeLabel}
+                </Button>
+            </View>
+        </Popup>
     );
 };
 
 const styles = StyleSheet.create({
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     popup: {
-        position: 'absolute',
-        width: Math.min(300, Dimensions.get('window').width - 16),
+        width: '100%',
+        maxWidth: 320,
         maxHeight: '70%',
         borderWidth: 1,
     },

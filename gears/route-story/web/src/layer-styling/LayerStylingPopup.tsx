@@ -61,20 +61,27 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
         <Popup
             visible
             anchor={anchorRef as unknown as React.RefObject<HTMLElement | null>}
-            triggerAnchor="top-right"
+            triggerAnchor="bottom-left"
             popupAnchor="top-left"
             dismissOnClickAway={false}
             onClose={onClose}
         >
             <Panel
-                variant="fill-inverse"
+                variant="fill-translucent"
                 className={styles['popup']}
                 role="dialog"
                 aria-label={dialogLabel}
             >
                 <DemoLine state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
                 <div className={styles['content']}>
-                    <Fieldset size="xs" label={currentPointLabel} expanded={currentPointExpanded} onExpandedChange={setCurrentPointExpanded}>
+                    <Fieldset
+                        size="xs"
+                        label={currentPointLabel}
+                        expanded={currentPointExpanded}
+                        onExpandedChange={setCurrentPointExpanded}
+                        color="neutral"
+                        variant="fill-inverse"
+                    >
                         <CurrentPointControls
                             gearId={gearId}
                             translationKey={translationKey}
@@ -103,7 +110,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                         />
                     </div>
                 </div>
-                <div className={styles['footer']}>
+                <Panel variant="fill-inverse" borderWidth={0} className={styles['footer']}>
                     {hasCustomStyling(state, defaults) ? (
                         <Button variant="ghost" size="xs" onClick={() => setState(defaults)}>
                             {restoreDefaultsLabel}
@@ -112,7 +119,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                     <Button variant="fill" size="xs" onClick={onClose}>
                         {closeLabel}
                     </Button>
-                </div>
+                </Panel>
             </Panel>
         </Popup>
     );

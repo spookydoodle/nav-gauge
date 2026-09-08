@@ -49,7 +49,7 @@ export const LineStyleGroup: FC<Props> = ({
     ].filter((option) => option.label != null);
 
     return (
-        <Fieldset size="xs" label={label} expanded={expanded} onExpandedChange={onExpandedChange}>
+        <Fieldset size="xs" label={label} color="neutral" variant="fill-inverse" expanded={expanded} onExpandedChange={onExpandedChange}>
             <div className={styles['top-controls']}>
                 <Checkbox size="xs" checked={style.showRouteLine} onChange={(checked) => onChange({ showRouteLine: checked })}>
                     {linesLabel}

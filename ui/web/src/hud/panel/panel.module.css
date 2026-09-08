@@ -112,7 +112,7 @@
 /* Fill inverse */
 .variant-fill-inverse {
     background-color: var(--panel-color-inverse);
-    border: 2px solid var(--panel-color);
+    border: var(--border-width) solid var(--panel-color);
 }
 
 .variant-fill-inverse.interactive:hover {
@@ -128,7 +128,7 @@
 /* Fill translucent */
 .variant-fill-translucent {
     background-color: rgb(from var(--panel-color) r g b / .24);
-    border: 2px solid var(--panel-color);
+    border: var(--border-width) solid var(--panel-color);
     backdrop-filter: blur(6px);
 }
 

@@ -33,6 +33,7 @@ export const MenuColors: Story = {
 export const MenuPlacements: Story = {
     render: () => (
         <div>
+            <p>Requested placements flip automatically when a menu would overflow the viewport.</p>
             <p>placement="bottom-right" (default)</p>
             <div style={{ margin: '0 auto', width: 'max-content' }}>
                 <Menu placement="bottom-right">

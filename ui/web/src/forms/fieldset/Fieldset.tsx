@@ -1,6 +1,6 @@
-import { FC, useState } from "react"
+import { CSSProperties, FC, useState } from "react"
 import classNames from "classnames";
-import { FieldsetProps, Icons } from "@ui";
+import { FieldsetProps, Icons, useTheme } from "@ui";
 import { Icon } from "../../icons";
 import styles from './fieldset.module.css';
 
@@ -8,6 +8,7 @@ interface Props {
     expanded?: boolean;
     onExpandedChange?: (expanded: boolean) => void;
     className?: string;
+    style?: CSSProperties;
     contentClassName?: string;
 }
 
@@ -17,13 +18,16 @@ export const Fieldset: FC<Omit<FieldsetProps, 'expanded' | 'onExpandedChange'> &
     append,
     size = 'sm',
     color = 'neutral',
+    variant,
     expandable = true,
     expanded: controlledExpanded,
     onExpandedChange,
     className,
     contentClassName,
+    style,
     children
 }) => {
+    const theme = useTheme();
     const [internalExpanded, setInternalExpanded] = useState(true);
     const isExpanded = controlledExpanded ?? internalExpanded;
 
@@ -37,12 +41,16 @@ export const Fieldset: FC<Omit<FieldsetProps, 'expanded' | 'onExpandedChange'> &
             className={classNames(
                 styles.fieldset,
                 styles[`size-${size}`],
+                styles[`mode-${theme.mode}`],
                 {
                     [styles[`color-${color}`]]: !!color,
+                    [styles[`variant-${variant}`]]: !!variant,
                     [styles['collapsed']]: !isExpanded
                 },
                 className
-            )}>
+            )}
+            style={style}
+        >
             <legend
                 className={classNames(
                     styles.legend,

@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Animated, Modal, Pressable, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
-import { MenuPosition, getIconAnchorPoint, placePopup, PopupProps } from '@ui';
+import { MenuPosition, getIconAnchorPoint, menuPositionsMatch, placePopup, PopupProps } from '@ui';
 
 interface Props extends PopupProps {
     overlayStyle?: StyleProp<ViewStyle>;
@@ -29,29 +29,36 @@ export const Popup: FC<Props> = ({
             return;
         }
 
-        let iconAnchor: { x: number; y: number };
+        const computePosition = () => {
+            let iconAnchor: { x: number; y: number };
 
-        if (position) {
-            iconAnchor = position;
-        } else if (anchor && anchor.current) {
-            const rect = (anchor.current as unknown as { getBoundingClientRect?: () => DOMRect })?.getBoundingClientRect?.();
-            if (rect) {
-                iconAnchor = getIconAnchorPoint(triggerAnchor, rect.left, rect.top, rect.width, rect.height);
+            if (position) {
+                iconAnchor = position;
+            } else if (anchor && anchor.current) {
+                const rect = (anchor.current as unknown as { getBoundingClientRect?: () => DOMRect })?.getBoundingClientRect?.();
+                if (rect) {
+                    iconAnchor = getIconAnchorPoint(triggerAnchor, rect.left, rect.top, rect.width, rect.height);
+                } else {
+                    return;
+                }
             } else {
                 return;
             }
-        } else {
-            return;
-        }
 
-        const { position: nextPosition } = placePopup(
-            popupAnchor,
-            iconAnchor,
-            popupSize,
-            windowWidth,
-            windowHeight,
-        );
-        setMenuPosition(nextPosition);
+            const nextPosition = placePopup(
+                popupAnchor,
+                iconAnchor,
+                popupSize,
+                windowWidth,
+                windowHeight,
+            ).position;
+
+            setMenuPosition((current) => menuPositionsMatch(current, nextPosition) ? current : nextPosition);
+        };
+
+        computePosition();
+        const followInterval = setInterval(computePosition, 100);
+        return () => clearInterval(followInterval);
     }, [visible, anchor, position, triggerAnchor, popupAnchor, popupSize, windowWidth, windowHeight]);
 
     const handleLayout = (event: LayoutChangeEvent) => {

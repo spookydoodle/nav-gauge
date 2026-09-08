@@ -5,6 +5,7 @@ import {
     StyleSheet,
     Pressable,
     LayoutChangeEvent,
+    useWindowDimensions,
     type HostInstance,
 } from 'react-native';
 import {
@@ -13,7 +14,7 @@ import {
     getIconAndMenuAnchors,
     MenuContext,
     getIconAnchorPoint,
-    getMenuPosition,
+    placePopup,
     MenuProps,
     Icons,
 } from '@ui';
@@ -57,26 +58,31 @@ export const Menu: FC<MenuProps> = ({
 }) => {
     const { icon: iconAnchor, menu: menuAnchor } = getIconAndMenuAnchors(placement);
     const theme = useTheme();
+    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
     const [visible, setVisible] = useState<boolean>(false);
-    const [positionKey, setPositionKey] = useState<number>(0);
-    const [menuPosition, setMenuPosition] = useState<MenuPosition>({});
+    const [anchorPoint, setAnchorPoint] = useState<{ x: number; y: number } | null>(null);
+    const [menuSize, setMenuSize] = useState<{ width: number; height: number } | null>(null);
 
     const iconWrapperRef = useRef<HostInstance>(null);
-    const anchorRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
     const toggleMenu = (): void => {
+        if (visible) {
+            setVisible(false);
+            return;
+        }
         iconWrapperRef.current?.measureInWindow((x, y, width, height) => {
-            anchorRef.current = getIconAnchorPoint(iconAnchor, x, y, width, height);
-            setMenuPosition({});
-            setPositionKey((k) => k + 1);
+            setAnchorPoint(getIconAnchorPoint(iconAnchor, x, y, width, height));
             setVisible(true);
         });
     };
 
-    const onOverlayLayout = (e: LayoutChangeEvent) => {
+    const handleMenuLayout = (e: LayoutChangeEvent) => {
         const { width, height } = e.nativeEvent.layout;
-        setMenuPosition(getMenuPosition(menuAnchor, anchorRef.current, width, height));
+        setMenuSize({ width, height });
     };
+    const menuPosition: MenuPosition = anchorPoint
+        ? placePopup(menuAnchor, anchorPoint, menuSize, windowWidth, windowHeight).position
+        : {};
 
     return (
         <View style={styles.container}>
@@ -97,9 +103,9 @@ export const Menu: FC<MenuProps> = ({
                 visible={visible}
                 animationType="fade"
             >
-                <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)} onLayout={onOverlayLayout}>
+                <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)}>
                     <View
-                        key={positionKey}
+                        onLayout={handleMenuLayout}
                         style={[
                             styles.menuList,
                             {
