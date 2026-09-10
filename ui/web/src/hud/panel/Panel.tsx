@@ -17,12 +17,13 @@ export const Panel: FC<PanelProps & Props & ComponentProps<'div'>> = ({
     highlightColor,
     variant,
     padding,
+    borderWidth = 2,
     themeMode,
     active = false,
     onClick,
     forwardRef,
     className,
-    style,
+    style = {},
     children,
     ...props
 }) => {
@@ -48,7 +49,10 @@ export const Panel: FC<PanelProps & Props & ComponentProps<'div'>> = ({
                 },
                 className
             )}
-            style={style}
+            style={{
+                '--border-width': `${borderWidth}px`,
+                ...style
+            } as CSSProperties}
             {...props}
         >
             {children}

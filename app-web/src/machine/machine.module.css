@@ -56,7 +56,15 @@
 }
 
 .icon-button {
-    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.2)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.12)) drop-shadow(0 8px 4px rgba(0, 0, 0, 0.06));
+    filter:
+        drop-shadow(0 2px 3px rgb(from var(--color-box-shadow) r g b / .14))
+        drop-shadow(0 6px 6px rgb(from var(--color-box-shadow) r g b / .08));
+}
+
+:global(body[data-theme="dark"]) .icon-button {
+    filter:
+        drop-shadow(0 2px 4px rgb(from var(--color-box-shadow) r g b / .45))
+        drop-shadow(0 7px 8px rgb(from var(--color-box-shadow) r g b / .28));
 }
 
 .icons.left .icon-button:nth-child(even) {
@@ -157,7 +165,7 @@
 .toolbar.left .content {
     display: grid;
     grid-template-columns: max-content 1fr;
-    box-shadow: 1px 1px 3px rgb(from var(--color-box-shadow) r g b / .4);
+    box-shadow: 2px 0 8px rgb(from var(--color-box-shadow) r g b / .14);
 }
 
 /* On isLessThanSm left and right toolbars are displayed combined in a secondary bottom toolbar */
@@ -176,7 +184,15 @@
 .toolbar.right .content {
     display: grid;
     grid-template-columns: max-content 1fr;
-    box-shadow: -1px 1px 3px rgb(from var(--color-box-shadow) r g b / .4);
+    box-shadow: -2px 0 8px rgb(from var(--color-box-shadow) r g b / .14);
+}
+
+:global(body[data-theme="dark"]) .toolbar.left .content {
+    box-shadow: 2px 0 10px rgb(from var(--color-box-shadow) r g b / .4);
+}
+
+:global(body[data-theme="dark"]) .toolbar.right .content {
+    box-shadow: -2px 0 10px rgb(from var(--color-box-shadow) r g b / .4);
 }
 
 .toolbar.bottom {
@@ -188,6 +204,11 @@
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.25s ease;
+    box-shadow: 0 -2px 8px rgb(from var(--color-box-shadow) r g b / .08);
+}
+
+:global(body[data-theme="dark"]) .toolbar.bottom .content {
+    box-shadow: 0 -2px 10px rgb(from var(--color-box-shadow) r g b / .2);
 }
 
 .toolbar.bottom .content.expanded {
@@ -211,6 +232,11 @@
     overflow: hidden;
     transition: height 0.25s ease;
     border-top: 1px solid var(--color-primary);
+    box-shadow: 0 -2px 8px rgb(from var(--color-box-shadow) r g b / .1);
+}
+
+:global(body[data-theme="dark"]) .toolbar.bottom-secondary {
+    box-shadow: 0 -2px 10px rgb(from var(--color-box-shadow) r g b / .24);
 }
 
 .toolbar.bottom-secondary .content {

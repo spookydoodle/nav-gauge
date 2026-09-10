@@ -60,6 +60,11 @@ export const SecondaryBottomToolPanel: FC<Props> = ({
                     backgroundColor: theme.componentColor('background', 0.87),
                     borderTopWidth: 1,
                     borderTopColor: theme.color('primary'),
+                    shadowColor: theme.componentColor('box-shadow'),
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: theme.isDark ? 0.24 : 0.1,
+                    shadowRadius: theme.isDark ? 5 : 4,
+                    elevation: 5,
                 }}
             >
                 <ToolPanelHeader

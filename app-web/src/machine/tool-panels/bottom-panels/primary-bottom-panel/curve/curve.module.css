@@ -15,6 +15,11 @@
     right: 0;
     bottom: 0;
     display: flex;
+    filter: drop-shadow(0 -2px 3px rgb(from var(--color-box-shadow) r g b / .08));
+}
+
+:global(body[data-theme="dark"]) .curves {
+    filter: drop-shadow(0 -2px 4px rgb(from var(--color-box-shadow) r g b / .18));
 }
 
 .curve-middle {

@@ -17,7 +17,6 @@ export const Player: FC<ToolPanelProps<maplibregl.Map> & WebRouteStoryProps> = (
     translationKey,
     map,
     data$,
-    state$,
     routeTimes$,
     images$,
     progressMs$,
@@ -48,6 +47,7 @@ export const Player: FC<ToolPanelProps<maplibregl.Map> & WebRouteStoryProps> = (
             playerOperator={playerOperator}
             fitBoundsHandler={fitBoundsHandler}
             animatrix={animatrix}
+            className={!media.isLessThanMd ? styles['padding-top'] : undefined}
         />
     );
     const markerButton = <MarkerButton gearId={gearId} translationKey={translationKey} playerOperator={playerOperator} />;

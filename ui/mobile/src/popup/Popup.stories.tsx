@@ -17,7 +17,7 @@ export const Overview = () => {
                 popupAnchor="top-right"
             >
                 <View style={{ padding: 16, borderWidth: 1, borderColor: '#ccc', backgroundColor: '#f0f0f0', width: 220, height: 240 }}>
-                    <Text>Popup's top-right corner at the anchor point; flips when it overflows the viewport.</Text>
+                    <Text>Popup's top-right corner is anchored here; it returns after the viewport grows.</Text>
                     <Button onPress={() => setVisible(false)}>Close</Button>
                 </View>
             </Popup>

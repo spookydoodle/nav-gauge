@@ -100,11 +100,9 @@ export const routeCameraLayerIds = {
 }
 
 export const currentPointSizeOptions: { label: string; radius: number }[] = [
-    { label: 'xs', radius: 3 },
     { label: 'sm', radius: 4 },
     { label: 'md', radius: 5 },
     { label: 'lg', radius: 7 },
-    { label: 'xl', radius: 9 },
 ];
 
 type RouteStatus = 'before' | 'after';

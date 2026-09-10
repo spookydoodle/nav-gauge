@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { ColorVariant, SizeVariant } from "../../model";
+import { ColorVariant, SizeVariant, SurfaceFillVariant } from "../../model";
 
 export interface FieldsetProps {
     label: string;
@@ -7,6 +7,7 @@ export interface FieldsetProps {
     append?: ReactNode;
     size?: SizeVariant;
     color?: ColorVariant;
+    variant?: SurfaceFillVariant;
     /**
      * Defaults to true
      */

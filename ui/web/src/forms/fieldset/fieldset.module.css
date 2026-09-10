@@ -10,18 +10,51 @@
 
 .color-primary {
     --fieldset-border-color: var(--color-primary);
+    --fieldset-color: var(--color-primary);
+    --fieldset-color-dark: var(--color-primary-900);
+    --fieldset-color-light: var(--color-primary-100);
 }
 
 .color-secondary {
     --fieldset-border-color: var(--color-secondary);
+    --fieldset-color: var(--color-secondary);
+    --fieldset-color-dark: var(--color-secondary-900);
+    --fieldset-color-light: var(--color-secondary-100);
 }
 
 .color-tertiary {
     --fieldset-border-color: var(--color-tertiary);
+    --fieldset-color: var(--color-tertiary);
+    --fieldset-color-dark: var(--color-tertiary-900);
+    --fieldset-color-light: var(--color-tertiary-100);
 }
 
 .color-neutral {
     --fieldset-border-color: var(--color-neutral);
+    --fieldset-color: var(--color-neutral);
+    --fieldset-color-dark: var(--color-neutral-800);
+    --fieldset-color-light: var(--color-neutral-100);
+}
+
+.mode-light {
+    --fieldset-color-inverse: var(--fieldset-color-light);
+}
+
+.mode-dark {
+    --fieldset-color-inverse: var(--fieldset-color-dark);
+}
+
+.variant-fill {
+    background-color: var(--fieldset-color);
+}
+
+.variant-fill-inverse {
+    background-color: var(--fieldset-color-inverse);
+}
+
+.variant-fill-translucent {
+    background-color: rgb(from var(--fieldset-color) r g b / .24);
+    backdrop-filter: blur(6px);
 }
 
 .size-xs {

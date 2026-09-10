@@ -98,7 +98,12 @@ a:hover {
 }
 
 .theme-selection {
-  background: var(--color-background);
+  background-color: var(--color-background);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 10px,
+    rgb(from var(--color-text) r g b / .04) 10px 11px
+  );
   border-radius: 8px;
   margin-bottom: 16px;
   display: flex;
@@ -121,7 +126,12 @@ a:hover {
   box-sizing: border-box;
   padding: 16px;
   border-radius: 8px;
-  background: var(--color-background);
+  background-color: var(--color-background);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 40px,
+    rgb(from var(--color-text) r g b / .09) 40px 60px
+  );
   color: var(--color-text);
   overflow: auto;
 }

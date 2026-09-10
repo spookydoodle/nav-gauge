@@ -37,4 +37,12 @@ describe("placePopup", () => {
         expect(result.popupAnchor).to.equal("top-right");
         expect(result.position).to.deep.equal({ top: 10, right: 790 });
     });
+
+    it("uses the top-left corner only while the popup is as wide as the viewport", () => {
+        const narrowResult = placePopup("top-right", { x: 500, y: 100 }, { width: 320, height: 80 }, 320, 600);
+        const wideResult = placePopup("top-right", { x: 500, y: 100 }, { width: 320, height: 80 }, 800, 600);
+
+        expect(narrowResult.position).to.deep.equal({ top: 0, left: 0 });
+        expect(wideResult.position).to.deep.equal({ top: 100, right: 300 });
+    });
 });

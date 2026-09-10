@@ -5,7 +5,10 @@ import {
     StyleSheet,
     Pressable,
     LayoutChangeEvent,
+    StyleProp,
+    useWindowDimensions,
     type HostInstance,
+    ViewStyle,
 } from 'react-native';
 import {
     useTheme,
@@ -13,7 +16,7 @@ import {
     getIconAndMenuAnchors,
     MenuContext,
     getIconAnchorPoint,
-    getMenuPosition,
+    placePopup,
     MenuProps,
     Icons,
 } from '@ui';
@@ -47,36 +50,48 @@ const styles = StyleSheet.create({
     }
 });
 
-export const Menu: FC<MenuProps> = ({
+interface MobileMenuProps extends MenuProps {
+    triggerStyle?: StyleProp<ViewStyle>;
+}
+
+export const Menu: FC<MobileMenuProps> = ({
     icon = Icons.NounProject.KebabMenu,
     iconActiveColor,
     iconSize,
     placement = 'bottom-right',
     color = 'neutral',
+    triggerAccessibilityLabel,
+    triggerActive = false,
+    triggerStyle,
     children,
 }) => {
     const { icon: iconAnchor, menu: menuAnchor } = getIconAndMenuAnchors(placement);
     const theme = useTheme();
+    const { width: windowWidth, height: windowHeight } = useWindowDimensions();
     const [visible, setVisible] = useState<boolean>(false);
-    const [positionKey, setPositionKey] = useState<number>(0);
-    const [menuPosition, setMenuPosition] = useState<MenuPosition>({});
+    const [anchorPoint, setAnchorPoint] = useState<{ x: number; y: number } | null>(null);
+    const [menuSize, setMenuSize] = useState<{ width: number; height: number } | null>(null);
 
     const iconWrapperRef = useRef<HostInstance>(null);
-    const anchorRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
     const toggleMenu = (): void => {
+        if (visible) {
+            setVisible(false);
+            return;
+        }
         iconWrapperRef.current?.measureInWindow((x, y, width, height) => {
-            anchorRef.current = getIconAnchorPoint(iconAnchor, x, y, width, height);
-            setMenuPosition({});
-            setPositionKey((k) => k + 1);
+            setAnchorPoint(getIconAnchorPoint(iconAnchor, x, y, width, height));
             setVisible(true);
         });
     };
 
-    const onOverlayLayout = (e: LayoutChangeEvent) => {
+    const handleMenuLayout = (e: LayoutChangeEvent) => {
         const { width, height } = e.nativeEvent.layout;
-        setMenuPosition(getMenuPosition(menuAnchor, anchorRef.current, width, height));
+        setMenuSize({ width, height });
     };
+    const menuPosition: MenuPosition = anchorPoint
+        ? placePopup(menuAnchor, anchorPoint, menuSize, windowWidth, windowHeight).position
+        : {};
 
     return (
         <View style={styles.container}>
@@ -86,9 +101,12 @@ export const Menu: FC<MenuProps> = ({
                     color={color}
                     highlightColor={iconActiveColor}
                     size={iconSize}
-                    active={visible}
+                    active={visible || triggerActive}
+                    accessibilityLabel={triggerAccessibilityLabel}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: visible }}
                     onPress={toggleMenu}
-                    style={styles.iconButton}
+                    style={[styles.iconButton, triggerStyle]}
                 />
             </View>
 
@@ -97,9 +115,9 @@ export const Menu: FC<MenuProps> = ({
                 visible={visible}
                 animationType="fade"
             >
-                <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)} onLayout={onOverlayLayout}>
+                <Pressable style={styles.modalOverlay} onPress={() => setVisible(false)}>
                     <View
-                        key={positionKey}
+                        onLayout={handleMenuLayout}
                         style={[
                             styles.menuList,
                             {

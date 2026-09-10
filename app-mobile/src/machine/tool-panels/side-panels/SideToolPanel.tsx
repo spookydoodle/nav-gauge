@@ -65,10 +65,22 @@ export const SideToolPanel: FC<Props> = ({
             style={[
                 {
                     backgroundColor: theme.componentColor('background', 0.87),
+                    shadowColor: theme.componentColor('box-shadow'),
+                    shadowOpacity: theme.isDark ? 0.4 : 0.14,
+                    shadowRadius: theme.isDark ? 5 : 4,
+                    elevation: 8,
                 },
                 placement === 'right'
-                    ? { borderLeftWidth: 1, borderLeftColor: theme.color('neutral') }
-                    : { borderRightWidth: 1, borderRightColor: theme.color('neutral') },
+                    ? {
+                        borderLeftWidth: 1,
+                        borderLeftColor: theme.color('neutral'),
+                        shadowOffset: { width: -2, height: 0 },
+                    }
+                    : {
+                        borderRightWidth: 1,
+                        borderRightColor: theme.color('neutral'),
+                        shadowOffset: { width: 2, height: 0 },
+                    },
             ]}
         >
             <Animated.View style={{ flex: 1, width: animatedWidth, overflow: 'hidden' }}>
