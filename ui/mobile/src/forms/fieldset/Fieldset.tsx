@@ -36,6 +36,7 @@ export const Fieldset: FC<Props> = ({
     append,
     size = 'md',
     color,
+    variant,
     expandable = true,
     expanded: controlledExpanded,
     onExpandedChange,
@@ -95,7 +96,6 @@ export const Fieldset: FC<Props> = ({
     const effectiveBevel = containerWidth > 0
         ? Math.min(bevelBySize[size], containerWidth / 2 - 1)
         : bevelBySize[size];
-
     return (
         <View style={styles.container} onLayout={handleLayout}>
             <FieldsetBevelOutline
@@ -103,6 +103,7 @@ export const Fieldset: FC<Props> = ({
                 containerHeight={containerHeight}
                 bevel={effectiveBevel}
                 color={color}
+                variant={variant}
             />
             <Animated.View
                 style={animating

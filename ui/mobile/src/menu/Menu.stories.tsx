@@ -17,7 +17,7 @@ export const MenuColors = () => (
             <View key={color}>
                 <Text>color="{color}"</Text>
                 <View style={styles.wrapper}>
-                    <Menu color={color}>
+                    <Menu color={color} triggerAccessibilityLabel="Open menu">
                         <MenuItem key={1} onPress={() => console.info("Option 1")}>Option 1</MenuItem>
                         <MenuItem key={2} onPress={() => console.info("Option 2")}>Option 2</MenuItem>
                     </Menu>
@@ -29,6 +29,7 @@ export const MenuColors = () => (
 
 export const MenuPlacements = () => (
     <View>
+        <Text>Requested placements flip automatically when a menu would overflow the viewport.</Text>
         <View>
             <Text>placement="bottom-right" (default)</Text>
             <View style={styles.wrapper}>

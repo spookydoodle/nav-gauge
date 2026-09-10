@@ -2,7 +2,7 @@ import type { Meta } from 'storybook-react-rsbuild';
 import { useState } from 'react';
 import { Fieldset } from './Fieldset';
 import { Text } from '../../typography';
-import { ColorVariant, SizeVariant } from '@ui';
+import { ColorVariant, SizeVariant, SurfaceFillVariant } from '@ui';
 
 const meta = {
     title: 'Forms/Fieldset',
@@ -13,6 +13,7 @@ export default meta;
 
 const allColors: ColorVariant[] = ['neutral', 'primary', 'secondary', 'tertiary'];
 const allSizes: SizeVariant[] = ['xs', 'sm', 'md'];
+const allVariants: SurfaceFillVariant[] = ['fill', 'fill-inverse', 'fill-translucent'];
 
 export const Default = {
     render: () => (
@@ -28,6 +29,18 @@ export const Colors = {
             {allColors.map(color => (
                 <Fieldset key={color} label={color} color={color}>
                     <Text>Bordered with {color} outline</Text>
+                </Fieldset>
+            ))}
+        </div>
+    ),
+};
+
+export const Variants = {
+    render: () => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 24 }}>
+            {allVariants.map(variant => (
+                <Fieldset key={variant} label={variant} color="neutral" variant={variant}>
+                    <Text>Neutral {variant} fieldset</Text>
                 </Fieldset>
             ))}
         </div>

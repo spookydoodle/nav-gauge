@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
 export const MenuItem: FC<{ onPress: () => void; } & MenuItemProps> = ({
     highlightColor = 'neutral',
     onPress,
+    disabled,
     children,
 }) => {
     const theme = useTheme();
@@ -29,6 +30,9 @@ export const MenuItem: FC<{ onPress: () => void; } & MenuItemProps> = ({
                 onPress();
                 handleClose();
             }}
+            disabled={disabled}
+            accessibilityRole="button"
+            accessibilityState={{ disabled }}
         >
             <Text style={styles.menuText}>
                 {children}

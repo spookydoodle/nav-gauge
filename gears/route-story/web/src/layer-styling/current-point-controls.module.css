@@ -15,11 +15,10 @@
     margin-top: 2px;
 }
 
-.size-row {
+.row {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-bottom: 2px;
 }
 
 .radio-buttons {

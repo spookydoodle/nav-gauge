@@ -1,9 +1,10 @@
 import { FC } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, type ViewStyle } from "react-native";
 import { useToolIcons, LAYOUT_DEFAULTS } from "@apparatus";
 import { ToolIconRight } from "./tool-icons/ToolIconRight";
 import { ToolIconLeft } from "./tool-icons/ToolIconLeft";
 import { MobileMap } from "@mobile-apparatus";
+import { useTheme } from "@ui";
 
 const styles = StyleSheet.create({
     icons: {
@@ -64,8 +65,16 @@ export const ToolIcons: FC<Props> = ({
     map,
     placement,
 }) => {
+    const theme = useTheme();
     const { len, hasSpacer, toolIconsByPlacement } = useToolIcons(placement);
     const Component = placement === 'left' ? ToolIconLeft : ToolIconRight;
+    const iconShadow: ViewStyle = {
+        shadowColor: theme.componentColor('box-shadow'),
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: theme.isDark ? 0.45 : 0.14,
+        shadowRadius: 5,
+        elevation: 6,
+    };
 
     if (len === 0) {
         return null;
@@ -111,7 +120,7 @@ export const ToolIcons: FC<Props> = ({
                                             : styles.cellStaggeredLeft,
                             ]}
                         >
-                            <Component map={map} {...toolIcon} />
+                            <Component map={map} style={iconShadow} {...toolIcon} />
                         </View>
                     );
                 })}

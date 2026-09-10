@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, CSSProperties, FC } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
-import { MenuPosition, getIconAnchorPoint, placePopup, PopupProps } from '@ui';
+import { MenuPosition, getIconAnchorPoint, menuPositionsMatch, placePopup, PopupProps } from '@ui';
 import { Transition } from '../transition';
 import type { TransitionProps } from '@ui';
 import styles from './popup.module.css';
@@ -67,37 +67,27 @@ export const Popup: FC<Props> = ({
 
             const rect = containerRef.current?.getBoundingClientRect();
             const size = rect ? { width: rect.width, height: rect.height } : null;
-            const { position: nextPosition } = placePopup(
+
+            const nextPosition = placePopup(
                 popupAnchor,
                 iconAnchor,
                 size,
                 window.innerWidth,
                 window.innerHeight,
-            );
-            setMenuPosition(nextPosition);
+            ).position;
+
+            setMenuPosition((current) => menuPositionsMatch(current, nextPosition) ? current : nextPosition);
         };
 
         computePosition();
-        window.addEventListener('scroll', computePosition, true);
-        window.addEventListener('resize', computePosition);
-
-        const resizeObservers: ResizeObserver[] = [];
-        if (anchor?.current) {
-            const anchorObserver = new ResizeObserver(computePosition);
-            anchorObserver.observe(anchor.current.parentElement ?? anchor.current);
-            resizeObservers.push(anchorObserver);
-        }
-        if (containerRef.current) {
-            const popupObserver = new ResizeObserver(computePosition);
-            popupObserver.observe(containerRef.current);
-            resizeObservers.push(popupObserver);
-        }
-
-        return () => {
-            window.removeEventListener('scroll', computePosition, true);
-            window.removeEventListener('resize', computePosition);
-            resizeObservers.forEach((observer) => observer.disconnect());
+        let animationFrame = 0;
+        const tick = () => {
+            computePosition();
+            animationFrame = requestAnimationFrame(tick);
         };
+        animationFrame = requestAnimationFrame(tick);
+
+        return () => cancelAnimationFrame(animationFrame);
     }, [visible, anchor, position, triggerAnchor, popupAnchor]);
 
     useEffect(() => {

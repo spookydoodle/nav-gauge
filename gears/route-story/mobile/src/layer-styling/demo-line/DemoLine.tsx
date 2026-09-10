@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { FC, RefObject } from "react";
+import { HostInstance, Pressable, StyleSheet, View } from "react-native";
 import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { DemoLineSegment } from "./DemoLineSegment";
 
@@ -25,18 +25,26 @@ const styles = StyleSheet.create({
     'demo-point-fill': {
         position: 'absolute',
     },
+    'active-anchor': { position: 'absolute', left: '25%', width: 1, height: 1 },
+    'inactive-anchor': { position: 'absolute', left: '75%', width: 1, height: 1 },
 });
 
 interface Props {
     state: RouteStoryState;
     onCurrentPointClick: () => void;
     currentPointMenuLabel: string;
+    activeRef: RefObject<HostInstance | null>;
+    currentPointRef: RefObject<HostInstance | null>;
+    inactiveRef: RefObject<HostInstance | null>;
 }
 
 export const DemoLine: FC<Props> = ({
     state,
     onCurrentPointClick,
     currentPointMenuLabel,
+    activeRef,
+    currentPointRef,
+    inactiveRef,
 }) => {
     const radius = state.currentPoint.size;
 
@@ -44,7 +52,10 @@ export const DemoLine: FC<Props> = ({
         <View style={styles['demo-line']} pointerEvents="box-none">
             <DemoLineSegment {...state.routeStyleActive} />
             <DemoLineSegment {...state.routeStyleInactive} />
+            <View ref={activeRef} style={styles['active-anchor']} pointerEvents="none" accessibilityElementsHidden />
+            <View ref={inactiveRef} style={styles['inactive-anchor']} pointerEvents="none" accessibilityElementsHidden />
             <Pressable
+                ref={currentPointRef}
                 style={styles['demo-point']}
                 accessibilityRole="button"
                 accessibilityLabel={currentPointMenuLabel}

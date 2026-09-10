@@ -49,6 +49,11 @@ export const BottomToolPanel: FC<Props> = ({
             <View style={[{
                 backgroundColor: theme.componentColor('background', 0.87),
                 borderTopColor: theme.color('primary'),
+                shadowColor: theme.componentColor('box-shadow'),
+                shadowOffset: { width: 0, height: -2 },
+                shadowOpacity: theme.isDark ? 0.2 : 0.08,
+                shadowRadius: theme.isDark ? 5 : 4,
+                elevation: 4,
             }]}>
                 <BottomToolPanelHeader
                     activeId={activeId}

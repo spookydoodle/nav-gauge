@@ -3,7 +3,7 @@ import { ScrollView, View, StyleSheet } from "react-native";
 import { Fieldset } from "./Fieldset";
 import { Checkbox } from "../checkbox";
 import { Text } from "../../typography";
-import { ColorVariant, SizeVariant } from "@ui";
+import { ColorVariant, SizeVariant, SurfaceFillVariant } from "@ui";
 
 const styles = StyleSheet.create({
     container: {
@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
 
 const allColors: ColorVariant[] = ['neutral', 'primary', 'secondary', 'tertiary'];
 const allSizes: SizeVariant[] = ['xs', 'sm', 'md'];
+const allVariants: SurfaceFillVariant[] = ['fill', 'fill-inverse', 'fill-translucent'];
 
 export const FieldsetVariants: FC = () => {
     const [color, setColor] = useState<ColorVariant>('neutral');
@@ -66,6 +67,14 @@ export const FieldsetVariants: FC = () => {
                         </Checkbox>
                     ))}
                 </View>
+            </View>
+
+            <View style={styles.section}>
+                {allVariants.map(variant => (
+                    <Fieldset key={variant} label={variant} color="neutral" variant={variant}>
+                        <Text>Neutral {variant} fieldset</Text>
+                    </Fieldset>
+                ))}
             </View>
 
             <View style={styles.section}>

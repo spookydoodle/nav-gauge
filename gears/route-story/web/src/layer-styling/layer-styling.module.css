@@ -1,19 +1,13 @@
 .popup {
-    width: 360px;
+    width: 100%;
+    max-width: 360px;
 }
 
 .content {
     max-height: 60dvh;
     overflow-y: auto;
-    padding: 0 10px 10px 10px;
     display: grid;
     row-gap: 10px;
-}
-
-.style-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 10px;
 }
 
 .footer {
@@ -21,5 +15,4 @@
     justify-content: flex-end;
     column-gap: 8px;
     padding: 10px;
-    background-color: var(--color-background);
 }

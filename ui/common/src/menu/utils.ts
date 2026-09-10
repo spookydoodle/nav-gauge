@@ -58,6 +58,10 @@ export interface PlacePopupResult {
     position: MenuPosition;
 }
 
+export function menuPositionsMatch(current: MenuPosition, next: MenuPosition): boolean {
+    return current.top === next.top && current.right === next.right && current.bottom === next.bottom && current.left === next.left;
+}
+
 function popupFitsInViewport(
     position: MenuPosition,
     size: PopupSize,
@@ -69,6 +73,11 @@ function popupFitsInViewport(
     return left >= 0 && top >= 0 && left + size.width <= viewportWidth && top + size.height <= viewportHeight;
 }
 
+/**
+ * Places anchored content inside the viewport, preferring the requested anchor,
+ * then its vertical, horizontal, and diagonal alternatives. Content at least as
+ * wide as the viewport is placed at the top-left until enough width is available.
+ */
 export function placePopup(
     popupAnchor: MenuAnchor,
     iconAnchor: { x: number; y: number },
@@ -76,6 +85,10 @@ export function placePopup(
     viewportWidth: number,
     viewportHeight: number,
 ): PlacePopupResult {
+    if (size && size.width >= viewportWidth) {
+        return { popupAnchor: 'top-left', position: { left: 0, top: 0 } };
+    }
+
     const candidates: MenuAnchor[] = [
         popupAnchor,
         flipVerticalAnchor(popupAnchor),

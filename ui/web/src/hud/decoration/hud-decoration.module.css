@@ -1,0 +1,63 @@
+.wrapper {
+    display: inline-block;
+    position: relative;
+}
+
+.decoration {
+    fill: none;
+    inset: calc(-1 * var(--decoration-offset));
+    overflow: visible;
+    pointer-events: none;
+    position: absolute;
+    stroke: var(--decoration-color);
+}
+
+.size-xs .decoration {
+    --decoration-offset: 3px;
+    stroke-width: 1;
+}
+
+.size-sm .decoration {
+    --decoration-offset: 5px;
+    stroke-width: 1.5;
+}
+
+.size-md .decoration {
+    --decoration-offset: 7px;
+    stroke-width: 2;
+}
+
+.glow-style-glow .decoration {
+    filter:
+        drop-shadow(0 0 3px rgb(from var(--decoration-color) r g b / .7))
+        drop-shadow(0 0 8px rgb(from var(--decoration-color) r g b / .35));
+}
+
+.glow-style-animate-borders-glow .decoration {
+    filter: drop-shadow(0 0 6px rgb(from var(--decoration-color) r g b / .6));
+}
+
+.glow-style-animate-borders-glow path {
+    animation: decoration-glow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes decoration-glow {
+    from { opacity: .45; }
+    to { opacity: 1; }
+}
+
+.color-neutral {
+    --decoration-color: var(--color-neutral);
+}
+
+.color-primary {
+    --decoration-color: var(--color-primary);
+}
+
+.color-secondary {
+    --decoration-color: var(--color-secondary);
+}
+
+.color-tertiary {
+    --decoration-color: var(--color-tertiary);
+}
