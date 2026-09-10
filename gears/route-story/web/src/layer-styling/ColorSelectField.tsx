@@ -1,7 +1,7 @@
 import { FC, useRef, useState } from "react";
 import { useTranslation } from "@apparatus";
 import { useTheme } from "@ui";
-import { Label, Popup, Tooltip } from "@web-ui";
+import { Popup, Tooltip } from "@web-ui";
 import { ColorPicker } from "@web-ui";
 import { RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import styles from './color-select-field.module.css';
