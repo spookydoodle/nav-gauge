@@ -12,7 +12,7 @@
     "dependencies": {
         "@the-dead-planet/nav-gauge-tinker-chest": "*",
         "@the-dead-planet/nav-gauge-ui-common": "*",
-        "fast-xml-parser": "^5.11.0"
+        "fast-xml-parser": "^5.11.1"
     },
     "devDependencies": {
         "@maplibre/maplibre-gl-style-spec": "^26.4.1",

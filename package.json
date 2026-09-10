@@ -66,20 +66,20 @@
         "rxjs": "^7.8.2"
     },
     "devDependencies": {
-        "@eslint/eslintrc": "^3.3.6",
+        "@eslint/eslintrc": "^3.3.7",
         "@types/chai": "^5.2.3",
         "@types/eslint": "^9.6.1",
         "@types/luxon": "^3.7.5",
         "@types/mocha": "^10.0.10",
         "@types/react": "^19.2.18",
-        "@typescript-eslint/eslint-plugin": "^8.68.0",
-        "@typescript-eslint/parser": "^8.68.0",
+        "@typescript-eslint/eslint-plugin": "^8.69.0",
+        "@typescript-eslint/parser": "^8.69.0",
         "chai": "^6.2.2",
         "concurrently": "^10.0.5",
         "eslint": "^10.9.1",
         "mocha": "^11.8.0",
         "path": "^0.12.7",
-        "tsx": "^4.23.12",
+        "tsx": "^4.23.13",
         "typescript": "^7.0.2"
     },
     "resolutions": {
