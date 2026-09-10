@@ -81,7 +81,7 @@ export const CustomAnchors = {
                         <div style={{ width: 320 }}>
                             <p>
                                 This popup's top-right corner sits at the trigger's bottom-right corner.
-                                It is large enough to flip when it would overflow the viewport.
+                                It flips when it would overflow and returns to this anchor after the viewport grows.
                             </p>
                             <Button size="xs" onClick={() => setVisible(false)}>Close</Button>
                         </div>

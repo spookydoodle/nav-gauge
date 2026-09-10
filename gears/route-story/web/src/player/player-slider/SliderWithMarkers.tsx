@@ -1,6 +1,7 @@
 import type * as maplibregl from "maplibre-gl";
 import { FC } from "react";
 import { BehaviorSubject } from "rxjs";
+import classNames from "classnames";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import { RouteStoryTranslationKey, RouteTimes, Animatrix } from "@the-dead-planet/nav-gauge-gears-route-story-common";
@@ -23,6 +24,7 @@ interface Props {
     playerOperator: WebPlayerOperator;
     fitBoundsHandler: (map: maplibregl.Map, boundingBox?: GeoJSON.BBox) => void;
     animatrix: Animatrix;
+    className?: string;
 }
 
 export const SliderWithMarkers: FC<Props> = ({
@@ -36,6 +38,7 @@ export const SliderWithMarkers: FC<Props> = ({
     playerOperator,
     fitBoundsHandler,
     animatrix,
+    className,
 }) => {
     const [routeTimes] = useSubjectState(routeTimes$);
     const [progressMs] = useSubjectState(progressMs$);
@@ -56,29 +59,31 @@ export const SliderWithMarkers: FC<Props> = ({
     };
 
     return (
-        <div className={styles['slider-container']}>
-            {showImageMarkers ? (
-                <SliderMarkers
-                    gearId={gearId}
-                    translationKey={translationKey}
-                    map={map}
-                    data$={data$}
-                    routeTimes$={routeTimes$}
-                    images$={images$}
-                    fitBoundsHandler={fitBoundsHandler}
-                    animatrix={animatrix}
+        <div className={classNames(styles['container'], className)}>
+            <div className={styles['slider-container']}>
+                {showImageMarkers ? (
+                    <SliderMarkers
+                        gearId={gearId}
+                        translationKey={translationKey}
+                        map={map}
+                        data$={data$}
+                        routeTimes$={routeTimes$}
+                        images$={images$}
+                        fitBoundsHandler={fitBoundsHandler}
+                        animatrix={animatrix}
+                    />
+                ) : null}
+                <Slider
+                    aria-label={sliderLabel}
+                    value={progressMs}
+                    min={0}
+                    max={routeTimes?.duration ?? 1}
+                    step={1}
+                    onChange={handleProgressChange}
+                    color="tertiary"
+                    size="sm"
                 />
-            ) : null}
-            <Slider
-                aria-label={sliderLabel}
-                value={progressMs}
-                min={0}
-                max={routeTimes?.duration ?? 1}
-                step={1}
-                onChange={handleProgressChange}
-                color="tertiary"
-                size="sm"
-            />
+            </div>
             <PlayerSliderLabels progressMs$={progressMs$} routeTimes$={routeTimes$} />
         </div>
     );

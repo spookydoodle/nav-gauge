@@ -49,7 +49,7 @@ export class MobileRouteStoryGear extends RouteStoryGear<MobileMap, MobileChrono
    public animatrixContentComponent = AnimationControls;
    public routeLayerComponent = RouteLayer;
    public imagesLayerComponent = ImagesLayer;
-      public topBarChipComponent = RecChip;
+   public topBarChipComponent = RecChip;
    public layerStylingComponent = LayerStylingPopup;
 
    public constructor(apparatus: GearApparatus<MobileMap, MobileChronoLens>) {
@@ -97,9 +97,9 @@ export class MobileRouteStoryGear extends RouteStoryGear<MobileMap, MobileChrono
       // resetTempSubfolder();
    };
 
-    public fitBounds = async (map: MobileMap, sw: [number, number], ne: [number, number]) => {
-        map.camera$.value?.fitBounds([...sw, ...ne], { padding: { bottom: 20, left: 20, right: 20, top: 20 } });
-    }
+   public fitBounds = async (map: MobileMap, sw: [number, number], ne: [number, number]) => {
+      map.camera$.value?.fitBounds([...sw, ...ne], { padding: { bottom: 20, left: 20, right: 20, top: 20 } });
+   }
 
    public fileToText = async (file: DocumentPickerResponse) => RNFS.readFile(file.uri, 'utf8');
 

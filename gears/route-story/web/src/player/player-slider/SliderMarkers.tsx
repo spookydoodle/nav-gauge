@@ -2,6 +2,7 @@ import type * as maplibregl from "maplibre-gl";
 import { FC, useEffect, useRef } from "react";
 import { BehaviorSubject } from "rxjs";
 import classNames from "classnames";
+import bbox from "@turf/bbox";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import {
@@ -20,7 +21,6 @@ import { WebMarkerImageData } from "../../images/image-parser";
 import { Button } from "@web-ui";
 import { Icons } from "@ui";
 import styles from './slider-markers.module.css';
-import bbox from "@turf/bbox";
 
 interface Props {
     gearId: string;

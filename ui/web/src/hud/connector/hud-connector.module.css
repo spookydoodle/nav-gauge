@@ -1,0 +1,30 @@
+.wrapper {
+    position: relative;
+}
+
+.connector {
+    fill: var(--connector-color);
+    height: 100%;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+    position: absolute;
+    stroke: var(--connector-color);
+    stroke-width: 1;
+    width: 100%;
+    z-index: 2;
+}
+
+.connector polyline {
+    fill: none;
+}
+
+.glow-style-glow .connector,
+.glow-style-animate-borders-glow .connector {
+    filter: drop-shadow(0 0 4px var(--connector-color));
+}
+
+.color-neutral { --connector-color: var(--color-neutral); }
+.color-primary { --connector-color: var(--color-primary); }
+.color-secondary { --connector-color: var(--color-secondary); }
+.color-tertiary { --connector-color: var(--color-tertiary); }

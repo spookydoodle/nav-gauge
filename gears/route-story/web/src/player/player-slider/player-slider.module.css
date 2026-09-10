@@ -1,14 +1,11 @@
 .container {
     flex: 1;
-    display: flex;
-    column-gap: 18px;
-    align-items: center;
+    display: grid;
+    position: relative;
+    row-gap: 10px;
 }
 
 .slider-container {
-    flex: 1;
-    display: grid;
     position: relative;
-    padding-top: 16px;
-    margin-top: 16px;
+    padding: 8px 0 4px 0;
 }

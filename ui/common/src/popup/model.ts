@@ -7,9 +7,9 @@ export interface PopupProps {
     position?: { x: number; y: number };
     variant?: PanelProps['variant'];
     shape?: PanelProps['shape'];
-    /** Which corner of the trigger the popup attaches to. */
+    /** Which corner of the trigger supplies the popup's attachment point. */
     triggerAnchor?: MenuAnchor;
-    /** Which corner of the popup sits at the trigger's anchor corner. */
+    /** Which popup corner attaches there. Placement may flip to stay inside the viewport. */
     popupAnchor?: MenuAnchor;
     dismissOnClickAway?: boolean;
     visible: boolean;

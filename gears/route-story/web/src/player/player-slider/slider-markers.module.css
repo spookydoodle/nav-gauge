@@ -1,5 +1,5 @@
 .slider-markers {
-    height: 0;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 8px;
@@ -10,6 +10,7 @@
 .image-marker-container {
     position: absolute;
     top: 0;
+    height: 100%;
 }
 
 .image-marker {
@@ -21,8 +22,8 @@
     --marker-highlight-color: var(--color-tertiary-800);
 
     position: absolute;
-    top: 5px;
-    height: 46px;
+    top: 0px;
+    height: 100%;
     display: block;
     width: var(--marker-width);
     background-color: var(--marker-color);
@@ -61,7 +62,7 @@
 }
 
 .image-marker::after {
-    top: 0;
+    top: calc(var(--marker-thumb-size) / 2);
     transform: translate(-50%, -50%) rotate(45deg);
     width: var(--marker-thumb-size);
     height: var(--marker-thumb-size);

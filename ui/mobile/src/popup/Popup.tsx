@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
-import { MenuPosition, getIconAnchorPoint, placePopup, PopupProps } from '@ui';
+import { Animated, Modal, Pressable, StyleSheet, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { MenuPosition, getIconAnchorPoint, menuPositionsMatch, placePopup, PopupProps, useTheme } from '@ui';
 
 interface Props extends PopupProps {
     overlayStyle?: StyleProp<ViewStyle>;
@@ -19,6 +19,7 @@ export const Popup: FC<Props> = ({
     popupStyle,
     children,
 }) => {
+    const theme = useTheme();
     const [menuPosition, setMenuPosition] = useState<MenuPosition>({});
     const [popupSize, setPopupSize] = useState<{ width: number; height: number } | null>(null);
     const { height: windowHeight, width: windowWidth } = useWindowDimensions();
@@ -29,29 +30,36 @@ export const Popup: FC<Props> = ({
             return;
         }
 
-        let iconAnchor: { x: number; y: number };
+        const computePosition = () => {
+            let iconAnchor: { x: number; y: number };
 
-        if (position) {
-            iconAnchor = position;
-        } else if (anchor && anchor.current) {
-            const rect = (anchor.current as unknown as { getBoundingClientRect?: () => DOMRect })?.getBoundingClientRect?.();
-            if (rect) {
-                iconAnchor = getIconAnchorPoint(triggerAnchor, rect.left, rect.top, rect.width, rect.height);
+            if (position) {
+                iconAnchor = position;
+            } else if (anchor && anchor.current) {
+                const rect = (anchor.current as unknown as { getBoundingClientRect?: () => DOMRect })?.getBoundingClientRect?.();
+                if (rect) {
+                    iconAnchor = getIconAnchorPoint(triggerAnchor, rect.left, rect.top, rect.width, rect.height);
+                } else {
+                    return;
+                }
             } else {
                 return;
             }
-        } else {
-            return;
-        }
 
-        const { position: nextPosition } = placePopup(
-            popupAnchor,
-            iconAnchor,
-            popupSize,
-            windowWidth,
-            windowHeight,
-        );
-        setMenuPosition(nextPosition);
+            const nextPosition = placePopup(
+                popupAnchor,
+                iconAnchor,
+                popupSize,
+                windowWidth,
+                windowHeight,
+            ).position;
+
+            setMenuPosition((current) => menuPositionsMatch(current, nextPosition) ? current : nextPosition);
+        };
+
+        computePosition();
+        const followInterval = setInterval(computePosition, 100);
+        return () => clearInterval(followInterval);
     }, [visible, anchor, position, triggerAnchor, popupAnchor, popupSize, windowWidth, windowHeight]);
 
     const handleLayout = (event: LayoutChangeEvent) => {
@@ -113,7 +121,16 @@ export const Popup: FC<Props> = ({
             >
                 <Animated.View
                     onLayout={handleLayout}
-                    style={[styles.popup, positionStyle, animatedStyle, popupStyle]}
+                    style={[
+                        styles.popup,
+                        {
+                            shadowColor: theme.componentColor('box-shadow'),
+                            shadowOpacity: theme.isDark ? 0.45 : 0.14,
+                        },
+                        positionStyle,
+                        animatedStyle,
+                        popupStyle,
+                    ]}
                 >
                     <Pressable
                         onPress={(e) => {
@@ -128,17 +145,20 @@ export const Popup: FC<Props> = ({
     );
 };
 
-const styles = {
+const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        position: 'absolute' as const,
+        position: 'absolute',
         left: 0,
         right: 0,
         top: 0,
         bottom: 0,
         zIndex: 1000,
-    } as ViewStyle,
+    },
     popup: {
-        position: 'absolute' as const,
-    } as ViewStyle,
-};
+        position: 'absolute',
+        shadowOffset: { width: 0, height: 8 },
+        shadowRadius: 12,
+        elevation: 10,
+    },
+});

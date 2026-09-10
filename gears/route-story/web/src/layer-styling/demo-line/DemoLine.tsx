@@ -1,4 +1,4 @@
-import { FC, useRef } from "react";
+import { FC, RefObject } from "react";
 import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import styles from './demo-line.module.css';
 
@@ -6,12 +6,18 @@ interface Props {
     state: RouteStoryState;
     onCurrentPointClick: () => void;
     currentPointMenuLabel: string;
+    activeRef: RefObject<SVGLineElement | null>;
+    currentPointRef: RefObject<SVGGElement | null>;
+    inactiveRef: RefObject<SVGLineElement | null>;
 }
 
 export const DemoLine: FC<Props> = ({
     state,
     onCurrentPointClick,
     currentPointMenuLabel,
+    activeRef,
+    currentPointRef,
+    inactiveRef,
 }) => {
     const { routeStyleActive: active, routeStyleInactive: inactive } = state;
     const activeDash = active.variant === 'dashed' ? '5 4' : undefined;
@@ -21,20 +27,18 @@ export const DemoLine: FC<Props> = ({
     const activeOutlineWidth = Math.max(2, activeWidth + active.outlineWidth * 2);
     const inactiveOutlineWidth = Math.max(2, inactiveWidth + inactive.outlineWidth * 2);
     const radius = state.currentPoint.size;
-    const svgRef = useRef<SVGSVGElement | null>(null);
-
     return (
         <svg
-            ref={svgRef}
             className={styles['demo-line']}
             viewBox="0 0 300 20"
             preserveAspectRatio="none"
         >
             <line x1="2" y1="10" x2="150" y2="10" stroke={active.outlineColor} strokeWidth={activeOutlineWidth} strokeDasharray={activeDash} strokeLinecap="round" />
-            <line x1="2" y1="10" x2="150" y2="10" stroke={active.color} strokeWidth={activeWidth} strokeDasharray={activeDash} strokeLinecap="round" />
+            <line ref={activeRef} x1="2" y1="10" x2="150" y2="10" stroke={active.color} strokeWidth={activeWidth} strokeDasharray={activeDash} strokeLinecap="round" />
             <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.outlineColor} strokeWidth={inactiveOutlineWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />
-            <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.color} strokeWidth={inactiveWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />
+            <line ref={inactiveRef} x1="150" y1="10" x2="298" y2="10" stroke={inactive.color} strokeWidth={inactiveWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />
             <g
+                ref={currentPointRef}
                 className={styles['demo-point']}
                 role="button"
                 tabIndex={0}

@@ -19,6 +19,7 @@ export const Panel: FC<PanelProps & Props> = ({
     glowStyle: _glowStyle,
     themeMode,
     padding,
+    borderWidth = 2,
     interactive = false,
     active = false,
     style,
@@ -52,7 +53,7 @@ export const Panel: FC<PanelProps & Props> = ({
                 return {
                     backgroundColor: fillColor,
                     borderColor: borderColor,
-                    borderWidth: 2,
+                    borderWidth,
                     padding: padding ? paddingMap[padding] : undefined,
                 };
             }
@@ -76,7 +77,7 @@ export const Panel: FC<PanelProps & Props> = ({
                 return {
                     backgroundColor: fillColor,
                     borderColor: borderColor,
-                    borderWidth: 2,
+                    borderWidth,
                     padding: padding ? paddingMap[padding] : undefined,
                 };
             }
@@ -89,7 +90,7 @@ export const Panel: FC<PanelProps & Props> = ({
                 return {
                     backgroundColor: fill,
                     borderColor: border,
-                    borderWidth: 2,
+                    borderWidth,
                     padding: padding ? paddingMap[padding] : undefined,
                 };
             }
@@ -112,7 +113,7 @@ export const Panel: FC<PanelProps & Props> = ({
                 return {
                     backgroundColor: bgFill,
                     borderColor: bColor,
-                    borderWidth: isOutline ? 2 : 0,
+                    borderWidth: isOutline ? borderWidth : 0,
                     padding: padding ? paddingMap[padding] : undefined,
                 };
             }

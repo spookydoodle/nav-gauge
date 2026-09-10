@@ -6,7 +6,8 @@ import {
     getIconAndMenuAnchors,
     MenuContext,
     getIconAnchorPoint,
-    getMenuPosition,
+    menuPositionsMatch,
+    placePopup,
     MenuProps,
     Icons,
     useTheme,
@@ -27,6 +28,8 @@ export const Menu: FC<Props & ComponentProps<'button'>> = ({
     tooltip,
     tooltipPlacement,
     color = 'neutral',
+    triggerAccessibilityLabel,
+    triggerActive = false,
     menuListClassName,
     children,
     ...props
@@ -39,20 +42,51 @@ export const Menu: FC<Props & ComponentProps<'button'>> = ({
     const containerRef = useRef<HTMLDivElement>(null);
 
     const handleToggle = () => {
-        if (visible) {
-            setVisible(false);
-            return;
-        }
-        const el = triggerRef.current;
-        if (!el) {
-            return;
-        };
-        const { left, top, width, height } = el.getBoundingClientRect();
-        setMenuPosition(getMenuPosition(menuAnchor, getIconAnchorPoint(iconAnchor, left, top, width, height), window.innerWidth, window.innerHeight));
-        setVisible(true);
+        setVisible((current) => !current);
     };
 
     const handleClose = () => setVisible(false);
+
+    useEffect(() => {
+        if (!visible) {
+            return;
+        }
+
+        const computePosition = () => {
+            const triggerBounds = triggerRef.current?.getBoundingClientRect();
+            if (!triggerBounds) {
+                return;
+            }
+
+            const menuBounds = containerRef.current?.getBoundingClientRect();
+            const triggerPoint = getIconAnchorPoint(
+                iconAnchor,
+                triggerBounds.left,
+                triggerBounds.top,
+                triggerBounds.width,
+                triggerBounds.height,
+            );
+            const nextPosition = placePopup(
+                menuAnchor,
+                triggerPoint,
+                menuBounds ? { width: menuBounds.width, height: menuBounds.height } : null,
+                window.innerWidth,
+                window.innerHeight,
+            ).position;
+
+            setMenuPosition((current) => menuPositionsMatch(current, nextPosition) ? current : nextPosition);
+        };
+
+        computePosition();
+        let animationFrame = 0;
+        const followTrigger = () => {
+            computePosition();
+            animationFrame = requestAnimationFrame(followTrigger);
+        };
+        animationFrame = requestAnimationFrame(followTrigger);
+
+        return () => cancelAnimationFrame(animationFrame);
+    }, [visible, iconAnchor, menuAnchor]);
 
     useEffect(() => {
         if (!visible) {
@@ -130,12 +164,13 @@ export const Menu: FC<Props & ComponentProps<'button'>> = ({
                 variant="ghost"
                 icon={icon}
                 size={iconSize}
-                active={visible}
+                active={visible || triggerActive}
                 color={color}
                 highlightColor={iconActiveColor}
                 onClick={handleToggle}
                 tooltip={tooltip}
                 tooltipPlacement={tooltipPlacement}
+                aria-label={triggerAccessibilityLabel}
                 {...props}
             />
             {visible && createPortal(
