@@ -1,28 +1,22 @@
 import { FC } from "react";
 import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { Checkbox, Dropdown, Fieldset, Label, NumberInput } from "@mobile-ui";
+import { Checkbox, Dropdown, Label, NumberInput } from "@mobile-ui";
 import { ColorSelectField } from "./ColorSelectField";
 import { View, StyleSheet } from "react-native";
 import { useMultipleTranslations } from "@apparatus";
 
 interface Props {
-    label: string;
     style: RouteStoryLineStyle;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
-    expanded?: boolean;
-    onExpandedChange?: (expanded: boolean) => void;
     onChange: (patch: Partial<RouteStoryLineStyle>) => void;
 }
 
 export const LineStyleGroup: FC<Props> = ({
-    label,
     style,
     gearId,
     translationKey,
     onChange,
-    expanded,
-    onExpandedChange,
 }) => {
     const [
         linesLabel,
@@ -48,7 +42,7 @@ export const LineStyleGroup: FC<Props> = ({
     ];
 
     return (
-        <Fieldset size="xs" label={label} color="neutral" variant="fill-inverse" expanded={expanded} onExpandedChange={onExpandedChange}>
+        <View>
             <View style={styles['top-controls']}>
                 <Checkbox size="xs" checked={style.showRouteLine} onChange={(checked) => onChange({ showRouteLine: checked })}>
                     {linesLabel}
@@ -73,7 +67,7 @@ export const LineStyleGroup: FC<Props> = ({
                     <NumberInput size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
                 </View>
             </View>
-        </Fieldset>
+        </View>
     );
 };
 

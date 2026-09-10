@@ -19,7 +19,7 @@ export const MenuColors: Story = {
                 <div key={color}>
                     <p>color="{color}"</p>
                     <div style={{ margin: '0 auto', width: 'max-content' }}>
-                        <Menu color={color}>
+                        <Menu color={color} triggerAccessibilityLabel="Open menu">
                             <MenuItem key={1} type="button" onClick={() => console.info("Option 1")}>Option 1</MenuItem>
                             <MenuItem key={2} type="button" onClick={() => console.info("Option 2")}>Option 2</MenuItem>
                         </Menu>

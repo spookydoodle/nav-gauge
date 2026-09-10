@@ -125,10 +125,6 @@
 }
 
 /* Fill translucent */
-.variant-fill-translucent {
-    backdrop-filter: blur(6px);
-}
-
 .variant-fill-translucent .polygon-base {
     fill: rgb(from var(--bevel-color) r g b / .24);
     stroke: var(--bevel-color);

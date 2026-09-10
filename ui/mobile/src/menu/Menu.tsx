@@ -5,8 +5,10 @@ import {
     StyleSheet,
     Pressable,
     LayoutChangeEvent,
+    StyleProp,
     useWindowDimensions,
     type HostInstance,
+    ViewStyle,
 } from 'react-native';
 import {
     useTheme,
@@ -48,12 +50,19 @@ const styles = StyleSheet.create({
     }
 });
 
-export const Menu: FC<MenuProps> = ({
+interface MobileMenuProps extends MenuProps {
+    triggerStyle?: StyleProp<ViewStyle>;
+}
+
+export const Menu: FC<MobileMenuProps> = ({
     icon = Icons.NounProject.KebabMenu,
     iconActiveColor,
     iconSize,
     placement = 'bottom-right',
     color = 'neutral',
+    triggerAccessibilityLabel,
+    triggerActive = false,
+    triggerStyle,
     children,
 }) => {
     const { icon: iconAnchor, menu: menuAnchor } = getIconAndMenuAnchors(placement);
@@ -92,9 +101,12 @@ export const Menu: FC<MenuProps> = ({
                     color={color}
                     highlightColor={iconActiveColor}
                     size={iconSize}
-                    active={visible}
+                    active={visible || triggerActive}
+                    accessibilityLabel={triggerAccessibilityLabel}
+                    accessibilityRole="button"
+                    accessibilityState={{ expanded: visible }}
                     onPress={toggleMenu}
-                    style={styles.iconButton}
+                    style={[styles.iconButton, triggerStyle]}
                 />
             </View>
 

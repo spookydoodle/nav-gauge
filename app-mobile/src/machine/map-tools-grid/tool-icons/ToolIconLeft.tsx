@@ -6,10 +6,11 @@ import { useTheme } from "@ui";
 import { Button } from "@mobile-ui";
 import { MobileMap } from "@mobile-apparatus";
 import { SvgProps } from "react-native-svg";
+import { type StyleProp, type ViewStyle } from "react-native";
 
 interface Props {
     map: MobileMap;
-    className?: string;
+    style?: StyleProp<ViewStyle>;
 }
 
 export const ToolIconLeft: FC<ObservedToolIcon<MobileMap> & Props> = ({
@@ -21,6 +22,7 @@ export const ToolIconLeft: FC<ObservedToolIcon<MobileMap> & Props> = ({
     active$,
     tooltip,
     onClick,
+    style,
 }) => {
     const { translatron, individuator } = useMobileMachineWard();
     const theme = useTheme();
@@ -53,6 +55,7 @@ export const ToolIconLeft: FC<ObservedToolIcon<MobileMap> & Props> = ({
             active={active}
             onPress={() => onClick?.(map)}
             disabled={disabled}
+            style={style}
         />
     );
 };

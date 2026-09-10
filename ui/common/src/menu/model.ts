@@ -18,8 +18,10 @@ export interface MenuProps {
     icon?: string;
     iconSize?: SizeVariant;
     iconActiveColor?: ColorVariant;
+    triggerActive?: boolean;
     tooltip?: ReactNode;
     tooltipPlacement?: TooltipProps['placement'];
+    triggerAccessibilityLabel?: string;
     children?: ReactNode;
 }
 
@@ -28,5 +30,6 @@ export interface MenuItemProps {
     highlightColor?: ColorVariant;
     isFirst?: boolean;
     closeOnPress?: boolean;
+    disabled?: boolean;
     children: ReactNode;
 }

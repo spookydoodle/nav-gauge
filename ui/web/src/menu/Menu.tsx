@@ -28,6 +28,8 @@ export const Menu: FC<Props & ComponentProps<'button'>> = ({
     tooltip,
     tooltipPlacement,
     color = 'neutral',
+    triggerAccessibilityLabel,
+    triggerActive = false,
     menuListClassName,
     children,
     ...props
@@ -162,12 +164,13 @@ export const Menu: FC<Props & ComponentProps<'button'>> = ({
                 variant="ghost"
                 icon={icon}
                 size={iconSize}
-                active={visible}
+                active={visible || triggerActive}
                 color={color}
                 highlightColor={iconActiveColor}
                 onClick={handleToggle}
                 tooltip={tooltip}
                 tooltipPlacement={tooltipPlacement}
+                aria-label={triggerAccessibilityLabel}
                 {...props}
             />
             {visible && createPortal(

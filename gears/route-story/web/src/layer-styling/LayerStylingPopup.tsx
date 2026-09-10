@@ -1,9 +1,9 @@
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
 import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { useTheme } from "@ui";
-import { Button, Fieldset, Panel, Popup } from "@web-ui";
+import { Button, HudConnector, Panel, Popup, Tabstrip } from "@web-ui";
 import { useSubjectState } from "@tinker-chest";
 import { WebRouteStoryProps } from "../model";
 import { CurrentPointControls } from "./CurrentPointControls";
@@ -27,8 +27,11 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
     const [active] = useSubjectState(icon.active$);
     const [anchorRef] = useSubjectState(icon.anchorRef$);
     const [state, setState] = useSubjectState(state$);
-    const [stylesExpanded, setStylesExpanded] = useState(true);
-    const [currentPointExpanded, setCurrentPointExpanded] = useState(false);
+    const [selectedStyle, setSelectedStyle] = useState('active');
+    const tabstripRef = useRef<HTMLDivElement>(null);
+    const activeRef = useRef<SVGLineElement>(null);
+    const currentPointRef = useRef<SVGGElement>(null);
+    const inactiveRef = useRef<SVGLineElement>(null);
     const [
         currentPointLabel,
         activeLabel,
@@ -49,13 +52,13 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
     const setInactiveLine = (patch: Partial<RouteStoryLineStyle>) => setState((prev) => ({ ...prev, routeStyleInactive: { ...prev.routeStyleInactive, ...patch } }));
     const setCurrentPoint = (patch: Partial<CurrentPointStyle>) => setState((prev) => ({ ...prev, currentPoint: { ...prev.currentPoint, ...patch } }));
 
-    const toggleCurrentPointExpanded = () => setCurrentPointExpanded((prev) => !prev);
-
     if (!active || !anchorRef?.current) {
         return null;
     }
 
     const defaults = getDefaultRouteStoryState(theme);
+    const targetRef = selectedStyle === 'active' ? activeRef : selectedStyle === 'current-point' ? currentPointRef : inactiveRef;
+    const fromAnchor = selectedStyle === 'active' ? 'top-left' : selectedStyle === 'current-point' ? 'top' : 'top-right';
 
     return (
         <Popup
@@ -72,44 +75,48 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                 role="dialog"
                 aria-label={dialogLabel}
             >
-                <DemoLine state={state} onCurrentPointClick={toggleCurrentPointExpanded} currentPointMenuLabel={currentPointLabel} />
-                <div className={styles['content']}>
-                    <Fieldset
-                        size="xs"
-                        label={currentPointLabel}
-                        expanded={currentPointExpanded}
-                        onExpandedChange={setCurrentPointExpanded}
-                        color="neutral"
-                        variant="fill-inverse"
-                    >
-                        <CurrentPointControls
-                            gearId={gearId}
-                            translationKey={translationKey}
-                            value={state.currentPoint}
-                            onChange={setCurrentPoint}
-                        />
-                    </Fieldset>
-                    <div className={styles['style-row']}>
-                        <LineStyleGroup
-                            label={activeLabel}
-                            style={state.routeStyleActive}
-                            gearId={gearId}
-                            translationKey={translationKey}
-                            expanded={stylesExpanded}
-                            onExpandedChange={setStylesExpanded}
-                            onChange={setActiveLine}
-                        />
-                        <LineStyleGroup
-                            label={inactiveLabel}
-                            style={state.routeStyleInactive}
-                            gearId={gearId}
-                            translationKey={translationKey}
-                            expanded={stylesExpanded}
-                            onExpandedChange={setStylesExpanded}
-                            onChange={setInactiveLine}
-                        />
+                <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="primary" glowStyle="glow">
+                    <DemoLine state={state} onCurrentPointClick={() => setSelectedStyle('current-point')} currentPointMenuLabel={currentPointLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
+                    <div className={styles['content']}>
+                        <div ref={tabstripRef}>
+                            <Tabstrip
+                                variant="fill-inverse"
+                                spread
+                                value={selectedStyle}
+                                onChange={setSelectedStyle}
+                                overflowAccessibilityLabel={dialogLabel}
+                                options={[
+                                    { value: 'current-point', label: currentPointLabel },
+                                    { value: 'active', label: activeLabel },
+                                    { value: 'inactive', label: inactiveLabel },
+                                ]}
+                            >
+                                {selectedStyle === 'current-point' ? (
+                                    <CurrentPointControls
+                                        gearId={gearId}
+                                        translationKey={translationKey}
+                                        value={state.currentPoint}
+                                        onChange={setCurrentPoint}
+                                    />
+                                ) : selectedStyle === 'active' ? (
+                                    <LineStyleGroup
+                                        style={state.routeStyleActive}
+                                        gearId={gearId}
+                                        translationKey={translationKey}
+                                        onChange={setActiveLine}
+                                    />
+                                ) : (
+                                    <LineStyleGroup
+                                        style={state.routeStyleInactive}
+                                        gearId={gearId}
+                                        translationKey={translationKey}
+                                        onChange={setInactiveLine}
+                                    />
+                                )}
+                            </Tabstrip>
+                        </div>
                     </div>
-                </div>
+                </HudConnector>
                 <Panel variant="fill-inverse" borderWidth={0} className={styles['footer']}>
                     {hasCustomStyling(state, defaults) ? (
                         <Button variant="ghost" size="xs" onClick={() => setState(defaults)}>
