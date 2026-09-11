@@ -46,7 +46,7 @@
         "@the-dead-planet/nav-gauge-ui-common": "*",
         "@the-dead-planet/nav-gauge-ui-web": "*",
         "classnames": "^2.5.1",
-        "maplibre-gl": "6.7.0",
+        "maplibre-gl": "6.8.0",
         "pmtiles": "^4.5.0",
         "react-dom": "19.2.8",
         "react-svg": "^19.1.5"
