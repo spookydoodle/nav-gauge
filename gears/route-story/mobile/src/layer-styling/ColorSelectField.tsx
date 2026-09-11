@@ -6,6 +6,7 @@ import { ColorPicker, Label } from "@mobile-ui";
 import { RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 
 interface Props {
+    disabled?: boolean;
     label?: string;
     value: string;
     gearId: string;
@@ -13,7 +14,7 @@ interface Props {
     onChange: (color: string) => void;
 }
 
-export const ColorSelectField: FC<Props> = ({ label, value, gearId, translationKey, onChange }) => {
+export const ColorSelectField: FC<Props> = ({ disabled = false, label, value, gearId, translationKey, onChange }) => {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [position, setPosition] = useState<MenuPosition>({});
@@ -34,13 +35,14 @@ export const ColorSelectField: FC<Props> = ({ label, value, gearId, translationK
             <View style={styles.field}>
                 <Pressable
                     ref={swatchRef}
-                    style={[styles.swatch, {
+                    style={[styles.swatch, disabled && styles.disabled, {
                         backgroundColor: value,
                         borderColor: theme.color('neutral', theme.isDark ? 500 : 400),
                     }]}
                     accessibilityRole="button"
                     accessibilityLabel={label}
-                    accessibilityState={{ expanded: open }}
+                    accessibilityState={{ disabled, expanded: open }}
+                    disabled={disabled}
                     onPress={handleOpen}
                 />
                 {label ? <Label>{label}</Label> : null}
@@ -70,6 +72,9 @@ const styles = StyleSheet.create({
         height: 24,
         borderRadius: 4,
         borderWidth: 1,
+    },
+    disabled: {
+        opacity: 0.5,
     },
     modalOverlay: {
         flex: 1,

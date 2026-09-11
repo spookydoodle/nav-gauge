@@ -1,8 +1,19 @@
-.top-controls {
+.controls {
     display: grid;
-    grid-template-columns: 1fr auto;
-    row-gap: 6px;
-    margin-bottom: 8px;
+    row-gap: 15px;
+}
+
+.control-group {
+    display: grid;
+    row-gap: 4px;
+}
+
+.variant-label {
+    display: block;
+}
+
+.variant-dropdown {
+    width: 100%;
 }
 
 .grid {

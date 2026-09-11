@@ -1,10 +1,10 @@
 import { ComponentProps, FC } from "react";
 import classNames from "classnames";
-import { defaultTypographyProps, TypographyProps } from "@ui";
+import { defaultTypographyProps, LabelProps, TypographyProps } from "@ui";
 import { textCssNames } from "./cssUtil";
 import styles from './typography.module.css';
 
-export const Label: FC<ComponentProps<'label'> & TypographyProps> = ({
+export const Label: FC<ComponentProps<'label'> & TypographyProps & LabelProps> = ({
     color,
     fontType = defaultTypographyProps.fontType,
     align,
@@ -27,6 +27,7 @@ export const Label: FC<ComponentProps<'label'> & TypographyProps> = ({
     pb,
     pl,
     className,
+    disabled = false,
     children,
     ...props
 }) => {
@@ -55,7 +56,7 @@ export const Label: FC<ComponentProps<'label'> & TypographyProps> = ({
         className,
     });
     return (
-        <label className={classNames(styles.label, ...cssNames)} {...props}>
+        <label className={classNames(styles.label, ...cssNames, { [styles.disabled]: disabled })} {...props}>
             {children}
         </label>
     );

@@ -7,6 +7,8 @@ export const defaultRouteStoryState: RouteStoryState = {
     routeStyleActive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'rgb(160, 48, 160)',
+        pointRadius: 3,
         color: 'rgb(160, 48, 160)',
         width: 2,
         outlineColor: 'rgb(255, 255, 255)',
@@ -16,6 +18,8 @@ export const defaultRouteStoryState: RouteStoryState = {
     routeStyleInactive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'rgb(221, 160, 221)',
+        pointRadius: 3,
         color: 'rgb(221, 160, 221)',
         width: 1,
         outlineColor: 'rgb(255, 255, 255)',
@@ -47,6 +51,8 @@ export const getDefaultRouteStoryState = (theme: Theme): RouteStoryState => {
         routeStyleActive: {
             showRouteLine: true,
             showRoutePoints: false,
+            pointColor: activeColor,
+            pointRadius: 3,
             color: activeColor,
             width: 2,
             outlineColor: 'rgb(255, 255, 255)',
@@ -56,6 +62,8 @@ export const getDefaultRouteStoryState = (theme: Theme): RouteStoryState => {
         routeStyleInactive: {
             showRouteLine: true,
             showRoutePoints: false,
+            pointColor: inactiveColor,
+            pointRadius: 3,
             color: inactiveColor,
             width: 1,
             outlineColor: 'rgb(255, 255, 255)',
@@ -205,10 +213,10 @@ export const getRoutePointsLayers = (state: RouteStoryState): RouteCircleLayerSp
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     'red',
                     ['==', ['get', 'status'], 'before'],
-                    state.routeStyleActive.color,
-                    state.routeStyleInactive.color,
+                    state.routeStyleActive.pointColor,
+                    state.routeStyleInactive.pointColor,
                 ],
-                'circle-radius': 3,
+                'circle-radius': state.routeStyleActive.pointRadius,
             },
         });
     }
@@ -224,10 +232,10 @@ export const getRoutePointsLayers = (state: RouteStoryState): RouteCircleLayerSp
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     'red',
                     ['==', ['get', 'status'], 'before'],
-                    state.routeStyleActive.color,
-                    state.routeStyleInactive.color,
+                    state.routeStyleActive.pointColor,
+                    state.routeStyleInactive.pointColor,
                 ],
-                'circle-radius': 3,
+                'circle-radius': state.routeStyleInactive.pointRadius,
             },
         });
     }

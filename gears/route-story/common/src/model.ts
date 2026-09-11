@@ -30,6 +30,8 @@ export interface RouteStoryState {
 export interface RouteStoryLineStyle {
     showRouteLine: boolean;
     showRoutePoints: boolean;
+    pointColor: string;
+    pointRadius: number;
     color: string;
     width: number;
     outlineColor: string;

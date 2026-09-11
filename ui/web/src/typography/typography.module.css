@@ -71,6 +71,11 @@
     color: var(--color-neutral);
 }
 
+.disabled {
+    color: var(--color-neutral);
+    opacity: .4;
+}
+
 .font-default {
     font-family: var(--font-default);
 }

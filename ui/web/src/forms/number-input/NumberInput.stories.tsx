@@ -35,6 +35,7 @@ export const NumberInputInteractive = {
                     size={size}
                     variant={variant}
                     disabled={disabled}
+                    unit="px"
                 />
 
                 <Fieldset label="Color">

@@ -7,5 +7,6 @@ export const LabelVariants: FC = () => (
         <Label>Default label</Label>
         <Label color="primary">Primary label</Label>
         <Label color="secondary">Secondary label</Label>
+        <Label disabled>Disabled label</Label>
     </View>
 );

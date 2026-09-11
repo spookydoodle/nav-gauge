@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from 'storybook-react-rsbuild';
 import { FontType, ColorVariant } from '@ui';
-import { H1, H2, H3, H4, H5, H6, P, Span, Text } from './';
+import { H1, H2, H3, H4, H5, H6, Label, P, Span, Text } from './';
 
 const colors: (ColorVariant | undefined)[] = [undefined, 'primary', 'secondary', 'tertiary', 'neutral'];
 const variantLabels = ['Default', 'Primary', 'Secondary', 'Tertiary', 'Neutral'];
@@ -51,6 +51,15 @@ export const TextStory = {
         </Text>
     ),
 } satisfies StoryObj;
+
+export const Labels: Story = {
+    render: () => (
+        <div style={{ display: 'grid', gap: 8 }}>
+            <Label>Enabled label</Label>
+            <Label disabled>Disabled label</Label>
+        </div>
+    ),
+};
 
 export const All = {
     render: () => {

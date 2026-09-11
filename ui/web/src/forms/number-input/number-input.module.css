@@ -46,6 +46,7 @@
 .unit {
     flex-shrink: 0;
     margin-left: 4px;
+    margin-right: 4px;
     opacity: 0.6;
     pointer-events: none;
 }

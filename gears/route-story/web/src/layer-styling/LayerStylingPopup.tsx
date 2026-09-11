@@ -58,7 +58,11 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
 
     const defaults = getDefaultRouteStoryState(theme);
     const targetRef = selectedStyle === 'active' ? activeRef : selectedStyle === 'current-point' ? currentPointRef : inactiveRef;
-    const fromAnchor = selectedStyle === 'active' ? 'top-left' : selectedStyle === 'current-point' ? 'top' : 'top-right';
+    const selectedTabRef: React.RefObject<Element | null> = {
+        get current() {
+            return tabstripRef.current?.querySelector('[role="tab"][aria-selected="true"]') ?? null;
+        },
+    };
 
     return (
         <Popup
@@ -75,7 +79,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                 role="dialog"
                 aria-label={dialogLabel}
             >
-                <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="primary" glowStyle="glow">
+                <HudConnector fromRef={selectedTabRef} toRef={targetRef} fromAnchor="top" toAnchor="bottom" color="secondary" glowStyle="glow">
                     <DemoLine state={state} onCurrentPointClick={() => setSelectedStyle('current-point')} currentPointMenuLabel={currentPointLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
                     <div className={styles['content']}>
                         <div ref={tabstripRef}>
@@ -86,8 +90,8 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                                 onChange={setSelectedStyle}
                                 overflowAccessibilityLabel={dialogLabel}
                                 options={[
-                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'active', label: activeLabel },
+                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'inactive', label: inactiveLabel },
                                 ]}
                             >

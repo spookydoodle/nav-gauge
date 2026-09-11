@@ -16,6 +16,8 @@ const state: RouteStoryState = {
     routeStyleActive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'red',
+        pointRadius: 3,
         color: 'red',
         width: 2,
         outlineColor: 'black',
@@ -25,6 +27,8 @@ const state: RouteStoryState = {
     routeStyleInactive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'red',
+        pointRadius: 3,
         color: 'red',
         width: 1,
         outlineColor: 'black',
