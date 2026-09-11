@@ -8,6 +8,10 @@ updates:
       time: "09:00"
       timezone: "UTC"
     groups:
+      security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
       minor-patch:
         update-types:
           - "minor"
@@ -23,6 +27,10 @@ updates:
       time: "09:00"
       timezone: "UTC"
     groups:
+      security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"
       minor-patch:
         update-types:
           - "minor"
