@@ -43,7 +43,7 @@ export const Spread: Story = {
         const [value, setValue] = useState('route');
         return (
             <div style={{ width: 420 }}>
-                <Tabstrip spread options={options.slice(0, 3)} value={value} onChange={setValue} highlightColor="primary" overflowAccessibilityLabel="More tabs">
+                <Tabstrip spread options={options.slice(0, 3).map((option) => ({ ...option, label: `${option.label} configuration` }))} value={value} onChange={setValue} highlightColor="primary" overflowAccessibilityLabel="More tabs">
                     {content[value]}
                 </Tabstrip>
             </div>

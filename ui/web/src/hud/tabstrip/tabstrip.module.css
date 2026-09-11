@@ -11,17 +11,17 @@
     width: 100%;
 }
 
-.spread > .tab,
-.spread > .overflow {
-    flex: 1 1 0;
-    min-width: 0;
-}
-
 .root .tab,
 .root .overflow {
     border: 0;
     flex: 0 0 auto;
     outline: 0;
+}
+
+.spread > .tab,
+.spread > .overflow {
+    flex: 1 1 0;
+    min-width: 0;
 }
 
 .root .tab:hover,
@@ -82,7 +82,10 @@
 }
 
 .label {
+    overflow: hidden;
     position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     z-index: 1;
 }
 

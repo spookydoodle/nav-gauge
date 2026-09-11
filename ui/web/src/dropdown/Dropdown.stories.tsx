@@ -31,6 +31,7 @@ export const SelectVariants = {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 24 }}>
                 <Dropdown<string>
+                    ariaLabel="Select material"
                     size={size}
                     color={color}
                     variant={variant}

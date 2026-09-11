@@ -48,11 +48,10 @@ export const LineStyleGroup: FC<Props> = ({
                 <Checkbox size="xs" checked={style.showRouteLine} onChange={(checked) => onChange({ showRouteLine: checked })}>
                     {linesLabel}
                 </Checkbox>
+                <Dropdown ariaLabel={lineStyleLabel} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
                 <Checkbox size="xs" checked={style.showRoutePoints} onChange={(checked) => onChange({ showRoutePoints: checked })}>
                     {pointsLabel}
                 </Checkbox>
-                <Label>{lineStyleLabel}</Label>
-                <Dropdown size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
             </div>
             <Label>{lineLabel}</Label>
             <div className={styles['grid']}>

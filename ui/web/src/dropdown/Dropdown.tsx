@@ -13,6 +13,7 @@ const ICON_SIZES: Record<string, number> = {
 };
 
 interface Props {
+    ariaLabel?: string;
     labelledBy?: string;
 }
 
@@ -26,6 +27,7 @@ export function Dropdown<T = string>({
     onChange,
     placeholder = 'Select...',
     disabled = false,
+    ariaLabel,
     labelledBy,
     className,
     style,
@@ -97,6 +99,7 @@ export function Dropdown<T = string>({
                 className={styles['trigger']}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
+                aria-label={ariaLabel}
                 aria-labelledby={labelledBy}
                 disabled={disabled}
                 onClick={disabled ? undefined : (() => setIsOpen(!isOpen))}
