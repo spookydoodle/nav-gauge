@@ -6,6 +6,8 @@ const pl: TranslationTable<MachineTranslationKey>['pl'] = {
     privacy: 'Prywatność',
     close: 'Zamknij',
     save: 'Zapisz',
+    on: 'Wł.',
+    off: 'Wył.',
     menu: 'Menu aplikacji',
     'toggle-mode': 'Przełącz tryb jasny i ciemny',
     gears: 'Tryby',

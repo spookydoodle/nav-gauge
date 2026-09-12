@@ -1,19 +1,29 @@
 import { FC, RefObject } from "react";
 import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Icons } from "@ui";
+import { Icon } from "@web-ui";
 import styles from './demo-line.module.css';
 
 interface Props {
     state: RouteStoryState;
     onCurrentPointClick: () => void;
+    onActiveClick: () => void;
+    onInactiveClick: () => void;
+    activeMenuLabel: string;
+    inactiveMenuLabel: string;
     currentPointMenuLabel: string;
-    activeRef: RefObject<SVGLineElement | null>;
-    currentPointRef: RefObject<SVGGElement | null>;
-    inactiveRef: RefObject<SVGLineElement | null>;
+    activeRef: RefObject<SVGRectElement | null>;
+    currentPointRef: RefObject<SVGRectElement | null>;
+    inactiveRef: RefObject<SVGRectElement | null>;
 }
 
 export const DemoLine: FC<Props> = ({
     state,
     onCurrentPointClick,
+    onActiveClick,
+    onInactiveClick,
+    activeMenuLabel,
+    inactiveMenuLabel,
     currentPointMenuLabel,
     activeRef,
     currentPointRef,
@@ -22,39 +32,42 @@ export const DemoLine: FC<Props> = ({
     const { routeStyleActive: active, routeStyleInactive: inactive } = state;
     const activeDash = active.variant === 'dashed' ? '5 4' : undefined;
     const inactiveDash = inactive.variant === 'dashed' ? '5 4' : undefined;
-    const activeWidth = Math.max(2, Math.min(active.width, 10));
-    const inactiveWidth = Math.max(2, Math.min(inactive.width, 10));
-    const activeOutlineWidth = Math.max(2, activeWidth + active.outlineWidth * 2);
-    const inactiveOutlineWidth = Math.max(2, inactiveWidth + inactive.outlineWidth * 2);
-    const radius = state.currentPoint.size;
+    const activeWidth = Math.min(active.width, 10);
+    const inactiveWidth = Math.min(inactive.width, 10);
+    const activeOutlineWidth = activeWidth + active.outlineWidth * 2;
+    const inactiveOutlineWidth = inactiveWidth + inactive.outlineWidth * 2;
+    const markerSize = 16 * state.currentPoint.size;
+    const markerRotation = state.currentPoint.rotation + (state.currentPoint.autoRotate ? 90 : 0);
+    const icon = state.currentPoint.icon === 'Circle' ? Icons.Circle : Icons.NounProject[state.currentPoint.icon];
     return (
         <svg
             className={styles['demo-line']}
             viewBox="0 0 300 20"
             preserveAspectRatio="none"
         >
-            <line x1="2" y1="10" x2="150" y2="10" stroke={active.outlineColor} strokeWidth={activeOutlineWidth} strokeDasharray={activeDash} strokeLinecap="round" />
-            <line ref={activeRef} x1="2" y1="10" x2="150" y2="10" stroke={active.color} strokeWidth={activeWidth} strokeDasharray={activeDash} strokeLinecap="round" />
-            <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.outlineColor} strokeWidth={inactiveOutlineWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />
-            <line ref={inactiveRef} x1="150" y1="10" x2="298" y2="10" stroke={inactive.color} strokeWidth={inactiveWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />
+            {active.showRouteLine && <line x1="2" y1="10" x2="150" y2="10" stroke={active.outlineColor} strokeWidth={activeOutlineWidth} strokeDasharray={activeDash} strokeLinecap="round" />}
+            {active.showRouteLine && <line x1="2" y1="10" x2="150" y2="10" stroke={active.color} strokeWidth={activeWidth} strokeDasharray={activeDash} strokeLinecap="round" />}
+            {inactive.showRouteLine && <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.outlineColor} strokeWidth={inactiveOutlineWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />}
+            {inactive.showRouteLine && <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.color} strokeWidth={inactiveWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />}
+            {active.showRoutePoints && [25, 75, 125].map((x) => <circle key={x} cx={x} cy="10" r={active.pointRadius} fill={active.pointColor} />)}
+            {inactive.showRoutePoints && [175, 225, 275].map((x) => <circle key={x} cx={x} cy="10" r={inactive.pointRadius} fill={inactive.pointColor} />)}
             <g
-                ref={currentPointRef}
-                className={styles['demo-point']}
-                role="button"
-                tabIndex={0}
-                aria-label={currentPointMenuLabel}
-                onClick={onCurrentPointClick}
-                onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        onCurrentPointClick();
-                    }
-                }}
+                pointerEvents="none"
             >
-                <circle cx="150" cy="10" r={radius + 8} fill="transparent" />
-                <circle cx="150" cy="10" r={radius + 2} fill={state.currentPoint.outlineColor} />
-                <circle cx="150" cy="10" r={radius} fill={state.currentPoint.fillColor} />
+                <foreignObject
+                    x={150 - markerSize / 2}
+                    y={10 - markerSize / 2}
+                    width={markerSize}
+                    height={markerSize}
+                >
+                    <span style={{ display: 'block', transform: `rotate(${markerRotation}deg)` }}>
+                        <Icon src={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
+                    </span>
+                </foreignObject>
             </g>
+            <rect ref={activeRef} className={styles.target} x="0" y="0" width="140" height="20" role="button" tabIndex={0} aria-label={activeMenuLabel} onClick={onActiveClick} onKeyDown={(event) => (event.key === 'Enter' || event.key === ' ') && (event.preventDefault(), onActiveClick())} />
+            <rect ref={currentPointRef} className={styles.target} x="140" y="0" width="20" height="20" role="button" tabIndex={0} aria-label={currentPointMenuLabel} onClick={onCurrentPointClick} onKeyDown={(event) => (event.key === 'Enter' || event.key === ' ') && (event.preventDefault(), onCurrentPointClick())} />
+            <rect ref={inactiveRef} className={styles.target} x="160" y="0" width="140" height="20" role="button" tabIndex={0} aria-label={inactiveMenuLabel} onClick={onInactiveClick} onKeyDown={(event) => (event.key === 'Enter' || event.key === ' ') && (event.preventDefault(), onInactiveClick())} />
         </svg>
     );
 };

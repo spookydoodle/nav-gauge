@@ -7,6 +7,8 @@ export const defaultRouteStoryState: RouteStoryState = {
     routeStyleActive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'rgb(160, 48, 160)',
+        pointRadius: 3,
         color: 'rgb(160, 48, 160)',
         width: 2,
         outlineColor: 'rgb(255, 255, 255)',
@@ -16,6 +18,8 @@ export const defaultRouteStoryState: RouteStoryState = {
     routeStyleInactive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'rgb(221, 160, 221)',
+        pointRadius: 3,
         color: 'rgb(221, 160, 221)',
         width: 1,
         outlineColor: 'rgb(255, 255, 255)',
@@ -24,12 +28,11 @@ export const defaultRouteStoryState: RouteStoryState = {
     },
     currentPoint: {
         fillColor: 'rgb(160, 48, 160)',
-        outlineColor: 'rgb(221, 160, 221)',
-        size: 5,
-        shape: {
-            type: 'simple',
-            shape: 'circle',
-        },
+        size: 1,
+        icon: 'Circle',
+        autoRotate: true,
+        rotation: 0,
+        rotationAlignment: 'map',
     },
 };
 
@@ -47,6 +50,8 @@ export const getDefaultRouteStoryState = (theme: Theme): RouteStoryState => {
         routeStyleActive: {
             showRouteLine: true,
             showRoutePoints: false,
+            pointColor: activeColor,
+            pointRadius: 3,
             color: activeColor,
             width: 2,
             outlineColor: 'rgb(255, 255, 255)',
@@ -56,6 +61,8 @@ export const getDefaultRouteStoryState = (theme: Theme): RouteStoryState => {
         routeStyleInactive: {
             showRouteLine: true,
             showRoutePoints: false,
+            pointColor: inactiveColor,
+            pointRadius: 3,
             color: inactiveColor,
             width: 1,
             outlineColor: 'rgb(255, 255, 255)',
@@ -64,12 +71,11 @@ export const getDefaultRouteStoryState = (theme: Theme): RouteStoryState => {
         },
         currentPoint: {
             fillColor: activeColor,
-            outlineColor: inactiveColor,
-            size: 5,
-            shape: {
-                type: 'simple',
-                shape: 'circle',
-            },
+            size: 1,
+            icon: 'Circle',
+            autoRotate: true,
+            rotation: 0,
+            rotationAlignment: 'map',
         },
     };
 };
@@ -90,7 +96,6 @@ export const routeLayerIds = {
     lineInactive: 'route-line-inactive',
     pointsActive: 'route-points-active',
     pointsInactive: 'route-points-inactive',
-    currentPointOutline: 'route-current-point-outline',
     currentPoint: 'route-current-point',
 }
 
@@ -98,12 +103,6 @@ export const routeCameraLayerIds = {
     line: 'route-line-simplified',
     points: 'route-points-simplified',
 }
-
-export const currentPointSizeOptions: { label: string; radius: number }[] = [
-    { label: 'sm', radius: 4 },
-    { label: 'md', radius: 5 },
-    { label: 'lg', radius: 7 },
-];
 
 type RouteStatus = 'before' | 'after';
 type RouteStatusFilter = ['==', GetProperty, RouteStatus];
@@ -139,6 +138,23 @@ export interface RouteCircleLayerSpec {
     paint: {
         'circle-color': string | HighlightOrStatusColor;
         'circle-radius': number;
+    };
+}
+
+export interface RouteSymbolLayerSpec {
+    id: string;
+    type: 'symbol';
+    source: string;
+    layout: {
+        'icon-image': string;
+        'icon-size': number;
+        'icon-allow-overlap': true;
+        'icon-ignore-placement': true;
+        'icon-rotation-alignment': 'map' | 'viewport';
+        'icon-rotate': number | ['+', number, ['case', ['==', ['get', 'autoRotate'], true], ['get', 'heading'], 0]];
+    };
+    paint: {
+        'icon-color': string;
     };
 }
 
@@ -205,10 +221,10 @@ export const getRoutePointsLayers = (state: RouteStoryState): RouteCircleLayerSp
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     'red',
                     ['==', ['get', 'status'], 'before'],
-                    state.routeStyleActive.color,
-                    state.routeStyleInactive.color,
+                    state.routeStyleActive.pointColor,
+                    state.routeStyleInactive.pointColor,
                 ],
-                'circle-radius': 3,
+                'circle-radius': state.routeStyleActive.pointRadius,
             },
         });
     }
@@ -224,10 +240,10 @@ export const getRoutePointsLayers = (state: RouteStoryState): RouteCircleLayerSp
                     ["==", ["feature-state", FeatureStateProps.Highlight], true],
                     'red',
                     ['==', ['get', 'status'], 'before'],
-                    state.routeStyleActive.color,
-                    state.routeStyleInactive.color,
+                    state.routeStyleActive.pointColor,
+                    state.routeStyleInactive.pointColor,
                 ],
-                'circle-radius': 3,
+                'circle-radius': state.routeStyleInactive.pointRadius,
             },
         });
     }
@@ -235,30 +251,24 @@ export const getRoutePointsLayers = (state: RouteStoryState): RouteCircleLayerSp
     return layers;
 };
 
-export const getCurrentPointLayers = (state: RouteStoryState): RouteCircleLayerSpec[] => {
-    const radius = state.currentPoint.size;
+export const getCurrentPointImageName = (icon: string): string => `route-current-point-${icon}`;
 
-    return [
-        {
-            id: routeLayerIds.currentPointOutline,
-            type: 'circle',
-            source: routeSourceIds.currentPoint,
-            paint: {
-                'circle-color': state.currentPoint.outlineColor,
-                'circle-radius': radius + 2,
-            },
-        },
-        {
-            id: routeLayerIds.currentPoint,
-            type: 'circle',
-            source: routeSourceIds.currentPoint,
-            paint: {
-                'circle-color': state.currentPoint.fillColor,
-                'circle-radius': radius,
-            },
-        },
-    ];
-};
+export const getCurrentPointLayers = (state: RouteStoryState): RouteSymbolLayerSpec[] => [{
+    id: routeLayerIds.currentPoint,
+    type: 'symbol',
+    source: routeSourceIds.currentPoint,
+    layout: {
+        'icon-image': getCurrentPointImageName(state.currentPoint.icon),
+        'icon-size': state.currentPoint.size,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-rotation-alignment': state.currentPoint.rotationAlignment,
+        'icon-rotate': ['+', state.currentPoint.rotation, ['case', ['==', ['get', 'autoRotate'], true], ['get', 'heading'], 0]],
+    },
+    paint: {
+        'icon-color': state.currentPoint.fillColor,
+    },
+}];
 
 export const getCameraLineLayers = (): (RouteLineLayerSpec | RouteCircleLayerSpec)[] => {
     const cameraLineColor = 'green';

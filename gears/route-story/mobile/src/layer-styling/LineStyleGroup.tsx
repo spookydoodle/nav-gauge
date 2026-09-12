@@ -5,6 +5,38 @@ import { ColorSelectField } from "./ColorSelectField";
 import { View, StyleSheet } from "react-native";
 import { useMultipleTranslations } from "@apparatus";
 
+const styles = StyleSheet.create({
+    controls: {
+        gap: 15,
+    },
+    'control-group': {
+        gap: 4,
+    },
+    grid: {
+        flexDirection: 'row',
+        gap: 8,
+        alignItems: 'center',
+    },
+    'line-grid': {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+        marginTop: 4,
+    },
+    'line-control': {
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: 100,
+        gap: 4,
+    },
+    'points-control': {
+        width: '33.333%',
+    },
+    'grid-fill': {
+        flex: 1,
+    },
+});
+
 interface Props {
     style: RouteStoryLineStyle;
     gearId: string;
@@ -26,6 +58,8 @@ export const LineStyleGroup: FC<Props> = ({
         dashedLabel,
         lineLabel,
         outlineLabel,
+        colorLabel,
+        sizeLabel,
     ] = useMultipleTranslations([
         { n: gearId, t: translationKey.Lines },
         { n: gearId, t: translationKey.Points },
@@ -34,6 +68,8 @@ export const LineStyleGroup: FC<Props> = ({
         { n: gearId, t: translationKey.Dashed },
         { n: gearId, t: translationKey.Line },
         { n: gearId, t: translationKey.Outline },
+        { n: gearId, t: translationKey.Color },
+        { n: gearId, t: translationKey.Size },
     ]);
 
     const variantOptions = [
@@ -42,53 +78,49 @@ export const LineStyleGroup: FC<Props> = ({
     ];
 
     return (
-        <View>
-            <View style={styles['top-controls']}>
+        <View style={styles.controls}>
+            <View style={styles['control-group']}>
                 <Checkbox size="xs" checked={style.showRouteLine} onChange={(checked) => onChange({ showRouteLine: checked })}>
                     {linesLabel}
                 </Checkbox>
+                <View style={styles['line-grid']}>
+                    <View style={styles['line-control']}>
+                        <Label disabled={!style.showRouteLine}>{lineStyleLabel}</Label>
+                        <Dropdown disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
+                    </View>
+                    <View style={styles['line-control']}>
+                        <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
+                        <View style={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
+                            <View style={styles['grid-fill']}>
+                                <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
+                            </View>
+                        </View>
+                    </View>
+                    <View style={styles['line-control']}>
+                        <Label disabled={!style.showRouteLine}>{outlineLabel}</Label>
+                        <View style={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
+                            <View style={styles['grid-fill']}>
+                                <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </View>
+            <View style={styles['control-group']}>
                 <Checkbox size="xs" checked={style.showRoutePoints} onChange={(checked) => onChange({ showRoutePoints: checked })}>
                     {pointsLabel}
                 </Checkbox>
-            </View>
-            <Label style={styles['variant-label']}>{lineStyleLabel}</Label>
-            <Dropdown size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
-            <Label style={styles['section-label']}>{lineLabel}</Label>
-            <View style={styles['grid']}>
-                <ColorSelectField value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
-                <View style={styles['grid-fill']}>
-                    <NumberInput size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
-                </View>
-            </View>
-            <Label style={styles['section-label']}>{outlineLabel}</Label>
-            <View style={styles['grid']}>
-                <ColorSelectField value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
-                <View style={styles['grid-fill']}>
-                    <NumberInput size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                <View style={styles['points-control']}>
+                    <View style={styles['grid']}>
+                        <ColorSelectField label={colorLabel} disabled={!style.showRoutePoints} value={style.pointColor} gearId={gearId} translationKey={translationKey} onChange={(pointColor) => onChange({ pointColor })} />
+                        <View style={styles['grid-fill']}>
+                            <NumberInput ariaLabel={sizeLabel} disabled={!style.showRoutePoints} size="xs" min={1} max={8} step={1} value={style.pointRadius} onChange={(pointRadius) => onChange({ pointRadius })} unit="px" />
+                        </View>
+                    </View>
                 </View>
             </View>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    'top-controls': {
-        flexDirection: 'row',
-        gap: 16,
-        marginBottom: 8,
-    },
-    'variant-label': {
-        marginBottom: -4,
-    },
-    'section-label': {
-        marginBottom: -6,
-    },
-    grid: {
-        flexDirection: 'row',
-        gap: 8,
-        alignItems: 'center',
-    },
-    'grid-fill': {
-        flex: 1,
-    },
-});

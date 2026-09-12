@@ -1,7 +1,21 @@
 import { FC, RefObject, useEffect, useRef, useState } from 'react';
 import { HostInstance, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import Svg, { Polygon, Polyline } from 'react-native-svg';
-import { HudConnectorAnchor, HudConnectorProps, useTheme } from '@ui';
+import { HudConnectorAnchor, HudConnectorProps, Theme, useTheme } from '@ui';
+
+const styles = StyleSheet.create({
+    wrapper: {
+        position: 'relative'
+    },
+    connector: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        zIndex: Theme.zIndex.hudConnector,
+    },
+});
 
 interface Props extends HudConnectorProps {
     fromRef: RefObject<HostInstance | null>;
@@ -72,8 +86,3 @@ export const HudConnector: FC<Props> = ({
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    wrapper: { position: 'relative' },
-    connector: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, zIndex: 2 },
-});

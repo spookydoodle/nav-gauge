@@ -6,6 +6,8 @@ const jp: TranslationTable<MachineTranslationKey>['jp'] = {
     privacy: 'プライバシー',
     close: '閉じる',
     save: '保存',
+    on: 'オン',
+    off: 'オフ',
     menu: 'アプリケーションメニュー',
     'toggle-mode': 'ライトモードとダークモードを切り替え',
     gears: 'ギア',

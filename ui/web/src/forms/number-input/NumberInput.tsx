@@ -1,6 +1,6 @@
 import { ChangeEvent, ComponentProps, FC, MouseEvent } from "react";
 import classNames from "classnames";
-import { Icons, NumberInputProps, SizeVariant, useTheme } from "@ui";
+import { addDecimalStep, Icons, NumberInputProps, SizeVariant, useTheme } from "@ui";
 import { Button } from "../../button";
 import styles from './number-input.module.css';
 
@@ -40,14 +40,14 @@ export const NumberInput: FC<Omit<ComponentProps<'input'>, 'onChange' | 'value' 
 
     const handleIncrement = () => {
         if (disabled) return;
-        const newValue = value + (step || 1);
+        const newValue = addDecimalStep(value, step ?? 1);
         if (max !== undefined && newValue > max) return;
         onChange(newValue);
     };
 
     const handleDecrement = () => {
         if (disabled) return;
-        const newValue = value - (step || 1);
+        const newValue = addDecimalStep(value, -(step ?? 1));
         if (min !== undefined && newValue < min) return;
         onChange(newValue);
     };

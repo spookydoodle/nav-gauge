@@ -26,4 +26,5 @@ Do not consider an edit done until the matching story is present.
 
 ### Mobile
 - Use `StyleSheet.create` for styles.
+- Define `StyleSheet.create` declarations before component props and component definitions.
 - Do not use CSS modules or CSS custom properties.

@@ -1,7 +1,9 @@
-import { FC } from "react";
+import { FC, useId } from "react";
 import { useMultipleTranslations } from "@apparatus";
-import { currentPointSizeOptions, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { Button, Label, Radio, Tooltip } from "@web-ui";
+import { currentPointIconNames, CurrentPointIconName, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { DropdownOption, Icons } from "@ui";
+import { Dropdown, IconRotateInput, Label, NumberInput, ToggleSwitch } from "@web-ui";
+import { useWebMachineWard } from "@web-apparatus";
 import { ColorSelectField } from "./ColorSelectField";
 import styles from './current-point-controls.module.css';
 
@@ -12,76 +14,59 @@ interface Props {
     onChange: (patch: Partial<CurrentPointStyle>) => void;
 }
 
-export const CurrentPointControls: FC<Props> = ({ gearId, translationKey, value, onChange }) => {
-    const [
-        colorLabel,
-        outlineColorLabel,
-        sizeLabel,
-        shapeLabel,
-        circleLabel,
-        triangleLabel,
-    ] = useMultipleTranslations([
-        { n: gearId, t: translationKey.Color },
-        { n: gearId, t: translationKey.OutlineColor },
-        { n: gearId, t: translationKey.Size },
-        { n: gearId, t: translationKey.Shape },
-        { n: gearId, t: translationKey.Circle },
-        { n: gearId, t: translationKey.Triangle },
-    ]);
+const iconOptions: DropdownOption<CurrentPointIconName>[] = currentPointIconNames.map((icon) => ({
+    value: icon,
+    label: icon.replace(/([a-z\d])([A-Z])/g, '$1 $2').replace(/(\D)(\d+)/g, '$1 $2'),
+    icon: icon === 'Circle' ? Icons.Circle : Icons.NounProject[icon],
+}));
 
-    const simpleShapesOptions: { shape: 'circle' | 'triangle', label: string }[] = [
-        { shape: "circle", label: circleLabel },
-        { shape: "triangle", label: triangleLabel }
-    ];
+const rotationAlignmentOptions = (mapLabel: string, viewportLabel: string): DropdownOption<CurrentPointStyle['rotationAlignment']>[] => [
+    { value: 'map', label: mapLabel },
+    { value: 'viewport', label: viewportLabel },
+];
+
+export const CurrentPointControls: FC<Props> = ({ gearId, translationKey, value, onChange }) => {
+    const { namespace, translationKey: machineTranslationKey } = useWebMachineWard();
+    const autoRotateLabelId = useId();
+    const rotationInputId = useId();
+    const [colorLabel, sizeLabel, iconLabel, autoRotateLabel, onLabel, offLabel, rotationLabel, rotationAlignmentLabel, mapLabel, viewportLabel] = useMultipleTranslations([
+        { n: gearId, t: translationKey.Color },
+        { n: gearId, t: translationKey.Size },
+        { n: gearId, t: translationKey.Icon },
+        { n: gearId, t: translationKey.AutoRotate },
+        { n: namespace, t: machineTranslationKey.On },
+        { n: namespace, t: machineTranslationKey.Off },
+        { n: gearId, t: translationKey.Rotation },
+        { n: gearId, t: translationKey.RotationAlignment },
+        { n: gearId, t: translationKey.Map },
+        { n: gearId, t: translationKey.Viewport },
+    ]);
 
     return (
         <div className={styles['container']}>
-            <div className={styles['row']}>
-                <ColorSelectField
-                    label={colorLabel}
-                    value={value.fillColor}
-                    gearId={gearId}
-                    translationKey={translationKey}
-                    onChange={(fillColor) => onChange({ fillColor })}
-                />
-                <ColorSelectField
-                    label={outlineColorLabel}
-                    value={value.outlineColor}
-                    gearId={gearId}
-                    translationKey={translationKey}
-                    onChange={(outlineColor) => onChange({ outlineColor })}
-                />
-                <div className={styles['row']}>
-                    {currentPointSizeOptions.map((option) => (
-                        <Tooltip key={option.label} content={`${sizeLabel} ${option.label}`} placement="top">
-                            <Button
-                                variant={value.size === option.radius ? "fill" : "outline"}
-                                size="xs"
-                                onClick={() => onChange({ size: option.radius })}
-                            >
-                                {option.label}
-                            </Button>
-                        </Tooltip>
-                    ))}
+            <div className={styles['appearance-grid']}>
+                <div className={styles['section']}>
+                    <Label>{iconLabel}</Label>
+                    <Dropdown className={styles['icon-dropdown']} ariaLabel={iconLabel} size="xs" value={value.icon} options={iconOptions} onChange={(icon) => onChange({ icon })} />
+                </div>
+                <div className={styles['grid']}>
+                    <ColorSelectField label={colorLabel} value={value.fillColor} gearId={gearId} translationKey={translationKey} onChange={(fillColor) => onChange({ fillColor })} />
+                    <NumberInput ariaLabel={sizeLabel} size="xs" min={0.1} max={4} step={0.1} value={value.size} onChange={(size) => onChange({ size })} />
                 </div>
             </div>
-            <div className={styles['section']}>
-                <Label>
-                    {shapeLabel}
-                </Label>
-                {simpleShapesOptions.map(({ shape, label }) => (
-                    <Radio
-                        size="xs"
-                        checked={value.shape.type === 'simple' && value.shape.shape === shape}
-                        onChange={(checked) => {
-                            if (checked) {
-                                onChange({ shape: { type: 'simple', shape } });
-                            }
-                        }}
-                    >
-                        {label}
-                    </Radio>
-                ))}
+            <div className={styles['rotation-grid']}>
+                <div className={styles['section']}>
+                    <Label>{rotationAlignmentLabel}</Label>
+                    <Dropdown ariaLabel={rotationAlignmentLabel} size="xs" value={value.rotationAlignment} options={rotationAlignmentOptions(mapLabel, viewportLabel)} onChange={(rotationAlignment) => onChange({ rotationAlignment })} />
+                </div>
+                <div className={styles['section']}>
+                    <Label htmlFor={rotationInputId} tabular>{rotationLabel}<br />{value.rotation}°</Label>
+                    <IconRotateInput id={rotationInputId} icon={iconOptions.find((option) => option.value === value.icon)?.icon} value={value.rotation} onChange={(rotation) => onChange({ rotation })} size="xs" />
+                </div>
+                <div className={styles['section']}>
+                    <Label id={autoRotateLabelId}>{autoRotateLabel}<br />{value.autoRotate ? onLabel : offLabel}</Label>
+                    <ToggleSwitch labelledBy={autoRotateLabelId} size="xs" checked={value.autoRotate} onChange={(autoRotate) => onChange({ autoRotate })} />
+                </div>
             </div>
         </div>
     );

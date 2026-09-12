@@ -1,9 +1,46 @@
 import { FC } from "react";
-import { StyleSheet, View } from "react-native";
 import { useMultipleTranslations } from "@apparatus";
-import { currentPointSizeOptions, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { Button, Label, Radio } from "@mobile-ui";
+import { currentPointIconNames, CurrentPointIconName, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Icons } from "@ui";
+import { Dropdown, IconRotateInput, Label, NumberInput, ToggleSwitch } from "@mobile-ui";
+import { useMobileMachineWard } from "@mobile-apparatus";
+import { StyleSheet, View } from "react-native";
 import { ColorSelectField } from "./ColorSelectField";
+
+const styles = StyleSheet.create({
+    container: {
+        gap: 15,
+    },
+    section: {
+        gap: 4,
+    },
+    'appearance-grid': {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    'appearance-column': {
+        flex: 1,
+        gap: 4,
+    },
+    grid: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        gap: 8,
+    },
+    'grid-fill': {
+        flex: 1,
+        gap: 4,
+    },
+    'rotation-grid': {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    'rotation-control': {
+        flex: 1,
+        gap: 4,
+    },
+});
 
 interface Props {
     gearId: string;
@@ -12,56 +49,60 @@ interface Props {
     onChange: (patch: Partial<CurrentPointStyle>) => void;
 }
 
+const iconOptions = currentPointIconNames.map((icon: CurrentPointIconName) => ({
+    value: icon,
+    label: icon.replace(/([a-z\d])([A-Z])/g, '$1 $2').replace(/(\D)(\d+)/g, '$1 $2'),
+    icon: icon === 'Circle' ? Icons.Circle : Icons.NounProject[icon],
+}));
+
+const rotationAlignmentOptions = (mapLabel: string, viewportLabel: string): { value: CurrentPointStyle['rotationAlignment']; label: string }[] => [
+    { value: 'map', label: mapLabel },
+    { value: 'viewport', label: viewportLabel },
+];
+
 export const CurrentPointControls: FC<Props> = ({ gearId, translationKey, value, onChange }) => {
-    const [colorLabel, outlineColorLabel, sizeLabel, shapeLabel, circleLabel, triangleLabel] = useMultipleTranslations([
+    const { namespace, translationKey: machineTranslationKey } = useMobileMachineWard();
+    const [colorLabel, sizeLabel, iconLabel, autoRotateLabel, onLabel, offLabel, rotationLabel, rotationAlignmentLabel, mapLabel, viewportLabel] = useMultipleTranslations([
         { n: gearId, t: translationKey.Color },
-        { n: gearId, t: translationKey.OutlineColor },
         { n: gearId, t: translationKey.Size },
-        { n: gearId, t: translationKey.Shape },
-        { n: gearId, t: translationKey.Circle },
-        { n: gearId, t: translationKey.Triangle },
+        { n: gearId, t: translationKey.Icon },
+        { n: gearId, t: translationKey.AutoRotate },
+        { n: namespace, t: machineTranslationKey.On },
+        { n: namespace, t: machineTranslationKey.Off },
+        { n: gearId, t: translationKey.Rotation },
+        { n: gearId, t: translationKey.RotationAlignment },
+        { n: gearId, t: translationKey.Map },
+        { n: gearId, t: translationKey.Viewport },
     ]);
 
-    const currentPointOption = currentPointSizeOptions.find((option) => option.radius === value.size);
-
     return (
-        <>
-            <ColorSelectField label={colorLabel} value={value.fillColor} gearId={gearId} translationKey={translationKey} onChange={(fillColor) => onChange({ fillColor })} />
-            <ColorSelectField label={outlineColorLabel} value={value.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
-            <Label style={styles.controlLabel}>{sizeLabel}</Label>
-            <View style={styles.sizeRow}>
-                {currentPointSizeOptions.map((option) => (
-                    <Button key={option.label} size="xs" variant={option === currentPointOption ? "fill" : "outline"} onPress={() => onChange({ size: option.radius })}>
-                        {option.label}
-                    </Button>
-                ))}
+        <View style={styles.container}>
+            <View style={styles['appearance-grid']}>
+                <View style={styles['appearance-column']}>
+                    <Label>{iconLabel}</Label>
+                    <Dropdown value={value.icon} options={iconOptions} size="xs" onChange={(icon) => onChange({ icon })} />
+                </View>
+                <View style={styles.grid}>
+                    <ColorSelectField label={colorLabel} value={value.fillColor} gearId={gearId} translationKey={translationKey} onChange={(fillColor) => onChange({ fillColor })} />
+                    <View style={styles['grid-fill']}>
+                        <NumberInput ariaLabel={sizeLabel} size="xs" min={0.1} max={4} step={0.1} value={value.size} onChange={(size) => onChange({ size })} />
+                    </View>
+                </View>
             </View>
-            <Label style={styles.controlLabel}>{shapeLabel}</Label>
-            <Radio size="xs" checked={value.shape.type === 'simple' && value.shape.shape === 'circle'} onChange={(checked) => {
-                if (checked) {
-                    onChange({ shape: { type: 'simple', shape: 'circle' } });
-                }
-            }}>
-                {circleLabel}
-            </Radio>
-            <Radio size="xs" checked={value.shape.type === 'simple' && value.shape.shape === 'triangle'} onChange={(checked) => {
-                if (checked) {
-                    onChange({ shape: { type: 'simple', shape: 'triangle' } });
-                }
-            }}>
-                {triangleLabel}
-            </Radio>
-        </>
+            <View style={styles['rotation-grid']}>
+                <View style={styles['rotation-control']}>
+                    <Label>{rotationAlignmentLabel}</Label>
+                    <Dropdown value={value.rotationAlignment} options={rotationAlignmentOptions(mapLabel, viewportLabel)} size="xs" onChange={(rotationAlignment) => onChange({ rotationAlignment })} />
+                </View>
+                <View style={styles['rotation-control']}>
+                    <Label tabular>{`${rotationLabel}\n${value.rotation}°`}</Label>
+                    <IconRotateInput icon={iconOptions.find((option) => option.value === value.icon)?.icon} value={value.rotation} onChange={(rotation) => onChange({ rotation })} size="xs" />
+                </View>
+                <View style={styles['rotation-control']}>
+                    <Label>{`${autoRotateLabel}\n${value.autoRotate ? onLabel : offLabel}`}</Label>
+                    <ToggleSwitch size="xs" checked={value.autoRotate} onChange={(autoRotate) => onChange({ autoRotate })} />
+                </View>
+            </View>
+        </View>
     );
 };
-
-const styles = StyleSheet.create({
-    controlLabel: {
-        marginTop: 2,
-    },
-    sizeRow: {
-        flexDirection: 'row',
-        gap: 4,
-        marginBottom: 2,
-    },
-});

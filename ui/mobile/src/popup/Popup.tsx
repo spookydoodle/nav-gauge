@@ -1,8 +1,27 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
-import { MenuPosition, getIconAnchorPoint, menuPositionsMatch, placePopup, PopupProps, useTheme } from '@ui';
+import { Animated, HostInstance, Modal, Pressable, StyleSheet, useWindowDimensions, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { MenuPosition, getIconAnchorPoint, menuPositionsMatch, placePopup, PopupProps, Theme, useTheme } from '@ui';
+
+const styles = StyleSheet.create({
+    overlay: {
+        flex: 1,
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: Theme.zIndex.popup,
+    },
+    popup: {
+        position: 'absolute',
+        shadowOffset: { width: 0, height: 8 },
+        shadowRadius: 12,
+        elevation: 10,
+    },
+});
 
 interface Props extends PopupProps {
+    modal?: boolean;
     overlayStyle?: StyleProp<ViewStyle>;
     popupStyle?: StyleProp<ViewStyle>;
 }
@@ -15,6 +34,7 @@ export const Popup: FC<Props> = ({
     dismissOnClickAway = true,
     visible,
     onClose,
+    modal = true,
     overlayStyle,
     popupStyle,
     children,
@@ -24,6 +44,7 @@ export const Popup: FC<Props> = ({
     const [popupSize, setPopupSize] = useState<{ width: number; height: number } | null>(null);
     const { height: windowHeight, width: windowWidth } = useWindowDimensions();
     const animValue = useRef(new Animated.Value(0)).current;
+    const overlayRef = useRef<HostInstance>(null);
 
     useEffect(() => {
         if (!visible) {
@@ -31,27 +52,32 @@ export const Popup: FC<Props> = ({
         }
 
         const computePosition = () => {
-            let iconAnchor: { x: number; y: number };
-
             if (position) {
-                iconAnchor = position;
-            } else if (anchor && anchor.current) {
-                const rect = (anchor.current as unknown as { getBoundingClientRect?: () => DOMRect })?.getBoundingClientRect?.();
-                if (rect) {
-                    iconAnchor = getIconAnchorPoint(triggerAnchor, rect.left, rect.top, rect.width, rect.height);
-                } else {
-                    return;
-                }
-            } else {
+                updatePosition(position, windowWidth, windowHeight);
                 return;
             }
 
+            const nativeAnchor = anchor?.current as unknown as HostInstance | null;
+            if (!nativeAnchor?.measureInWindow || !overlayRef.current) return;
+
+            nativeAnchor.measureInWindow((anchorX, anchorY, anchorWidth, anchorHeight) => {
+                overlayRef.current?.measureInWindow((overlayX, overlayY, overlayWidth, overlayHeight) => {
+                    updatePosition(
+                        getIconAnchorPoint(triggerAnchor, anchorX - overlayX, anchorY - overlayY, anchorWidth, anchorHeight),
+                        overlayWidth,
+                        overlayHeight,
+                    );
+                });
+            });
+        };
+
+        const updatePosition = (iconAnchor: { x: number; y: number }, viewportWidth: number, viewportHeight: number) => {
             const nextPosition = placePopup(
                 popupAnchor,
                 iconAnchor,
                 popupSize,
-                windowWidth,
-                windowHeight,
+                viewportWidth,
+                viewportHeight,
             ).position;
 
             setMenuPosition((current) => menuPositionsMatch(current, nextPosition) ? current : nextPosition);
@@ -107,58 +133,33 @@ export const Popup: FC<Props> = ({
         ...(menuPosition.bottom !== undefined && { bottom: menuPosition.bottom }),
     };
 
-    return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="none"
-            onRequestClose={onClose}
-            statusBarTranslucent
+    const popup = (
+        <Animated.View
+            onLayout={handleLayout}
+            style={[
+                styles.popup,
+                {
+                    shadowColor: theme.componentColor('box-shadow'),
+                    shadowOpacity: theme.isDark ? 0.45 : 0.14,
+                },
+                positionStyle,
+                animatedStyle,
+                popupStyle,
+            ]}
         >
-            <Pressable
-                style={[styles.overlay, overlayStyle]}
-                onPress={dismissOnClickAway ? onClose : undefined}
-            >
-                <Animated.View
-                    onLayout={handleLayout}
-                    style={[
-                        styles.popup,
-                        {
-                            shadowColor: theme.componentColor('box-shadow'),
-                            shadowOpacity: theme.isDark ? 0.45 : 0.14,
-                        },
-                        positionStyle,
-                        animatedStyle,
-                        popupStyle,
-                    ]}
-                >
-                    <Pressable
-                        onPress={(e) => {
-                            e.stopPropagation();
-                        }}
-                    >
-                        {children}
-                    </Pressable>
-                </Animated.View>
+            <Pressable onPress={(event) => event.stopPropagation()}>{children}</Pressable>
+        </Animated.View>
+    );
+
+    if (!modal) {
+        return <View ref={overlayRef} pointerEvents="box-none" style={[styles.overlay, overlayStyle]}>{popup}</View>;
+    }
+
+    return (
+        <Modal visible={visible} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+            <Pressable style={[styles.overlay, overlayStyle]} onPress={dismissOnClickAway ? onClose : undefined}>
+                {popup}
             </Pressable>
         </Modal>
     );
 };
-
-const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        zIndex: 1000,
-    },
-    popup: {
-        position: 'absolute',
-        shadowOffset: { width: 0, height: 8 },
-        shadowRadius: 12,
-        elevation: 10,
-    },
-});

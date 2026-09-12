@@ -301,6 +301,14 @@ export class Theme {
         xl: '32px',
     }
 
+    public static zIndex = {
+        hudConnector: 2,
+        popup: 1000,
+        floating: 1100,
+        tooltipConnector: 9998,
+        tooltip: 10000,
+    } as const;
+
     public static properties = {
         disabledOpacity: 0.4,
     }

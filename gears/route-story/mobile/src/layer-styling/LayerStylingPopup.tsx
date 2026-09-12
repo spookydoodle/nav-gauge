@@ -11,6 +11,35 @@ import { CurrentPointControls } from "./CurrentPointControls";
 import { LineStyleGroup } from "./LineStyleGroup";
 import { DemoLine } from "./demo-line/DemoLine";
 
+const styles = StyleSheet.create({
+    popup: {
+        width: '100%',
+        maxWidth: 360,
+        maxHeight: '100%',
+    },
+    panel: {
+        width: '100%',
+        overflow: 'hidden',
+    },
+    'demo-section': {
+        paddingTop: 10,
+        paddingHorizontal: 10,
+        paddingBottom: 4,
+    },
+    scroll: {
+        flexShrink: 1,
+    },
+    content: {
+        paddingTop: 8,
+    },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 8,
+        padding: 10,
+    },
+});
+
 const hasCustomStyling = (current: RouteStoryState, defaults: RouteStoryState): boolean =>
     JSON.stringify(current.routeStyleActive) !== JSON.stringify(defaults.routeStyleActive) ||
     JSON.stringify(current.routeStyleInactive) !== JSON.stringify(defaults.routeStyleInactive) ||
@@ -70,6 +99,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
 
     return (
         <Popup
+            modal={false}
             visible={active && !!anchorRef?.current}
             anchor={anchorRef as unknown as React.RefObject<HTMLElement | null>}
             triggerAnchor="bottom-left"
@@ -79,9 +109,9 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
             popupStyle={styles.popup}
         >
             <Panel variant="fill-translucent" style={styles.panel}>
-                <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="primary" glowStyle="glow">
+                <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="secondary" glowStyle="glow">
                     <View style={styles['demo-section']} accessibilityLabel={dialogLabel}>
-                        <DemoLine state={state} onCurrentPointClick={() => setSelectedStyle('current-point')} currentPointMenuLabel={currentPointLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
+                        <DemoLine state={state} onActiveClick={() => setSelectedStyle('active')} onCurrentPointClick={() => setSelectedStyle('current-point')} onInactiveClick={() => setSelectedStyle('inactive')} activeMenuLabel={activeLabel} currentPointMenuLabel={currentPointLabel} inactiveMenuLabel={inactiveLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
                     </View>
                     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
                         <View ref={tabstripRef}>
@@ -92,8 +122,8 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
                                 onChange={setSelectedStyle}
                                 overflowAccessibilityLabel={dialogLabel}
                                 options={[
-                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'active', label: activeLabel },
+                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'inactive', label: inactiveLabel },
                                 ]}
                             >
@@ -132,35 +162,3 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
         </Popup>
     );
 };
-
-const styles = StyleSheet.create({
-    popup: {
-        width: '100%',
-        maxWidth: 320,
-        maxHeight: '70%',
-    },
-    panel: {
-        width: '100%',
-        overflow: 'hidden',
-    },
-    'demo-section': {
-        paddingTop: 10,
-        paddingHorizontal: 10,
-        paddingBottom: 4,
-    },
-    scroll: {
-        flexShrink: 1,
-    },
-    content: {
-        gap: 8,
-        paddingTop: 6,
-        paddingHorizontal: 10,
-        paddingBottom: 10,
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        gap: 8,
-        padding: 10,
-    },
-});

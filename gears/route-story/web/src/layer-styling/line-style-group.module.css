@@ -1,7 +1,19 @@
-.top-controls {
+.controls {
     display: grid;
-    row-gap: 6px;
-    margin-bottom: 8px;
+    row-gap: 15px;
+}
+
+.control-group {
+    display: grid;
+    row-gap: 4px;
+}
+
+.variant-label {
+    display: block;
+}
+
+.variant-dropdown {
+    width: 100%;
 }
 
 .grid {
@@ -10,6 +22,24 @@
     gap: 8px;
     row-gap: 12px;
     align-items: center;
+}
+
+.line-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.line-grid > .control-group {
+    flex: 1 1 100px;
+    min-width: 0;
+}
+
+.points-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 12px;
 }
 
 .row {

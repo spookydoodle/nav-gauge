@@ -38,6 +38,8 @@ export enum MachineTranslationKey {
     Privacy = 'privacy',
     Close = 'close',
     Save = 'save',
+    On = 'on',
+    Off = 'off',
     Menu = 'menu',
     ToggleMode = 'toggle-mode',
     Gears = 'gears',

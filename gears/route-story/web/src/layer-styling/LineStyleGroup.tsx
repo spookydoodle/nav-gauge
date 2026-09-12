@@ -27,6 +27,8 @@ export const LineStyleGroup: FC<Props> = ({
         dashedLabel,
         lineLabel,
         outlineLabel,
+        colorLabel,
+        sizeLabel,
     ] = useMultipleTranslations([
         { n: gearId, t: translationKey.Lines },
         { n: gearId, t: translationKey.Points },
@@ -35,6 +37,8 @@ export const LineStyleGroup: FC<Props> = ({
         { n: gearId, t: translationKey.Dashed },
         { n: gearId, t: translationKey.Line },
         { n: gearId, t: translationKey.Outline },
+        { n: gearId, t: translationKey.Color },
+        { n: gearId, t: translationKey.Size },
     ]);
 
     const variantOptions: DropdownOption<'solid' | 'dashed'>[] = [
@@ -43,26 +47,46 @@ export const LineStyleGroup: FC<Props> = ({
     ].filter((option) => option.label != null);
 
     return (
-        <div>
-            <div className={styles['top-controls']}>
-                <Checkbox size="xs" checked={style.showRouteLine} onChange={(checked) => onChange({ showRouteLine: checked })}>
-                    {linesLabel}
-                </Checkbox>
-                <Checkbox size="xs" checked={style.showRoutePoints} onChange={(checked) => onChange({ showRoutePoints: checked })}>
-                    {pointsLabel}
-                </Checkbox>
-                <Label>{lineStyleLabel}</Label>
-                <Dropdown size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
+        <div className={styles['controls']}>
+            <div className={styles['control-group']}>
+                <div>
+                    <Checkbox size="xs" checked={style.showRouteLine} onChange={(checked) => onChange({ showRouteLine: checked })}>
+                        {linesLabel}
+                    </Checkbox>
+                </div>
+                <div className={styles['line-grid']}>
+                    <div className={styles['control-group']}>
+                        <Label disabled={!style.showRouteLine} className={styles['variant-label']}>{lineStyleLabel}</Label>
+                        <Dropdown className={styles['variant-dropdown']} ariaLabel={lineStyleLabel} disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
+                    </div>
+                    <div className={styles['control-group']}>
+                        <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
+                        <div className={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
+                            <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
+                        </div>
+                    </div>
+                    <div className={styles['control-group']}>
+                        <Label disabled={!style.showRouteLine}>{outlineLabel}</Label>
+                        <div className={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
+                            <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <Label>{lineLabel}</Label>
-            <div className={styles['grid']}>
-                <ColorSelectField value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
-                <NumberInput size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
-            </div>
-            <Label>{outlineLabel}</Label>
-            <div className={styles['grid']}>
-                <ColorSelectField value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
-                <NumberInput size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+            <div className={styles['control-group']}>
+                <div>
+                    <Checkbox size="xs" checked={style.showRoutePoints} onChange={(checked) => onChange({ showRoutePoints: checked })}>
+                        {pointsLabel}
+                    </Checkbox>
+                </div>
+                <div className={styles['points-grid']}>
+                    <div className={styles['grid']}>
+                        <ColorSelectField label={colorLabel} disabled={!style.showRoutePoints} value={style.pointColor} gearId={gearId} translationKey={translationKey} onChange={(pointColor) => onChange({ pointColor })} />
+                        <NumberInput ariaLabel={sizeLabel} disabled={!style.showRoutePoints} size="xs" min={1} max={8} step={1} value={style.pointRadius} onChange={(pointRadius) => onChange({ pointRadius })} unit="px" />
+                    </div>
+                </div>
             </div>
         </div>
     );

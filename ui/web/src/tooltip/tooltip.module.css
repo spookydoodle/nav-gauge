@@ -1,6 +1,6 @@
 .tooltip-content {
     position: fixed;
-    z-index: 10000;
+    z-index: var(--z-index-tooltip);
     pointer-events: none;
     padding: 4px 10px;
     font-family: var(--font-default);
@@ -95,6 +95,6 @@
 .connection-line {
     position: fixed;
     pointer-events: none;
-    z-index: 9998;
+    z-index: var(--z-index-tooltip-connector);
     background-color: var(--tooltip-highlight-color-accent);
 }

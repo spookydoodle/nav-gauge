@@ -1,11 +1,11 @@
 import { BehaviorSubject } from "rxjs";
 import { ChronoLens, GaugeControlsType, MapLayout, MarkerImage, ToolIcon } from "@apparatus";
 import { ParsingResultWithError } from "@tinker-chest";
+import { Icons } from "@ui";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
 import { Animatrix } from "./animatrix";
 import { SplineData } from "./tinkers";
-import { Icons } from "@ui";
 
 export interface RouteTimes {
     startTime: string;
@@ -30,6 +30,8 @@ export interface RouteStoryState {
 export interface RouteStoryLineStyle {
     showRouteLine: boolean;
     showRoutePoints: boolean;
+    pointColor: string;
+    pointRadius: number;
     color: string;
     width: number;
     outlineColor: string;
@@ -39,27 +41,51 @@ export interface RouteStoryLineStyle {
 
 export interface CurrentPointStyle {
     fillColor: string;
-    outlineColor: string;
-    /**
-     * Radius in pixels.
-     */
     size: number;
-    shape: CurrentPointStyleShape | CurrentPointStyleIcon;
+    icon: CurrentPointIconName;
+    autoRotate: boolean;
+    rotation: number;
+    rotationAlignment: 'map' | 'viewport';
 }
 
-export interface CurrentPointStyleShape {
-    type: 'simple';
-    shape: 'circle' | 'triangle';
-}
+export const currentPointIconNames = [
+    'Circle',
+    'AeroplaneSide01',
+    'AeroplaneSide02',
+    'AeroplaneTop01',
+    'BikeFront01',
+    'BikeSide01',
+    'BikeSide02',
+    'BikerSide01',
+    'CarFront01',
+    'CarSide01',
+    'CarSide02',
+    'CarSide03',
+    'CarTop01',
+    'EBikeSide01',
+    'MotorcycleSide01',
+    'Rocket01',
+    'RunCameleon01',
+    'RunSide01',
+    'RunSide02',
+    'RunWomanSide01',
+    'ScooterFront01',
+    'TrainFront01',
+    'TrainSide01',
+    'TrainSide02',
+    'VanSide01',
+    'VanSide02',
+    'Walk01',
+    'WalkDog01',
+    'WalkFamily01',
+    'WalkFamily02',
+    'WalkMobile01',
+    'WalkShoes01',
+    'ZeppelinSide01',
+    'ZeppelinSide02',
+] as const satisfies readonly (Exclude<keyof typeof Icons, 'NounProject'> | keyof typeof Icons.NounProject)[];
 
-export interface CurrentPointStyleIcon {
-    type: 'icon';
-    icon: typeof Icons.NounProject.AlienGun;
-    /**
-     * When `true` will rotate according to the current point heading.
-     */
-    rotate: boolean;
-}
+export type CurrentPointIconName = typeof currentPointIconNames[number];
 
 export interface RouteStoryLayerStylingPopupProps<TMap> {
     icon: ToolIcon<TMap>;
@@ -121,9 +147,13 @@ export enum RouteStoryTranslationKey {
     Solid = 'solid',
     Dashed = 'dashed',
     Size = 'size',
-    Shape = 'shape',
+    Icon = 'icon',
+    AutoRotate = 'auto-rotate',
+    Rotation = 'rotation',
+    RotationAlignment = 'rotation-alignment',
+    Map = 'map',
+    Viewport = 'viewport',
     Circle = 'circle',
-    Triangle = 'triangle',
     Opacity = 'opacity',
     RestoreDefaults = 'restore-defaults',
     Close = 'close',

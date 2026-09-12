@@ -16,6 +16,8 @@ const state: RouteStoryState = {
     routeStyleActive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'red',
+        pointRadius: 3,
         color: 'red',
         width: 2,
         outlineColor: 'black',
@@ -25,6 +27,8 @@ const state: RouteStoryState = {
     routeStyleInactive: {
         showRouteLine: true,
         showRoutePoints: false,
+        pointColor: 'red',
+        pointRadius: 3,
         color: 'red',
         width: 1,
         outlineColor: 'black',
@@ -33,20 +37,20 @@ const state: RouteStoryState = {
     },
     currentPoint: {
         fillColor: 'blue',
-        outlineColor: 'black',
-        size: 5,
-        shape: {
-            type: 'simple',
-            shape: 'circle',
-        }
+        size: 1,
+        icon: 'Circle',
+        autoRotate: true,
+        rotation: 0,
+        rotationAlignment: 'map',
     }
 };
 const startTimeEpoch = Date.parse("2026-01-01T00:00:00Z");
 
 describe("Route story gear", () => {
     describe("Route source data", () => {
+        const splineData = getSplineData(route);
         const expectValidLines = (progressMs: number) => {
-            const { line } = getRouteSourceData(state, route, startTimeEpoch, progressMs);
+            const { line } = getRouteSourceData(state, route, startTimeEpoch, progressMs, splineData);
             expect(line.type).to.equal("FeatureCollection");
             for (const feature of (line as GeoJSON.FeatureCollection).features) {
                 if (feature.geometry.type === "LineString") {
@@ -60,7 +64,7 @@ describe("Route story gear", () => {
         });
 
         it("should produce two valid lines mid-route", () => {
-            const { line } = getRouteSourceData(state, route, startTimeEpoch, 90_000);
+            const { line } = getRouteSourceData(state, route, startTimeEpoch, 90_000, splineData);
             const lineStrings = (line as GeoJSON.FeatureCollection).features
                 .filter((f): f is GeoJSON.Feature<GeoJSON.LineString> => f.geometry.type === "LineString");
             expect(lineStrings).to.have.lengthOf(2);
@@ -69,8 +73,13 @@ describe("Route story gear", () => {
         });
 
         it("should report the index of the segment that follows the current time", () => {
-            const { splitIndex } = getRouteSourceData(state, route, startTimeEpoch, 90_000);
+            const { splitIndex } = getRouteSourceData(state, route, startTimeEpoch, 90_000, splineData);
             expect(splitIndex).to.equal(2);
+        });
+
+        it("provides finite headings at both route ends", () => {
+            expect(getRouteSourceData(state, route, startTimeEpoch, 0, splineData).heading).to.be.finite;
+            expect(getRouteSourceData(state, route, startTimeEpoch, 120_000, splineData).heading).to.be.finite;
         });
     });
 

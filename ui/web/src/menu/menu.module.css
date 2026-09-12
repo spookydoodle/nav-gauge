@@ -1,7 +1,7 @@
 .overlay {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: var(--z-index-floating);
 }
 
 .color-neutral {
@@ -63,7 +63,7 @@
     padding: 8px 0;
     overflow: hidden;
     transition: opacity .2s ease-in;
-    z-index: 2;
+    z-index: var(--z-index-floating);
     background-color: var(--menu-bg);
     border: 2px solid var(--menu-color);
 }

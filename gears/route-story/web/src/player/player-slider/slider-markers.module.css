@@ -1,5 +1,6 @@
 .slider-markers {
     height: 100%;
+    pointer-events: none;
     position: absolute;
     top: 0;
     left: 8px;
@@ -28,6 +29,7 @@
     width: var(--marker-width);
     background-color: var(--marker-color);
     cursor: grab;
+    pointer-events: auto;
 }
 
 .image-marker:hover,
@@ -86,6 +88,7 @@
 
 .pan-to-icon {
     opacity: 0;
+    pointer-events: auto;
     position: absolute;
     top: -18px;
     left: -8px;

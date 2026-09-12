@@ -45,4 +45,11 @@ describe("placePopup", () => {
         expect(narrowResult.position).to.deep.equal({ top: 0, left: 0 });
         expect(wideResult.position).to.deep.equal({ top: 100, right: 300 });
     });
+
+    it("clamps to the viewport when neither vertical anchor fits", () => {
+        const result = placePopup("top-left", { x: 100, y: 100 }, { width: 200, height: 500 }, 800, 400);
+
+        expect(result.popupAnchor).to.equal("top-left");
+        expect(result.position).to.deep.equal({ left: 100, top: 0 });
+    });
 });

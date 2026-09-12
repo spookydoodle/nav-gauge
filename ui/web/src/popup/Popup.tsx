@@ -95,19 +95,27 @@ export const Popup: FC<Props> = ({
             return;
         }
         const isTopmost = () => openPopups.length > 0 && Math.max(...openPopups) === popupOrder;
+        const isOwnedPortalTarget = (target: EventTarget | null) => {
+            const portalTriggerId = target instanceof Element
+                ? target.closest<HTMLElement>('[data-popup-trigger-id]')?.dataset.popupTriggerId
+                : undefined;
+            const portalTrigger = portalTriggerId ? document.getElementById(portalTriggerId) : null;
+            return Boolean(portalTrigger && containerRef.current?.contains(portalTrigger));
+        };
         const mousedownHandler = (e: MouseEvent) => {
             if (!isTopmost() || !dismissOnClickAway) {
                 return;
             }
             if (
                 !containerRef.current?.contains(e.target as Node) &&
-                !(anchor && anchor.current?.contains(e.target as Node))
+                !(anchor && anchor.current?.contains(e.target as Node)) &&
+                !isOwnedPortalTarget(e.target)
             ) {
                 onClose();
             }
         };
         const keydownHandler = (e: KeyboardEvent) => {
-            if (isTopmost() && e.key === 'Escape') {
+            if (isTopmost() && e.key === 'Escape' && !isOwnedPortalTarget(e.target)) {
                 onClose();
             }
         };

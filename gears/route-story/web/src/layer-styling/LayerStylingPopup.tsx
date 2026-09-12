@@ -29,9 +29,9 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
     const [state, setState] = useSubjectState(state$);
     const [selectedStyle, setSelectedStyle] = useState('active');
     const tabstripRef = useRef<HTMLDivElement>(null);
-    const activeRef = useRef<SVGLineElement>(null);
-    const currentPointRef = useRef<SVGGElement>(null);
-    const inactiveRef = useRef<SVGLineElement>(null);
+    const activeRef = useRef<SVGRectElement>(null);
+    const currentPointRef = useRef<SVGRectElement>(null);
+    const inactiveRef = useRef<SVGRectElement>(null);
     const [
         currentPointLabel,
         activeLabel,
@@ -58,7 +58,11 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
 
     const defaults = getDefaultRouteStoryState(theme);
     const targetRef = selectedStyle === 'active' ? activeRef : selectedStyle === 'current-point' ? currentPointRef : inactiveRef;
-    const fromAnchor = selectedStyle === 'active' ? 'top-left' : selectedStyle === 'current-point' ? 'top' : 'top-right';
+    const selectedTabRef: React.RefObject<Element | null> = {
+        get current() {
+            return tabstripRef.current?.querySelector('[role="tab"][aria-selected="true"]') ?? null;
+        },
+    };
 
     return (
         <Popup
@@ -75,8 +79,19 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                 role="dialog"
                 aria-label={dialogLabel}
             >
-                <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="primary" glowStyle="glow">
-                    <DemoLine state={state} onCurrentPointClick={() => setSelectedStyle('current-point')} currentPointMenuLabel={currentPointLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
+                <HudConnector fromRef={selectedTabRef} toRef={targetRef} fromAnchor="top" toAnchor="bottom" color="secondary" glowStyle="glow">
+                    <DemoLine
+                        state={state}
+                        onActiveClick={() => setSelectedStyle('active')}
+                        onCurrentPointClick={() => setSelectedStyle('current-point')}
+                        onInactiveClick={() => setSelectedStyle('inactive')}
+                        activeMenuLabel={activeLabel}
+                        currentPointMenuLabel={currentPointLabel}
+                        inactiveMenuLabel={inactiveLabel}
+                        activeRef={activeRef}
+                        currentPointRef={currentPointRef}
+                        inactiveRef={inactiveRef}
+                    />
                     <div className={styles['content']}>
                         <div ref={tabstripRef}>
                             <Tabstrip
@@ -86,8 +101,8 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                                 onChange={setSelectedStyle}
                                 overflowAccessibilityLabel={dialogLabel}
                                 options={[
-                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'active', label: activeLabel },
+                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'inactive', label: inactiveLabel },
                                 ]}
                             >

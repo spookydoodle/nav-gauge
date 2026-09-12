@@ -5,17 +5,25 @@
 }
 
 .swatch {
+    --swatch-border-color: var(--color-neutral-400);
+
+    background-color: var(--swatch-color);
     width: 20px;
     height: 20px;
     border-radius: 4px;
-    border: 1px solid;
+    border: 1px solid var(--swatch-border-color);
     padding: 0;
     cursor: pointer;
     flex-shrink: 0;
 }
 
-.color-popup {
-    z-index: 1100;
+.mode-dark {
+    --swatch-border-color: var(--color-neutral-500);
+}
+
+.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
 .color-popup > div {

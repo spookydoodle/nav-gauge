@@ -89,3 +89,7 @@ export interface TypographyProps {
      */
     pl?: SpacingVariant;
 }
+
+export interface LabelProps {
+    disabled?: boolean;
+}

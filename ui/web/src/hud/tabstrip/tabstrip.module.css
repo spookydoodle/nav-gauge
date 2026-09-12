@@ -11,17 +11,17 @@
     width: 100%;
 }
 
-.spread > .tab,
-.spread > .overflow {
-    flex: 1 1 0;
-    min-width: 0;
-}
-
 .root .tab,
 .root .overflow {
     border: 0;
     flex: 0 0 auto;
     outline: 0;
+}
+
+.spread > .tab,
+.spread > .overflow {
+    flex: 1 1 0;
+    min-width: max-content;
 }
 
 .root .tab:hover,
@@ -82,7 +82,10 @@
 }
 
 .label {
+    overflow: hidden;
     position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     z-index: 1;
 }
 
@@ -115,13 +118,38 @@
 .content {
     margin-top: -1px;
     overflow: hidden;
+    position: relative;
     transition: height .2s ease;
     width: 100%;
 }
 
 .content-inner {
+    animation: content-enter .2s ease;
     box-sizing: border-box;
     width: 100%;
+}
+
+.content-outgoing {
+    animation: content-exit .2s ease;
+    inset: 0 0 auto;
+    pointer-events: none;
+    position: absolute;
+}
+
+@keyframes content-enter {
+    from { transform: translateY(4px); }
+    to { transform: translateY(0); }
+}
+
+@keyframes content-exit {
+    from { transform: translateY(0); }
+    to { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .content { transition: none; }
+    .content-inner { animation: none; }
+    .content-outgoing { display: none; }
 }
 
 .size-xs { padding: 6px; }

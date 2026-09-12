@@ -201,7 +201,7 @@
     fill: var(--dropdown-color-light);
 }
 
-.variant-fill .trigger:hover {
+.variant-fill .trigger:not(:disabled):hover {
     background-color: var(--dropdown-highlight-color-accent);
 }
 
@@ -217,7 +217,7 @@
     fill: var(--dropdown-color-text);
 }
 
-.variant-fill-inverse .trigger:hover {
+.variant-fill-inverse .trigger:not(:disabled):hover {
     border-color: var(--dropdown-highlight-color-accent);
 }
 
@@ -233,7 +233,7 @@
     fill: var(--dropdown-color-text);
 }
 
-.variant-fill-translucent .trigger:hover {
+.variant-fill-translucent .trigger:not(:disabled):hover {
     border-color: var(--dropdown-highlight-color-accent);
     background-color: rgb(from var(--dropdown-highlight-color) r g b / .36);
 }
@@ -245,8 +245,8 @@
     fill: var(--dropdown-color);
 }
 
-.variant-fill-inverse .trigger:hover .arrow,
-.variant-fill-translucent .trigger:hover .arrow {
+.variant-fill-inverse .trigger:not(:disabled):hover .arrow,
+.variant-fill-translucent .trigger:not(:disabled):hover .arrow {
     color: var(--dropdown-color-accent);
     stroke: var(--dropdown-color-accent);
     fill: var(--dropdown-color-accent);
@@ -254,15 +254,15 @@
 
 .disabled {
     opacity: .4;
-    pointer-events: none;
+}
+
+.disabled .trigger {
+    cursor: not-allowed;
 }
 
 .menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 100;
+    position: fixed;
+    z-index: var(--z-index-floating);
     list-style: none;
     margin: 4px 0 0;
     padding: 4px 0;
