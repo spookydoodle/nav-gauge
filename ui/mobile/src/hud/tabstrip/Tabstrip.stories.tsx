@@ -13,7 +13,7 @@ const options: TabstripOption[] = [
     { value: 'export', label: 'Export' },
 ];
 const content: Record<string, string> = {
-    route: 'Configure the route line, direction, and playback behavior.',
+    route: 'Configure the route line, direction, and playback behavior.\nAdjust its color, width, points, and outline.\nPreview the result before exporting.',
     waypoints: 'Review waypoint labels and marker visibility.',
     terrain: 'Adjust terrain exaggeration and contour details.',
     weather: 'Inspect wind, cloud, and precipitation overlays.',

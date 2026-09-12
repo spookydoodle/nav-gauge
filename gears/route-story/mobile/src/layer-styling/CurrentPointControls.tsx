@@ -1,8 +1,9 @@
 import { FC } from "react";
-import { StyleSheet, View } from "react-native";
 import { useMultipleTranslations } from "@apparatus";
-import { currentPointSizeOptions, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { Button, Label, Radio } from "@mobile-ui";
+import { currentPointIconNames, CurrentPointIconName, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Icons } from "@ui";
+import { Dropdown, Label, NumberInput } from "@mobile-ui";
+import { StyleSheet, View } from "react-native";
 import { ColorSelectField } from "./ColorSelectField";
 
 interface Props {
@@ -12,56 +13,51 @@ interface Props {
     onChange: (patch: Partial<CurrentPointStyle>) => void;
 }
 
+const iconOptions = currentPointIconNames.map((icon: CurrentPointIconName) => ({
+    value: icon,
+    label: icon.replace(/([a-z\d])([A-Z])/g, '$1 $2').replace(/(\D)(\d+)/g, '$1 $2'),
+    icon: icon === 'Circle' ? Icons.Circle : Icons.NounProject[icon],
+}));
+
 export const CurrentPointControls: FC<Props> = ({ gearId, translationKey, value, onChange }) => {
-    const [colorLabel, outlineColorLabel, sizeLabel, shapeLabel, circleLabel, triangleLabel] = useMultipleTranslations([
+    const [colorLabel, outlineColorLabel, outlineWidthLabel, sizeLabel, iconLabel] = useMultipleTranslations([
         { n: gearId, t: translationKey.Color },
         { n: gearId, t: translationKey.OutlineColor },
+        { n: gearId, t: translationKey.OutlineWidth },
         { n: gearId, t: translationKey.Size },
-        { n: gearId, t: translationKey.Shape },
-        { n: gearId, t: translationKey.Circle },
-        { n: gearId, t: translationKey.Triangle },
+        { n: gearId, t: translationKey.Icon },
     ]);
 
-    const currentPointOption = currentPointSizeOptions.find((option) => option.radius === value.size);
-
     return (
-        <>
-            <ColorSelectField label={colorLabel} value={value.fillColor} gearId={gearId} translationKey={translationKey} onChange={(fillColor) => onChange({ fillColor })} />
-            <ColorSelectField label={outlineColorLabel} value={value.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
-            <Label style={styles.controlLabel}>{sizeLabel}</Label>
-            <View style={styles.sizeRow}>
-                {currentPointSizeOptions.map((option) => (
-                    <Button key={option.label} size="xs" variant={option === currentPointOption ? "fill" : "outline"} onPress={() => onChange({ size: option.radius })}>
-                        {option.label}
-                    </Button>
-                ))}
+        <View style={styles.container}>
+            <Label>{iconLabel}</Label>
+            <Dropdown value={value.icon} options={iconOptions} size="xs" onChange={(icon) => onChange({ icon })} />
+            <View style={styles.grid}>
+                <ColorSelectField label={colorLabel} value={value.fillColor} gearId={gearId} translationKey={translationKey} onChange={(fillColor) => onChange({ fillColor })} />
+                <View style={styles['grid-fill']}>
+                    <NumberInput ariaLabel={sizeLabel} size="xs" min={0.1} max={4} step={0.1} value={value.size} onChange={(size) => onChange({ size })} />
+                </View>
             </View>
-            <Label style={styles.controlLabel}>{shapeLabel}</Label>
-            <Radio size="xs" checked={value.shape.type === 'simple' && value.shape.shape === 'circle'} onChange={(checked) => {
-                if (checked) {
-                    onChange({ shape: { type: 'simple', shape: 'circle' } });
-                }
-            }}>
-                {circleLabel}
-            </Radio>
-            <Radio size="xs" checked={value.shape.type === 'simple' && value.shape.shape === 'triangle'} onChange={(checked) => {
-                if (checked) {
-                    onChange({ shape: { type: 'simple', shape: 'triangle' } });
-                }
-            }}>
-                {triangleLabel}
-            </Radio>
-        </>
+            <View style={styles.grid}>
+                <ColorSelectField label={outlineColorLabel} value={value.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
+                <View style={styles['grid-fill']}>
+                    <NumberInput ariaLabel={outlineWidthLabel} size="xs" min={0} max={8} step={0.1} value={value.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                </View>
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    controlLabel: {
-        marginTop: 2,
-    },
-    sizeRow: {
-        flexDirection: 'row',
+    container: {
         gap: 4,
-        marginBottom: 2,
+    },
+    grid: {
+        flexDirection: 'row',
+        gap: 8,
+        alignItems: 'center',
+    },
+    'grid-fill': {
+        flex: 1,
     },
 });

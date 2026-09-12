@@ -126,7 +126,7 @@ export const Tabstrip: FC<TabstripProps> = ({
                     ))}
                 </View>
             </View>
-            {children !== undefined && children !== null ? <View style={[styles.content, contentStyle]}>{children}</View> : null}
+            {children !== undefined && children !== null ? <View key={value} style={[styles.content, contentStyle]}>{children}</View> : null}
         </View>
     );
 };

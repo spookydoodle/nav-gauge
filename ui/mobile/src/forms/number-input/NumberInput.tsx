@@ -9,6 +9,7 @@ export const NumberInput: FC<NumberInputProps> = ({
     value,
     onChange,
     disabled = false,
+    ariaLabel,
     unit,
 }) => {
     const theme = useTheme();
@@ -42,7 +43,8 @@ export const NumberInput: FC<NumberInputProps> = ({
                     ]}
                     value={String(value)}
                     onChangeText={handleChange}
-                    keyboardType="numeric"
+                    keyboardType="decimal-pad"
+                    accessibilityLabel={ariaLabel || (typeof label === 'string' ? label : undefined)}
                     editable={!disabled}
                 />
                 {unit ? <Text style={[styles.unit, { color: baseColor, fontSize: inputFontSize }]}>{unit}</Text> : null}

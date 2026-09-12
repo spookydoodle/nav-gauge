@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { getVisibleTabIndexes, Icons, TabstripProps, useTheme } from '@ui';
 import { Button } from '../../button';
@@ -21,8 +21,23 @@ export const Tabstrip: FC<TabstripProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const measurementRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const previousContentRef = useRef<{ children: ReactNode; value: string }>({ children, value });
     const [visibleIndexes, setVisibleIndexes] = useState<number[]>([]);
     const [contentHeight, setContentHeight] = useState<number>();
+    const [outgoingContent, setOutgoingContent] = useState<{ children: ReactNode; value: string }>();
+
+    useLayoutEffect(() => {
+        const previousContent = previousContentRef.current;
+        if (previousContent.value === value) return;
+
+        setOutgoingContent(previousContent);
+        const timeout = window.setTimeout(() => setOutgoingContent(undefined), 200);
+        return () => window.clearTimeout(timeout);
+    }, [value]);
+
+    useLayoutEffect(() => {
+        previousContentRef.current = { children, value };
+    });
 
     useEffect(() => {
         const container = containerRef.current;
@@ -104,7 +119,12 @@ export const Tabstrip: FC<TabstripProps> = ({
             </div>
             {children !== undefined && children !== null ? (
                 <div className={styles['content']} style={{ height: contentHeight }}>
-                    <div ref={contentRef} className={classNames(styles['content-inner'], styles[`size-${size}`], styles[`content-${variant}`])}>{children}</div>
+                    {outgoingContent?.children !== undefined && outgoingContent.children !== null ? (
+                        <div key={outgoingContent.value} className={classNames(styles['content-inner'], styles['content-outgoing'], styles[`size-${size}`], styles[`content-${variant}`])} aria-hidden="true">
+                            {outgoingContent.children}
+                        </div>
+                    ) : null}
+                    <div key={value} ref={contentRef} className={classNames(styles['content-inner'], styles[`size-${size}`], styles[`content-${variant}`])}>{children}</div>
                 </div>
             ) : null}
         </div>

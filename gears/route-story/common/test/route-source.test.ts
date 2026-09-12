@@ -38,11 +38,9 @@ const state: RouteStoryState = {
     currentPoint: {
         fillColor: 'blue',
         outlineColor: 'black',
-        size: 5,
-        shape: {
-            type: 'simple',
-            shape: 'circle',
-        }
+        outlineWidth: 2,
+        size: 1,
+        icon: 'Circle',
     }
 };
 const startTimeEpoch = Date.parse("2026-01-01T00:00:00Z");

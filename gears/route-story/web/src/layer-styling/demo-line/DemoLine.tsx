@@ -1,5 +1,7 @@
 import { FC, RefObject } from "react";
 import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Icons } from "@ui";
+import { Icon } from "@web-ui";
 import styles from './demo-line.module.css';
 
 interface Props {
@@ -26,7 +28,8 @@ export const DemoLine: FC<Props> = ({
     const inactiveWidth = Math.max(2, Math.min(inactive.width, 10));
     const activeOutlineWidth = Math.max(2, activeWidth + active.outlineWidth * 2);
     const inactiveOutlineWidth = Math.max(2, inactiveWidth + inactive.outlineWidth * 2);
-    const radius = state.currentPoint.size;
+    const markerSize = 16 * state.currentPoint.size;
+    const icon = state.currentPoint.icon === 'Circle' ? Icons.Circle : Icons.NounProject[state.currentPoint.icon];
     return (
         <svg
             className={styles['demo-line']}
@@ -51,9 +54,17 @@ export const DemoLine: FC<Props> = ({
                     }
                 }}
             >
-                <circle cx="150" cy="10" r={radius + 8} fill="transparent" />
-                <circle cx="150" cy="10" r={radius + 2} fill={state.currentPoint.outlineColor} />
-                <circle cx="150" cy="10" r={radius} fill={state.currentPoint.fillColor} />
+                <circle cx="150" cy="10" r={Math.max(10, markerSize / 2 + 4)} fill="transparent" />
+                <foreignObject
+                    x={150 - markerSize / 2}
+                    y={10 - markerSize / 2}
+                    width={markerSize}
+                    height={markerSize}
+                >
+                    <span style={{ display: 'block', filter: `drop-shadow(0 0 ${state.currentPoint.outlineWidth}px ${state.currentPoint.outlineColor})` }}>
+                        <Icon src={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
+                    </span>
+                </foreignObject>
             </g>
         </svg>
     );

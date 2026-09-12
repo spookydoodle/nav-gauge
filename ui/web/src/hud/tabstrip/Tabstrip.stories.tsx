@@ -13,7 +13,7 @@ const options: TabstripOption[] = [
 ];
 
 const content: Record<string, string> = {
-    route: 'Configure the route line, direction, and playback behavior.',
+    route: 'Configure the route line, direction, and playback behavior.\nAdjust its color, width, points, and outline.\nPreview the result before exporting.',
     waypoints: 'Review waypoint labels and marker visibility.',
     terrain: 'Adjust terrain exaggeration and contour details.',
     weather: 'Inspect wind, cloud, and precipitation overlays.',
@@ -31,7 +31,7 @@ export const Responsive: Story = {
         return (
             <div style={{ width: 260 }}>
                 <Tabstrip options={options} value={value} onChange={setValue} highlightColor="primary" overflowAccessibilityLabel="More tabs">
-                    {content[value]}
+                    <div style={{ whiteSpace: 'pre-line' }}>{content[value]}</div>
                 </Tabstrip>
             </div>
         );

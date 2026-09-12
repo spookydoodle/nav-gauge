@@ -1,5 +1,4 @@
 .container {
-    padding: 10px;
     display: grid;
     row-gap: 10px;
 }
@@ -9,19 +8,13 @@
     row-gap: 4px;
 }
 
-.control-label {
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 2px;
+.icon-dropdown {
+    width: 100%;
 }
 
-.row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.radio-buttons {
+.grid {
     display: grid;
-    row-gap: 4px;
+    grid-template-columns: max-content 1fr;
+    align-items: center;
+    gap: 8px;
 }

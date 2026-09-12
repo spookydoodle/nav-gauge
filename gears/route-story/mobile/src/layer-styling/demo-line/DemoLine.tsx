@@ -1,6 +1,8 @@
 import { FC, RefObject } from "react";
 import { HostInstance, Pressable, StyleSheet, View } from "react-native";
 import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Icons } from "@ui";
+import { Icon } from "@mobile-ui";
 import { DemoLineSegment } from "./DemoLineSegment";
 
 const styles = StyleSheet.create({
@@ -18,12 +20,6 @@ const styles = StyleSheet.create({
         right: 0,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    'demo-point-outline': {
-        position: 'absolute',
-    },
-    'demo-point-fill': {
-        position: 'absolute',
     },
     'active-anchor': { position: 'absolute', left: '25%', width: 1, height: 1 },
     'inactive-anchor': { position: 'absolute', left: '75%', width: 1, height: 1 },
@@ -46,7 +42,8 @@ export const DemoLine: FC<Props> = ({
     currentPointRef,
     inactiveRef,
 }) => {
-    const radius = state.currentPoint.size;
+    const markerSize = 16 * state.currentPoint.size;
+    const icon = state.currentPoint.icon === 'Circle' ? Icons.Circle : Icons.NounProject[state.currentPoint.icon];
 
     return (
         <View style={styles['demo-line']} pointerEvents="box-none">
@@ -61,24 +58,9 @@ export const DemoLine: FC<Props> = ({
                 accessibilityLabel={currentPointMenuLabel}
                 onPress={onCurrentPointClick}
             >
-                <View
-                    style={[styles['demo-point-outline'], {
-                        width: (radius + 2) * 2,
-                        height: (radius + 2) * 2,
-                        borderRadius: radius + 2,
-                        backgroundColor: state.currentPoint.outlineColor,
-                    }]}
-                    pointerEvents="none"
-                />
-                <View
-                    style={[styles['demo-point-fill'], {
-                        width: radius * 2,
-                        height: radius * 2,
-                        borderRadius: radius,
-                        backgroundColor: state.currentPoint.fillColor,
-                    }]}
-                    pointerEvents="none"
-                />
+                <View style={{ backgroundColor: state.currentPoint.outlineColor, padding: state.currentPoint.outlineWidth }} pointerEvents="none">
+                    <Icon icon={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
+                </View>
             </Pressable>
         </View>
     );

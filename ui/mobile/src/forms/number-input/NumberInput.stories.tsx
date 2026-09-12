@@ -42,6 +42,7 @@ export const NumberInputInteractive: FC = () => {
                 color={color}
                 size={size}
                 disabled={disabled}
+                step={0.1}
             />
 
             <View style={styles.section}>
