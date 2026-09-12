@@ -56,15 +56,21 @@ export const LineStyleGroup: FC<Props> = ({
                 </div>
                 <Label disabled={!style.showRouteLine} className={styles['variant-label']}>{lineStyleLabel}</Label>
                 <Dropdown className={styles['variant-dropdown']} ariaLabel={lineStyleLabel} disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
-                <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
-                <div className={styles['grid']}>
-                    <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
-                    <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
-                </div>
-                <Label disabled={!style.showRouteLine}>{outlineLabel}</Label>
-                <div className={styles['grid']}>
-                    <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
-                    <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                <div className={styles['line-grid']}>
+                    <div className={styles['control-group']}>
+                        <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
+                        <div className={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
+                            <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
+                        </div>
+                    </div>
+                    <div className={styles['control-group']}>
+                        <Label disabled={!style.showRouteLine}>{outlineLabel}</Label>
+                        <div className={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
+                            <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className={styles['control-group']}>

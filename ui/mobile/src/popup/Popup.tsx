@@ -1,8 +1,9 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, useWindowDimensions, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
-import { MenuPosition, getIconAnchorPoint, menuPositionsMatch, placePopup, PopupProps, useTheme } from '@ui';
+import { Animated, Modal, Pressable, StyleSheet, useWindowDimensions, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
+import { MenuPosition, getIconAnchorPoint, menuPositionsMatch, placePopup, PopupProps, Theme, useTheme } from '@ui';
 
 interface Props extends PopupProps {
+    modal?: boolean;
     overlayStyle?: StyleProp<ViewStyle>;
     popupStyle?: StyleProp<ViewStyle>;
 }
@@ -15,6 +16,7 @@ export const Popup: FC<Props> = ({
     dismissOnClickAway = true,
     visible,
     onClose,
+    modal = true,
     overlayStyle,
     popupStyle,
     children,
@@ -107,39 +109,32 @@ export const Popup: FC<Props> = ({
         ...(menuPosition.bottom !== undefined && { bottom: menuPosition.bottom }),
     };
 
-    return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="none"
-            onRequestClose={onClose}
-            statusBarTranslucent
+    const popup = (
+        <Animated.View
+            onLayout={handleLayout}
+            style={[
+                styles.popup,
+                {
+                    shadowColor: theme.componentColor('box-shadow'),
+                    shadowOpacity: theme.isDark ? 0.45 : 0.14,
+                },
+                positionStyle,
+                animatedStyle,
+                popupStyle,
+            ]}
         >
-            <Pressable
-                style={[styles.overlay, overlayStyle]}
-                onPress={dismissOnClickAway ? onClose : undefined}
-            >
-                <Animated.View
-                    onLayout={handleLayout}
-                    style={[
-                        styles.popup,
-                        {
-                            shadowColor: theme.componentColor('box-shadow'),
-                            shadowOpacity: theme.isDark ? 0.45 : 0.14,
-                        },
-                        positionStyle,
-                        animatedStyle,
-                        popupStyle,
-                    ]}
-                >
-                    <Pressable
-                        onPress={(e) => {
-                            e.stopPropagation();
-                        }}
-                    >
-                        {children}
-                    </Pressable>
-                </Animated.View>
+            <Pressable onPress={(event) => event.stopPropagation()}>{children}</Pressable>
+        </Animated.View>
+    );
+
+    if (!modal) {
+        return <View pointerEvents="box-none" style={[styles.overlay, overlayStyle]}>{popup}</View>;
+    }
+
+    return (
+        <Modal visible={visible} transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
+            <Pressable style={[styles.overlay, overlayStyle]} onPress={dismissOnClickAway ? onClose : undefined}>
+                {popup}
             </Pressable>
         </Modal>
     );
@@ -153,7 +148,7 @@ const styles = StyleSheet.create({
         right: 0,
         top: 0,
         bottom: 0,
-        zIndex: 1000,
+        zIndex: Theme.zIndex.popup,
     },
     popup: {
         position: 'absolute',

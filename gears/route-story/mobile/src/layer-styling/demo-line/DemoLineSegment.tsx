@@ -4,7 +4,7 @@ import { RouteStoryLineStyle } from "@the-dead-planet/nav-gauge-gears-route-stor
 
 const styles = StyleSheet.create({
     dashedOutline: {
-        flex: 1,
+        width: '100%',
         height: 0,
         borderStyle: 'dashed',
         justifyContent: 'center',
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
         borderStyle: 'dashed',
     },
     solidOutline: {
-        flex: 1,
+        width: '100%',
         justifyContent: 'center',
     },
 });

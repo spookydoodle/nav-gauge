@@ -2,6 +2,7 @@ import type { Meta } from 'storybook-react-rsbuild';
 import { ColorVariant, Icons, SizeVariant, SurfaceFillVariant } from '@ui';
 import { Dropdown } from './Dropdown';
 import { useState } from 'react';
+import { Popup } from '../popup';
 
 const meta = {
     title: 'Dropdown',
@@ -70,6 +71,19 @@ export const SelectVariants = {
                     </fieldset>
                 </div>
             </div>
+        );
+    },
+};
+
+export const InClippedPopup = {
+    render: () => {
+        const [value, setValue] = useState('brass');
+        return (
+            <Popup visible position={{ x: 24, y: 24 }} onClose={() => undefined}>
+                <div style={{ width: 240, height: 80, overflow: 'hidden' }}>
+                    <Dropdown ariaLabel="Select material" color="primary" highlightColor="tertiary" variant="fill-translucent" value={value} options={options} onChange={setValue} />
+                </div>
+            </Popup>
         );
     },
 };

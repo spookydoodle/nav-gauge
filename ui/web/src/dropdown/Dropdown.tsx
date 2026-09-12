@@ -1,4 +1,4 @@
-import { ComponentProps, useEffect, useRef, useState } from "react";
+import { ComponentProps, useEffect, useId, useRef, useState } from "react";
 import classNames from "classnames";
 import { DropdownList } from "./DropdownList";
 import { DropdownProps, useTheme } from "@ui";
@@ -35,12 +35,13 @@ export function Dropdown<T = string>({
 }: DropdownProps<T> & Props & Omit<ComponentProps<'div'>, 'onChange'>) {
     const theme = useTheme();
     const [isOpen, setIsOpen] = useState(false);
+    const listId = useId();
     const containerRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);
 
-    const handleClose = () => {
+    const handleClose = (restoreFocus = true) => {
         setIsOpen(false);
-        triggerRef.current?.focus();
+        if (restoreFocus) triggerRef.current?.focus();
     };
 
     const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
@@ -63,7 +64,8 @@ export function Dropdown<T = string>({
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+            const list = document.getElementById(listId);
+            if (containerRef.current && !containerRef.current.contains(e.target as Node) && !list?.contains(e.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -71,7 +73,7 @@ export function Dropdown<T = string>({
             document.addEventListener('mousedown', handleClickOutside);
         }
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [isOpen]);
+    }, [isOpen, listId]);
 
     return (
         <div
@@ -94,11 +96,13 @@ export function Dropdown<T = string>({
             {...props}
         >
             <button
+                id={`${listId}-trigger`}
                 ref={triggerRef}
                 type="button"
                 className={styles['trigger']}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
+                aria-controls={listId}
                 aria-label={ariaLabel}
                 aria-labelledby={labelledBy}
                 disabled={disabled}
@@ -132,9 +136,14 @@ export function Dropdown<T = string>({
 
             {isOpen ? (
                 <DropdownList
+                    id={listId}
+                    triggerRef={triggerRef}
                     onClose={handleClose}
                     iconSize={iconSize}
                     color={color}
+                    highlightColor={highlightColor}
+                    size={size}
+                    variant={variant}
                     value={value}
                     options={options}
                     onChange={onChange}

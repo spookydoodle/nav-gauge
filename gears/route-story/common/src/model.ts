@@ -41,10 +41,11 @@ export interface RouteStoryLineStyle {
 
 export interface CurrentPointStyle {
     fillColor: string;
-    outlineColor: string;
-    outlineWidth: number;
     size: number;
     icon: CurrentPointIconName;
+    autoRotate: boolean;
+    rotation: number;
+    rotationAlignment: 'map' | 'viewport';
 }
 
 export const currentPointIconNames = [
@@ -147,6 +148,11 @@ export enum RouteStoryTranslationKey {
     Dashed = 'dashed',
     Size = 'size',
     Icon = 'icon',
+    AutoRotate = 'auto-rotate',
+    Rotation = 'rotation',
+    RotationAlignment = 'rotation-alignment',
+    Map = 'map',
+    Viewport = 'viewport',
     Circle = 'circle',
     Opacity = 'opacity',
     RestoreDefaults = 'restore-defaults',

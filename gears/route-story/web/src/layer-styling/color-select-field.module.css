@@ -26,10 +26,6 @@
     opacity: 0.5;
 }
 
-.color-popup {
-    z-index: 1100;
-}
-
 .color-popup > div {
     min-width: 180px;
     max-width: 260px;

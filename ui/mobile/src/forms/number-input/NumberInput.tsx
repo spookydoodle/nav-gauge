@@ -2,6 +2,12 @@ import { FC } from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { NumberInputProps, useTheme } from "@ui";
 
+const sizes = {
+    md: { height: 32, paddingHorizontal: 12, fontSize: 14 },
+    sm: { height: 24, paddingHorizontal: 10, fontSize: 12 },
+    xs: { height: 18, paddingHorizontal: 8, fontSize: 11 },
+} as const;
+
 export const NumberInput: FC<NumberInputProps> = ({
     color = 'neutral',
     size = 'sm',
@@ -23,8 +29,7 @@ export const NumberInput: FC<NumberInputProps> = ({
 
     const baseColor = theme.color(color, 500);
     const labelFontSize = size === 'xs' ? 11 : size === 'sm' ? 12 : 13;
-    const inputFontSize = size === 'xs' ? 12 : size === 'sm' ? 14 : 16;
-    const padding = size === 'xs' ? 4 : size === 'sm' ? 6 : 8;
+    const inputSize = sizes[size];
 
     return (
         <View style={styles.container}>
@@ -37,8 +42,8 @@ export const NumberInput: FC<NumberInputProps> = ({
                         {
                             color: baseColor,
                             borderColor: baseColor,
-                            fontSize: inputFontSize,
-                            padding,
+                            ...inputSize,
+                            paddingVertical: 0,
                         },
                     ]}
                     value={String(value)}
@@ -47,7 +52,7 @@ export const NumberInput: FC<NumberInputProps> = ({
                     accessibilityLabel={ariaLabel || (typeof label === 'string' ? label : undefined)}
                     editable={!disabled}
                 />
-                {unit ? <Text style={[styles.unit, { color: baseColor, fontSize: inputFontSize }]}>{unit}</Text> : null}
+                {unit ? <Text style={[styles.unit, { color: baseColor, fontSize: inputSize.fontSize }]}>{unit}</Text> : null}
             </View>
         </View>
     );
@@ -66,6 +71,7 @@ const styles = StyleSheet.create({
     },
     input: {
         width: '100%',
+        boxSizing: 'border-box',
         borderWidth: 1,
         borderRadius: 4,
         fontSize: 14,

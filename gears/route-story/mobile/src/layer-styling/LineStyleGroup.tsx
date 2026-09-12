@@ -53,18 +53,24 @@ export const LineStyleGroup: FC<Props> = ({
                 </Checkbox>
                 <Label disabled={!style.showRouteLine}>{lineStyleLabel}</Label>
                 <Dropdown disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
-                <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
-                <View style={styles['grid']}>
-                    <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
+                <View style={styles['line-grid']}>
                     <View style={styles['grid-fill']}>
-                        <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
+                        <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
+                        <View style={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
+                            <View style={styles['grid-fill']}>
+                                <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={1} max={8} step={1} value={style.width} onChange={(width) => onChange({ width })} unit="px" />
+                            </View>
+                        </View>
                     </View>
-                </View>
-                <Label disabled={!style.showRouteLine}>{outlineLabel}</Label>
-                <View style={styles['grid']}>
-                    <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
                     <View style={styles['grid-fill']}>
-                        <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                        <Label disabled={!style.showRouteLine}>{outlineLabel}</Label>
+                        <View style={styles['grid']}>
+                            <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
+                            <View style={styles['grid-fill']}>
+                                <NumberInput ariaLabel={sizeLabel} disabled={!style.showRouteLine} size="xs" min={0} max={4} step={1} value={style.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+                            </View>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -94,6 +100,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 8,
         alignItems: 'center',
+    },
+    'line-grid': {
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 4,
     },
     'grid-fill': {
         flex: 1,

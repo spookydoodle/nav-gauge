@@ -2,7 +2,7 @@ import { FC, useRef, useState } from "react";
 import { Dimensions, HostInstance, Modal, Pressable, StyleSheet, View } from "react-native";
 import { useTranslation } from "@apparatus";
 import { getIconAnchorPoint, getMenuPosition, MenuPosition, useTheme } from "@ui";
-import { ColorPicker, Label } from "@mobile-ui";
+import { ColorPicker } from "@mobile-ui";
 import { RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 
 interface Props {
@@ -45,7 +45,6 @@ export const ColorSelectField: FC<Props> = ({ disabled = false, label, value, ge
                     disabled={disabled}
                     onPress={handleOpen}
                 />
-                {label ? <Label>{label}</Label> : null}
             </View>
             <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
                 <Pressable style={styles.modalOverlay} onPress={() => setOpen(false)}>
@@ -65,11 +64,10 @@ const styles = StyleSheet.create({
     field: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
     },
     swatch: {
-        width: 24,
-        height: 24,
+        width: 20,
+        height: 20,
         borderRadius: 4,
         borderWidth: 1,
     },
@@ -85,8 +83,8 @@ const styles = StyleSheet.create({
     modalPanel: {
         position: 'absolute',
         width: 260,
-        padding: 12,
-        borderRadius: 8,
+        padding: 8,
+        borderRadius: 6,
         borderWidth: 1,
     },
 });

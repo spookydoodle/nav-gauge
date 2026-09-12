@@ -93,6 +93,11 @@
     cursor: pointer;
 }
 
+.variant-fill-translucent .content {
+    background: rgb(from var(--bevel-color) r g b / .24);
+    backdrop-filter: blur(8px);
+}
+
 /* Fill */
 .variant-fill .polygon-base {
     fill: var(--bevel-color);
@@ -126,19 +131,26 @@
 
 /* Fill translucent */
 .variant-fill-translucent .polygon-base {
-    fill: rgb(from var(--bevel-color) r g b / .24);
+    fill: transparent;
     stroke: var(--bevel-color);
 }
 
 .variant-fill-translucent.interactive:hover .polygon-base {
-    fill: rgb(from var(--bevel-highlight-color-accent) r g b / .36);
     stroke: var(--bevel-highlight-color-accent);
 }
 
 .variant-fill-translucent.interactive:active .polygon-base,
 .variant-fill-translucent.interactive.active .polygon-base {
-    fill: rgb(from var(--bevel-highlight-color) r g b / .48);
     stroke: var(--bevel-highlight-color);
+}
+
+.variant-fill-translucent.interactive:hover .content {
+    background: rgb(from var(--bevel-highlight-color-accent) r g b / .36);
+}
+
+.variant-fill-translucent.interactive:active .content,
+.variant-fill-translucent.interactive.active .content {
+    background: rgb(from var(--bevel-highlight-color) r g b / .48);
 }
 
 /* Glow styles */

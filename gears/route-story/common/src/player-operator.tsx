@@ -1,6 +1,6 @@
 import { BehaviorSubject } from "rxjs";
 import { SurveillanceState, LoadedImageData, ChronoLens } from "@apparatus";
-import { getSplineHeading, getRouteSourceData } from "./tinkers";
+import { getRouteSourceData } from "./tinkers";
 import { getImageIconSize, FULL_SIZE_IMAGE_SIZE, THUMBNAIL_IMAGE_SIZE } from "./images";
 import { RouteStoryGear } from "./route-story-gear";
 import { IMAGE_ANIMATION_DURATION } from "./layer-specification";
@@ -9,6 +9,8 @@ import { DesignSystemColor, ThemeComponentColor } from "@ui";
 
 export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> {
     private gear: RouteStoryGear<TMap, TChronoLens, TFile, TImageData>;
+    private heading: number | undefined;
+    private headingSplineData: object | undefined;
 
     public isLoading$ = new BehaviorSubject(false);
     public showImageMarkers$ = new BehaviorSubject(true);
@@ -49,6 +51,7 @@ export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends 
         const routeTimes = this.gear.routeTimes$.value;
         if (routeTimes && this.gear.progressMs$.value >= routeTimes.duration) {
             this.gear.progressMs$.next(0);
+            this.heading = undefined;
         }
     };
 
@@ -82,13 +85,24 @@ export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends 
             this.gear.apparatus.chronoLens.isPlaying$.next(false);
         }
         this.gear.progressMs$.next(value);
-        if (this.gear.data$.value.geojson) {
+        const splineData = this.gear.splineData$.value;
+        if (this.gear.data$.value.geojson && splineData) {
+            if (this.headingSplineData !== splineData) {
+                this.heading = undefined;
+                this.headingSplineData = splineData;
+            }
             const { currentPoint, line } = getRouteSourceData(
                 this.gear.state$.value,
                 this.gear.data$.value.geojson,
                 this.gear.routeTimes$.value.startTimeEpoch,
                 value,
+                splineData,
             );
+            const rawHeading = currentPoint.properties?.heading;
+            if (typeof rawHeading === 'number') {
+                this.heading = unwrapHeading(this.heading, rawHeading);
+                currentPoint.properties = { ...currentPoint.properties, heading: this.heading };
+            }
             updateLayer?.(line, currentPoint);
         }
         if (this.gear.apparatus.chronoLens.isPlaying$.value) {
@@ -115,6 +129,10 @@ export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends 
         const splineData = this.gear.splineData$.value;
         if (!splineData) {
             return;
+        }
+        if (this.headingSplineData !== splineData) {
+            this.heading = undefined;
+            this.headingSplineData = splineData;
         }
 
         const { startTimeEpoch, endTimeEpoch } = routeTimes;
@@ -149,7 +167,9 @@ export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends 
             }
             const nextImage: LoadedImageData<TImageData> | undefined = sortedImageFeatures[nextImageIndex];
             const nextImageTime = nextImageIndex >= 0 ? nextImageTimes[nextImageIndex] : null;
-            const { currentPoint, line, splitIndex, fraction } = getRouteSourceData(this.gear.state$.value, geojson, startTimeEpoch, currentProgressMs);
+            const { currentPoint, line, heading: rawHeading } = getRouteSourceData(this.gear.state$.value, geojson, startTimeEpoch, currentProgressMs, splineData);
+            this.heading = easeHeading(this.heading, rawHeading, dt, easeDuration);
+            currentPoint.properties = { ...currentPoint.properties, heading: this.heading };
             onUpdateLayer(currentPoint, line);
 
             if (this.animation !== undefined && nextImage && nextImageTime !== null && nextImageTime <= startTimeEpoch + currentProgressMs) {
@@ -159,7 +179,7 @@ export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends 
                 let settleDelay = 0;
                 if (followCurrentPoint) {
                     const lngLat: GeoJSON.Position = [currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]];
-                    const currentPointHeading = autoRotate ? getSplineHeading(splineData, splitIndex, fraction) : 0;
+                    const currentPointHeading = autoRotate ? this.heading : 0;
                     onUpdateMapCamera(lngLat, cameraAngle + currentPointHeading);
                     settleDelay = easeDuration;
                 }
@@ -184,7 +204,7 @@ export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends 
 
             if (followCurrentPoint) {
                 const lngLat: GeoJSON.Position = [currentPoint.geometry.coordinates[0], currentPoint.geometry.coordinates[1]];
-                const currentPointHeading = autoRotate ? getSplineHeading(splineData, splitIndex, fraction) : 0;
+                const currentPointHeading = autoRotate ? this.heading : 0;
                 onUpdateMapCamera(lngLat, cameraAngle + currentPointHeading);
             }
 
@@ -275,4 +295,14 @@ export class PlayerOperator<TMap, TChronoLens extends ChronoLens, TFile extends 
         clearTimeout(this.inDisplayImageTimeout);
         updateIconSize(getImageIconSize(FULL_SIZE_IMAGE_SIZE, THUMBNAIL_IMAGE_SIZE));
     };
+};
+
+export const unwrapHeading = (current: number | undefined, target: number): number =>
+    current === undefined ? target : current + ((((target - current) % 360) + 540) % 360 - 180);
+
+export const easeHeading = (current: number | undefined, target: number, frameTime: number, duration: number): number => {
+    const unwrappedTarget = unwrapHeading(current, target);
+    return current === undefined || duration <= 0
+        ? unwrappedTarget
+        : current + (unwrappedTarget - current) * Math.min(frameTime / duration, 1);
 };

@@ -261,11 +261,8 @@
 }
 
 .menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    z-index: 100;
+    position: fixed;
+    z-index: var(--z-index-floating);
     list-style: none;
     margin: 4px 0 0;
     padding: 4px 0;

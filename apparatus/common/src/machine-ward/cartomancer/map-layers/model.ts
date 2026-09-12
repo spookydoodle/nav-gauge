@@ -8,4 +8,5 @@ export interface CurrentPointData {
     currentPoint: GeoJSON.Feature<GeoJSON.Point>;
     splitIndex: number;
     fraction: number;
+    heading: number;
 }

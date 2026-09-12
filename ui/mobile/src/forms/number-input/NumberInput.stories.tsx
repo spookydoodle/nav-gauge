@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { ScrollView, View, Switch, Text, StyleSheet } from "react-native";
 import { NumberInput } from "./NumberInput";
+import { Dropdown } from "../../dropdown";
 import { ColorVariant, SizeVariant } from "@ui";
 
 const styles = StyleSheet.create({
@@ -86,6 +87,11 @@ export const NumberInputInteractive: FC = () => {
                 {allSizes.map(s => (
                     <NumberInput key={s} label={s} value={42} onChange={() => { }} size={s} />
                 ))}
+            </View>
+
+            <View style={styles.row}>
+                <NumberInput value={42} onChange={() => {}} size="xs" />
+                <Dropdown value="xs" options={[{ value: 'xs', label: 'Extra small' }]} onChange={() => {}} size="xs" />
             </View>
         </ScrollView>
     );

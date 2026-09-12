@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { Fieldset } from '../fieldset';
 import { Text } from '../../typography';
+import { Dropdown } from '../../dropdown';
 import { ColorVariant, SizeVariant, SurfaceFillVariant } from '@ui';
 
 const meta = {
@@ -88,6 +89,11 @@ export const NumberInputInteractive = {
                         <NumberInput key={s} id={`size-${s}`} label={s} value={42} onChange={() => { }} size={s} />
                     ))}
                 </Fieldset>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <NumberInput ariaLabel="Extra-small number" value={42} onChange={() => { }} size="xs" />
+                    <Dropdown ariaLabel="Extra-small dropdown" value="xs" options={[{ value: 'xs', label: 'Extra small' }]} onChange={() => { }} size="xs" />
+                </div>
 
                 <Text>Current value: {value}</Text>
             </div>

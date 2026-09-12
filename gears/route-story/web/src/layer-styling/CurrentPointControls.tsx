@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { FC, useId } from "react";
 import { useMultipleTranslations } from "@apparatus";
 import { currentPointIconNames, CurrentPointIconName, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { DropdownOption, Icons } from "@ui";
-import { Dropdown, Label, NumberInput } from "@web-ui";
+import { Dropdown, IconRotateInput, Label, NumberInput, ToggleSwitch } from "@web-ui";
 import { ColorSelectField } from "./ColorSelectField";
 import styles from './current-point-controls.module.css';
 
@@ -19,13 +19,23 @@ const iconOptions: DropdownOption<CurrentPointIconName>[] = currentPointIconName
     icon: icon === 'Circle' ? Icons.Circle : Icons.NounProject[icon],
 }));
 
+const rotationAlignmentOptions = (mapLabel: string, viewportLabel: string): DropdownOption<CurrentPointStyle['rotationAlignment']>[] => [
+    { value: 'map', label: mapLabel },
+    { value: 'viewport', label: viewportLabel },
+];
+
 export const CurrentPointControls: FC<Props> = ({ gearId, translationKey, value, onChange }) => {
-    const [colorLabel, outlineColorLabel, outlineWidthLabel, sizeLabel, iconLabel] = useMultipleTranslations([
+    const autoRotateLabelId = useId();
+    const rotationInputId = useId();
+    const [colorLabel, sizeLabel, iconLabel, autoRotateLabel, rotationLabel, rotationAlignmentLabel, mapLabel, viewportLabel] = useMultipleTranslations([
         { n: gearId, t: translationKey.Color },
-        { n: gearId, t: translationKey.OutlineColor },
-        { n: gearId, t: translationKey.OutlineWidth },
         { n: gearId, t: translationKey.Size },
         { n: gearId, t: translationKey.Icon },
+        { n: gearId, t: translationKey.AutoRotate },
+        { n: gearId, t: translationKey.Rotation },
+        { n: gearId, t: translationKey.RotationAlignment },
+        { n: gearId, t: translationKey.Map },
+        { n: gearId, t: translationKey.Viewport },
     ]);
 
     return (
@@ -38,9 +48,19 @@ export const CurrentPointControls: FC<Props> = ({ gearId, translationKey, value,
                 <ColorSelectField label={colorLabel} value={value.fillColor} gearId={gearId} translationKey={translationKey} onChange={(fillColor) => onChange({ fillColor })} />
                 <NumberInput ariaLabel={sizeLabel} size="xs" min={0.1} max={4} step={0.1} value={value.size} onChange={(size) => onChange({ size })} />
             </div>
-            <div className={styles['grid']}>
-                <ColorSelectField label={outlineColorLabel} value={value.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
-                <NumberInput ariaLabel={outlineWidthLabel} size="xs" min={0} max={8} step={0.1} value={value.outlineWidth} onChange={(outlineWidth) => onChange({ outlineWidth })} unit="px" />
+            <div className={styles['rotation-grid']}>
+                <div className={styles['section']}>
+                    <Label id={autoRotateLabelId}>{autoRotateLabel}</Label>
+                    <ToggleSwitch labelledBy={autoRotateLabelId} size="xs" checked={value.autoRotate} onChange={(autoRotate) => onChange({ autoRotate })} />
+                </div>
+                <div className={styles['section']}>
+                    <Label htmlFor={rotationInputId}>{rotationLabel}</Label>
+                    <IconRotateInput id={rotationInputId} icon={iconOptions.find((option) => option.value === value.icon)?.icon} value={value.rotation} onChange={(rotation) => onChange({ rotation })} size="xs" />
+                </div>
+                <div className={styles['section']}>
+                    <Label>{rotationAlignmentLabel}</Label>
+                    <Dropdown ariaLabel={rotationAlignmentLabel} size="xs" value={value.rotationAlignment} options={rotationAlignmentOptions(mapLabel, viewportLabel)} onChange={(rotationAlignment) => onChange({ rotationAlignment })} />
+                </div>
             </div>
         </div>
     );

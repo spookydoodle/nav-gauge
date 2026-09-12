@@ -12,7 +12,7 @@
     stroke: var(--connector-color);
     stroke-width: 1;
     width: 100%;
-    z-index: 2;
+    z-index: var(--z-index-hud-connector);
 }
 
 .connector polyline {

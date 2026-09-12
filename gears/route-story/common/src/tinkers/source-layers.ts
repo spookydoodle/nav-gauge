@@ -10,16 +10,20 @@ import { emptyCollection, FeatureProperties, GeoJson } from "@tinker-chest";
 import { RouteStoryState, RouteTimes } from "../model";
 
 export const getRouteSourceData = (
-    { routeStyleActive, routeStyleInactive }: RouteStoryState,
+    { routeStyleActive, routeStyleInactive, currentPoint: currentPointStyle }: RouteStoryState,
     geojson: GeoJson,
     startTimeEpoch: number,
     progressMs: number,
+    splineData: SplineData,
 ): CurrentPointData => {
     const currentTime = startTimeEpoch + progressMs;
-    const splitIndex = geojson.features.findIndex((f) =>
+    const followingIndex = geojson.features.findIndex((f) =>
         new Date(f.properties.time).valueOf() > new Date(currentTime).valueOf()
     );
+    const splitIndex = followingIndex < 0 ? geojson.features.length : followingIndex;
     const { currentPoint, fraction } = getCurrentPoint(geojson, splitIndex, currentTime);
+    const heading = getSplineHeading(splineData, splitIndex, fraction);
+    currentPoint.properties = { ...currentPoint.properties, heading, autoRotate: currentPointStyle.autoRotate };
 
     const anyVisible =
         routeStyleActive.showRouteLine || routeStyleActive.showRoutePoints ||
@@ -28,6 +32,7 @@ export const getRouteSourceData = (
     return {
         splitIndex,
         fraction,
+        heading,
         currentPoint,
         line: anyVisible
             ? {
@@ -70,13 +75,13 @@ const getCurrentPoint = (
     currentPoint: GeoJSON.Feature<GeoJSON.Point>;
     fraction: number;
 } => {
-    const indexes = [Math.max(0, splitIndex - 1), Math.max(1, splitIndex)];
-    const currentLineStart = geojson.features[indexes[0]];
-    const currentLineEnd = geojson.features[indexes[1]];
+    const endIndex = Math.min(geojson.features.length - 1, Math.max(1, splitIndex));
+    const currentLineStart = geojson.features[endIndex - 1];
+    const currentLineEnd = geojson.features[endIndex];
     const currentLineStartTime = new Date(currentLineStart.properties.time).valueOf();
     const currentLineEndTime = new Date(currentLineEnd.properties.time).valueOf();
 
-    const fraction = Number(((currentTime - currentLineStartTime) / (currentLineEndTime - currentLineStartTime)).toFixed(2));
+    const fraction = Math.max(0, Math.min(1, (currentTime - currentLineStartTime) / (currentLineEndTime - currentLineStartTime)));
     const currentLineStartPos = currentLineStart.geometry.coordinates;
     const currentLineEndPos = currentLineEnd.geometry.coordinates;
     const line = turfLine([currentLineStartPos, currentLineEndPos]);
@@ -166,7 +171,7 @@ export const getSplineHeading = (splineData: SplineData, splitIndex: number, fra
 
     return turfBearing(
         turfPoint(splinePoints[splineIdx - 1]),
-        turfPoint(splinePoints[splineIdx]),
+        turfPoint(splinePoints[splineIdx + 1]),
     );
 };
 

@@ -20,6 +20,12 @@ export const useThemeVariables = (theme: Theme) => {
                 spacingValue
             );
         }
+        for (const [layer, zIndex] of Object.entries(Theme.zIndex)) {
+            document.documentElement.style.setProperty(
+                `--z-index-${layer.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`,
+                String(zIndex),
+            );
+        }
     }, []);
 
     useEffect(() => {

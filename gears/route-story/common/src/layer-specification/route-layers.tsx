@@ -28,10 +28,11 @@ export const defaultRouteStoryState: RouteStoryState = {
     },
     currentPoint: {
         fillColor: 'rgb(160, 48, 160)',
-        outlineColor: 'rgb(221, 160, 221)',
-        outlineWidth: 2,
         size: 1,
         icon: 'Circle',
+        autoRotate: true,
+        rotation: 0,
+        rotationAlignment: 'map',
     },
 };
 
@@ -70,10 +71,11 @@ export const getDefaultRouteStoryState = (theme: Theme): RouteStoryState => {
         },
         currentPoint: {
             fillColor: activeColor,
-            outlineColor: inactiveColor,
-            outlineWidth: 2,
             size: 1,
             icon: 'Circle',
+            autoRotate: true,
+            rotation: 0,
+            rotationAlignment: 'map',
         },
     };
 };
@@ -148,11 +150,11 @@ export interface RouteSymbolLayerSpec {
         'icon-size': number;
         'icon-allow-overlap': true;
         'icon-ignore-placement': true;
+        'icon-rotation-alignment': 'map' | 'viewport';
+        'icon-rotate': number | ['+', number, ['case', ['==', ['get', 'autoRotate'], true], ['get', 'heading'], 0]];
     };
     paint: {
         'icon-color': string;
-        'icon-halo-color': string;
-        'icon-halo-width': number;
     };
 }
 
@@ -260,11 +262,11 @@ export const getCurrentPointLayers = (state: RouteStoryState): RouteSymbolLayerS
         'icon-size': state.currentPoint.size,
         'icon-allow-overlap': true,
         'icon-ignore-placement': true,
+        'icon-rotation-alignment': state.currentPoint.rotationAlignment,
+        'icon-rotate': ['+', state.currentPoint.rotation, ['case', ['==', ['get', 'autoRotate'], true], ['get', 'heading'], 0]],
     },
     paint: {
         'icon-color': state.currentPoint.fillColor,
-        'icon-halo-color': state.currentPoint.outlineColor,
-        'icon-halo-width': state.currentPoint.outlineWidth,
     },
 }];
 

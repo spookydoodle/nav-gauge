@@ -33,10 +33,11 @@ describe("Current point layer", () => {
             ...defaultRouteStoryState,
             currentPoint: {
                 fillColor: 'red',
-                outlineColor: 'blue',
-                outlineWidth: 3,
                 size: 1.5,
                 icon: 'AeroplaneTop01',
+                autoRotate: false,
+                rotation: 25,
+                rotationAlignment: 'viewport',
             },
         });
 
@@ -49,11 +50,11 @@ describe("Current point layer", () => {
                 'icon-size': 1.5,
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true,
+                'icon-rotation-alignment': 'viewport',
+                'icon-rotate': ['+', 25, ['case', ['==', ['get', 'autoRotate'], true], ['get', 'heading'], 0]],
             },
             paint: {
                 'icon-color': 'red',
-                'icon-halo-color': 'blue',
-                'icon-halo-width': 3,
             },
         });
     });

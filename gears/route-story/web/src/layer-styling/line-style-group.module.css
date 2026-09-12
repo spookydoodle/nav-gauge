@@ -24,6 +24,13 @@
     align-items: center;
 }
 
+.line-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 12px;
+    margin-top: 4px;
+}
+
 .row {
     align-items: center;
 }

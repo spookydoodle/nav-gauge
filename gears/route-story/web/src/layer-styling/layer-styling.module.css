@@ -7,6 +7,7 @@
     max-height: 60dvh;
     overflow-y: auto;
     display: grid;
+    padding-top: 8px;
     row-gap: 10px;
 }
 

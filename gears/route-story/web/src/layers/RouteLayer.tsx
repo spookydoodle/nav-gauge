@@ -37,7 +37,7 @@ export const RouteLayer: FC<OverlayComponentProps<maplibregl.Map> & WebRouteStor
     const loadedImages = useLoadedWebImages(images);
 
     const sources = useMemo((): { [key in 'line' | 'currentPoint']: GeoJSON.GeoJSON } => {
-        if (!geojson || !routeTimes) {
+        if (!geojson || !routeTimes || !splineData) {
             return { currentPoint: emptyCollection, line: emptyCollection };
         }
 
@@ -46,8 +46,9 @@ export const RouteLayer: FC<OverlayComponentProps<maplibregl.Map> & WebRouteStor
             geojson,
             routeTimes.startTimeEpoch,
             progressMs, // Not a dependency of this memo, data is updated later in the animateRoute hook
+            splineData,
         );
-    }, [geojson, routeTimes, state]);
+    }, [geojson, routeTimes, splineData, state]);
 
     useEffect(() => {
         if (!isPlaying || !geojson || !routeTimes) {

@@ -70,6 +70,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
 
     return (
         <Popup
+            modal={false}
             visible={active && !!anchorRef?.current}
             anchor={anchorRef as unknown as React.RefObject<HTMLElement | null>}
             triggerAnchor="bottom-left"
@@ -81,7 +82,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
             <Panel variant="fill-translucent" style={styles.panel}>
                 <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="primary" glowStyle="glow">
                     <View style={styles['demo-section']} accessibilityLabel={dialogLabel}>
-                        <DemoLine state={state} onCurrentPointClick={() => setSelectedStyle('current-point')} currentPointMenuLabel={currentPointLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
+                        <DemoLine state={state} onActiveClick={() => setSelectedStyle('active')} onCurrentPointClick={() => setSelectedStyle('current-point')} onInactiveClick={() => setSelectedStyle('inactive')} activeMenuLabel={activeLabel} currentPointMenuLabel={currentPointLabel} inactiveMenuLabel={inactiveLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
                     </View>
                     <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
                         <View ref={tabstripRef}>
@@ -92,8 +93,8 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
                                 onChange={setSelectedStyle}
                                 overflowAccessibilityLabel={dialogLabel}
                                 options={[
-                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'active', label: activeLabel },
+                                    { value: 'current-point', label: currentPointLabel },
                                     { value: 'inactive', label: inactiveLabel },
                                 ]}
                             >
@@ -136,7 +137,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
 const styles = StyleSheet.create({
     popup: {
         width: '100%',
-        maxWidth: 320,
+        maxWidth: 360,
         maxHeight: '70%',
     },
     panel: {
@@ -152,10 +153,7 @@ const styles = StyleSheet.create({
         flexShrink: 1,
     },
     content: {
-        gap: 8,
-        paddingTop: 6,
-        paddingHorizontal: 10,
-        paddingBottom: 10,
+        paddingTop: 8,
     },
     footer: {
         flexDirection: 'row',

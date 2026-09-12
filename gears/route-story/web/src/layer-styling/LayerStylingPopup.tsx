@@ -29,9 +29,9 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
     const [state, setState] = useSubjectState(state$);
     const [selectedStyle, setSelectedStyle] = useState('active');
     const tabstripRef = useRef<HTMLDivElement>(null);
-    const activeRef = useRef<SVGLineElement>(null);
-    const currentPointRef = useRef<SVGGElement>(null);
-    const inactiveRef = useRef<SVGLineElement>(null);
+    const activeRef = useRef<SVGRectElement>(null);
+    const currentPointRef = useRef<SVGRectElement>(null);
+    const inactiveRef = useRef<SVGRectElement>(null);
     const [
         currentPointLabel,
         activeLabel,
@@ -80,7 +80,18 @@ export const LayerStylingPopup: FC<ToolPopupProps<maplibregl.Map> & RouteStoryLa
                 aria-label={dialogLabel}
             >
                 <HudConnector fromRef={selectedTabRef} toRef={targetRef} fromAnchor="top" toAnchor="bottom" color="secondary" glowStyle="glow">
-                    <DemoLine state={state} onCurrentPointClick={() => setSelectedStyle('current-point')} currentPointMenuLabel={currentPointLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
+                    <DemoLine
+                        state={state}
+                        onActiveClick={() => setSelectedStyle('active')}
+                        onCurrentPointClick={() => setSelectedStyle('current-point')}
+                        onInactiveClick={() => setSelectedStyle('inactive')}
+                        activeMenuLabel={activeLabel}
+                        currentPointMenuLabel={currentPointLabel}
+                        inactiveMenuLabel={inactiveLabel}
+                        activeRef={activeRef}
+                        currentPointRef={currentPointRef}
+                        inactiveRef={inactiveRef}
+                    />
                     <div className={styles['content']}>
                         <div ref={tabstripRef}>
                             <Tabstrip

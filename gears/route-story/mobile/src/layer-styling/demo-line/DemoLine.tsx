@@ -16,18 +16,22 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         bottom: 0,
-        left: 0,
-        right: 0,
+        left: '50%',
+        width: 40,
+        marginLeft: -20,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    'active-anchor': { position: 'absolute', left: '25%', width: 1, height: 1 },
-    'inactive-anchor': { position: 'absolute', left: '75%', width: 1, height: 1 },
+    segment: { flex: 1 },
 });
 
 interface Props {
     state: RouteStoryState;
     onCurrentPointClick: () => void;
+    onActiveClick: () => void;
+    onInactiveClick: () => void;
+    activeMenuLabel: string;
+    inactiveMenuLabel: string;
     currentPointMenuLabel: string;
     activeRef: RefObject<HostInstance | null>;
     currentPointRef: RefObject<HostInstance | null>;
@@ -37,6 +41,10 @@ interface Props {
 export const DemoLine: FC<Props> = ({
     state,
     onCurrentPointClick,
+    onActiveClick,
+    onInactiveClick,
+    activeMenuLabel,
+    inactiveMenuLabel,
     currentPointMenuLabel,
     activeRef,
     currentPointRef,
@@ -47,10 +55,8 @@ export const DemoLine: FC<Props> = ({
 
     return (
         <View style={styles['demo-line']} pointerEvents="box-none">
-            <DemoLineSegment {...state.routeStyleActive} />
-            <DemoLineSegment {...state.routeStyleInactive} />
-            <View ref={activeRef} style={styles['active-anchor']} pointerEvents="none" accessibilityElementsHidden />
-            <View ref={inactiveRef} style={styles['inactive-anchor']} pointerEvents="none" accessibilityElementsHidden />
+            <Pressable ref={activeRef} style={styles.segment} accessibilityRole="button" accessibilityLabel={activeMenuLabel} onPress={onActiveClick}><DemoLineSegment {...state.routeStyleActive} /></Pressable>
+            <Pressable ref={inactiveRef} style={styles.segment} accessibilityRole="button" accessibilityLabel={inactiveMenuLabel} onPress={onInactiveClick}><DemoLineSegment {...state.routeStyleInactive} /></Pressable>
             <Pressable
                 ref={currentPointRef}
                 style={styles['demo-point']}
@@ -58,9 +64,7 @@ export const DemoLine: FC<Props> = ({
                 accessibilityLabel={currentPointMenuLabel}
                 onPress={onCurrentPointClick}
             >
-                <View style={{ backgroundColor: state.currentPoint.outlineColor, padding: state.currentPoint.outlineWidth }} pointerEvents="none">
-                    <Icon icon={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
-                </View>
+                <Icon icon={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
             </Pressable>
         </View>
     );

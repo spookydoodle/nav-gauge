@@ -22,6 +22,7 @@ export const cleanUpRouteStoryState = (value: unknown): RouteStoryState => {
         currentPoint: {
             ...currentPoint,
             icon: currentPointIconNames.includes(currentPoint.icon as CurrentPointIconName) ? currentPoint.icon : 'Circle',
+            rotationAlignment: currentPoint.rotationAlignment === 'viewport' ? 'viewport' : 'map',
         },
     };
 };

@@ -143,7 +143,7 @@ export const BevelPanel: FC<BevelPanelProps & Props & ComponentProps<'div'>> = (
                 </svg>
             )}
             <div
-                className={contentClassName}
+                className={classNames(styles.content, contentClassName)}
                 style={{
                     ...contentStyle,
                     clipPath: size.width > 0 ? `url(#${clipPathId})` : undefined,

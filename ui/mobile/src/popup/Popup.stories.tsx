@@ -24,3 +24,14 @@ export const Overview = () => {
         </View>
     );
 };
+
+export const NonModal = () => (
+    <View style={{ padding: 100 }}>
+        <Button>Underlying action</Button>
+        <Popup modal={false} visible onClose={() => undefined} position={{ x: 250, y: 350 }}>
+            <View style={{ padding: 16, backgroundColor: '#f0f0f0' }}>
+                <Text>Touches outside this popup pass through.</Text>
+            </View>
+        </Popup>
+    </View>
+);
