@@ -33,11 +33,14 @@ export const HudConnector: FC<Props> = ({
 
     useEffect(() => {
         const wrapper = wrapperRef.current;
-        const from = fromRef.current;
-        const to = toRef.current;
-        if (!wrapper || !from || !to) return;
+        if (!wrapper) return;
 
         const update = () => {
+            const from = fromRef.current;
+            const to = toRef.current;
+            if (!from || !to) return;
+            observer.observe(from);
+            observer.observe(to);
             const wrapperRectangle = wrapper.getBoundingClientRect();
             setPoints([
                 anchorPoint(from.getBoundingClientRect(), fromAnchor, wrapperRectangle),
@@ -45,14 +48,15 @@ export const HudConnector: FC<Props> = ({
             ]);
         };
         const observer = new ResizeObserver(update);
+        const mutationObserver = new MutationObserver(update);
         observer.observe(wrapper);
-        observer.observe(from);
-        observer.observe(to);
+        mutationObserver.observe(wrapper, { childList: true, subtree: true });
         window.addEventListener('resize', update);
         window.addEventListener('scroll', update, true);
         update();
         return () => {
             observer.disconnect();
+            mutationObserver.disconnect();
             window.removeEventListener('resize', update);
             window.removeEventListener('scroll', update, true);
         };

@@ -25,10 +25,21 @@
 }
 
 .line-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
     margin-top: 4px;
+}
+
+.line-grid > .control-group {
+    flex: 1 1 100px;
+    min-width: 0;
+}
+
+.points-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 12px;
 }
 
 .row {

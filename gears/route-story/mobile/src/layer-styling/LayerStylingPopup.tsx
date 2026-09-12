@@ -11,6 +11,35 @@ import { CurrentPointControls } from "./CurrentPointControls";
 import { LineStyleGroup } from "./LineStyleGroup";
 import { DemoLine } from "./demo-line/DemoLine";
 
+const styles = StyleSheet.create({
+    popup: {
+        width: '100%',
+        maxWidth: 360,
+        maxHeight: '100%',
+    },
+    panel: {
+        width: '100%',
+        overflow: 'hidden',
+    },
+    'demo-section': {
+        paddingTop: 10,
+        paddingHorizontal: 10,
+        paddingBottom: 4,
+    },
+    scroll: {
+        flexShrink: 1,
+    },
+    content: {
+        paddingTop: 8,
+    },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        gap: 8,
+        padding: 10,
+    },
+});
+
 const hasCustomStyling = (current: RouteStoryState, defaults: RouteStoryState): boolean =>
     JSON.stringify(current.routeStyleActive) !== JSON.stringify(defaults.routeStyleActive) ||
     JSON.stringify(current.routeStyleInactive) !== JSON.stringify(defaults.routeStyleInactive) ||
@@ -80,7 +109,7 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
             popupStyle={styles.popup}
         >
             <Panel variant="fill-translucent" style={styles.panel}>
-                <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="primary" glowStyle="glow">
+                <HudConnector fromRef={tabstripRef} toRef={targetRef} fromAnchor={fromAnchor} toAnchor="bottom" color="secondary" glowStyle="glow">
                     <View style={styles['demo-section']} accessibilityLabel={dialogLabel}>
                         <DemoLine state={state} onActiveClick={() => setSelectedStyle('active')} onCurrentPointClick={() => setSelectedStyle('current-point')} onInactiveClick={() => setSelectedStyle('inactive')} activeMenuLabel={activeLabel} currentPointMenuLabel={currentPointLabel} inactiveMenuLabel={inactiveLabel} activeRef={activeRef} currentPointRef={currentPointRef} inactiveRef={inactiveRef} />
                     </View>
@@ -133,32 +162,3 @@ export const LayerStylingPopup: FC<ToolPopupProps<MobileMap> & RouteStoryLayerSt
         </Popup>
     );
 };
-
-const styles = StyleSheet.create({
-    popup: {
-        width: '100%',
-        maxWidth: 360,
-        maxHeight: '70%',
-    },
-    panel: {
-        width: '100%',
-        overflow: 'hidden',
-    },
-    'demo-section': {
-        paddingTop: 10,
-        paddingHorizontal: 10,
-        paddingBottom: 4,
-    },
-    scroll: {
-        flexShrink: 1,
-    },
-    content: {
-        paddingTop: 8,
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        gap: 8,
-        padding: 10,
-    },
-});

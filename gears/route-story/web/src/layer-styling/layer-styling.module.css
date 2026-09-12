@@ -1,10 +1,11 @@
 .popup {
-    width: 100%;
-    max-width: 360px;
+    max-height: 100dvh;
+    overflow: hidden;
+    width: min(360px, 100dvw);
 }
 
 .content {
-    max-height: 60dvh;
+    max-height: calc(100dvh - 100px);
     overflow-y: auto;
     display: grid;
     padding-top: 8px;

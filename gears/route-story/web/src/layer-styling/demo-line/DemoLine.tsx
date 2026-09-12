@@ -32,11 +32,12 @@ export const DemoLine: FC<Props> = ({
     const { routeStyleActive: active, routeStyleInactive: inactive } = state;
     const activeDash = active.variant === 'dashed' ? '5 4' : undefined;
     const inactiveDash = inactive.variant === 'dashed' ? '5 4' : undefined;
-    const activeWidth = Math.max(2, Math.min(active.width, 10));
-    const inactiveWidth = Math.max(2, Math.min(inactive.width, 10));
-    const activeOutlineWidth = Math.max(2, activeWidth + active.outlineWidth * 2);
-    const inactiveOutlineWidth = Math.max(2, inactiveWidth + inactive.outlineWidth * 2);
+    const activeWidth = Math.min(active.width, 10);
+    const inactiveWidth = Math.min(inactive.width, 10);
+    const activeOutlineWidth = activeWidth + active.outlineWidth * 2;
+    const inactiveOutlineWidth = inactiveWidth + inactive.outlineWidth * 2;
     const markerSize = 16 * state.currentPoint.size;
+    const markerRotation = state.currentPoint.rotation + (state.currentPoint.autoRotate ? 90 : 0);
     const icon = state.currentPoint.icon === 'Circle' ? Icons.Circle : Icons.NounProject[state.currentPoint.icon];
     return (
         <svg
@@ -44,10 +45,12 @@ export const DemoLine: FC<Props> = ({
             viewBox="0 0 300 20"
             preserveAspectRatio="none"
         >
-            <line x1="2" y1="10" x2="150" y2="10" stroke={active.outlineColor} strokeWidth={activeOutlineWidth} strokeDasharray={activeDash} strokeLinecap="round" />
-            <line x1="2" y1="10" x2="150" y2="10" stroke={active.color} strokeWidth={activeWidth} strokeDasharray={activeDash} strokeLinecap="round" />
-            <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.outlineColor} strokeWidth={inactiveOutlineWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />
-            <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.color} strokeWidth={inactiveWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />
+            {active.showRouteLine && <line x1="2" y1="10" x2="150" y2="10" stroke={active.outlineColor} strokeWidth={activeOutlineWidth} strokeDasharray={activeDash} strokeLinecap="round" />}
+            {active.showRouteLine && <line x1="2" y1="10" x2="150" y2="10" stroke={active.color} strokeWidth={activeWidth} strokeDasharray={activeDash} strokeLinecap="round" />}
+            {inactive.showRouteLine && <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.outlineColor} strokeWidth={inactiveOutlineWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />}
+            {inactive.showRouteLine && <line x1="150" y1="10" x2="298" y2="10" stroke={inactive.color} strokeWidth={inactiveWidth} strokeDasharray={inactiveDash} strokeLinecap="round" />}
+            {active.showRoutePoints && [25, 75, 125].map((x) => <circle key={x} cx={x} cy="10" r={active.pointRadius} fill={active.pointColor} />)}
+            {inactive.showRoutePoints && [175, 225, 275].map((x) => <circle key={x} cx={x} cy="10" r={inactive.pointRadius} fill={inactive.pointColor} />)}
             <g
                 pointerEvents="none"
             >
@@ -57,7 +60,7 @@ export const DemoLine: FC<Props> = ({
                     width={markerSize}
                     height={markerSize}
                 >
-                    <span style={{ display: 'block' }}>
+                    <span style={{ display: 'block', transform: `rotate(${markerRotation}deg)` }}>
                         <Icon src={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
                     </span>
                 </foreignObject>

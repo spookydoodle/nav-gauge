@@ -92,16 +92,16 @@ export const Tabstrip: FC<TabstripProps> = ({
                         {selected ? <Text style={{ color: theme.color(highlightColor, theme.isDark ? 900 : 100) }}>{option.label}</Text> : option.label}
                     </Button>;
                     return selected ? (
-                        <View key={option.value} style={[styles.selected, spread ? styles.spreadItem : undefined, { backgroundColor: isTrailing && !spread ? 'transparent' : inactiveFill }, visibleIndex ? styles.joined : undefined]}>
+                        <View key={option.value} style={[styles.selected, spread ? [styles.spreadItem, { minWidth: width }] : undefined, { backgroundColor: isTrailing && !spread ? 'transparent' : inactiveFill }, visibleIndex ? styles.joined : undefined]}>
                             <Svg style={styles.shape} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" pointerEvents="none" accessibilityElementsHidden>
                                 <Polygon points={`${visibleIndex ? 6 : 0},0 ${isLast ? width : width - 6},0 ${width},${height + 1} 0,${height + 1}`} fill={fill} />
                             </Svg>
                             {button}
                         </View>
-                    ) : <View key={option.value} style={[spread ? styles.spreadItem : undefined, visibleIndex ? styles.joined : undefined]}>{button}</View>;
+                    ) : <View key={option.value} style={[spread ? [styles.spreadItem, { minWidth: width }] : undefined, visibleIndex ? styles.joined : undefined]}>{button}</View>;
                 })}
                 {overflowOptions.length ? (
-                    <View style={[spread ? styles.spreadItem : undefined, visibleIndexes.length ? styles.joined : undefined]} onLayout={(event) => setOverflowWidth(event.nativeEvent.layout.width)}>
+                    <View style={[spread ? [styles.spreadItem, { minWidth: overflowWidth }] : undefined, visibleIndexes.length ? styles.joined : undefined]} onLayout={(event) => setOverflowWidth(event.nativeEvent.layout.width)}>
                         <Menu
                             color={color}
                             iconActiveColor={highlightColor}

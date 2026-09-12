@@ -6,6 +6,8 @@ const nl: TranslationTable<MachineTranslationKey>['nl'] = {
     privacy: 'Privacy',
     close: 'Sluiten',
     save: 'Opslaan',
+    on: 'Aan',
+    off: 'Uit',
     menu: 'Applicatiemenu',
     'toggle-mode': 'Schakel tussen lichte en donkere modus',
     gears: 'Versnellingen',

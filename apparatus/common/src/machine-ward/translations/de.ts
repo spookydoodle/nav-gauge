@@ -6,6 +6,8 @@ const de: TranslationTable<MachineTranslationKey>['de'] = {
     privacy: 'Datenschutz',
     close: 'Schließen',
     save: 'Speichern',
+    on: 'Ein',
+    off: 'Aus',
     menu: 'Anwendungsmenü',
     'toggle-mode': 'Hell- und Dunkelmodus umschalten',
     gears: 'Getriebe',

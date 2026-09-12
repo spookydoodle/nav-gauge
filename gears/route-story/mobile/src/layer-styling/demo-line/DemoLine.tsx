@@ -51,6 +51,7 @@ export const DemoLine: FC<Props> = ({
     inactiveRef,
 }) => {
     const markerSize = 16 * state.currentPoint.size;
+    const markerRotation = state.currentPoint.rotation + (state.currentPoint.autoRotate ? 90 : 0);
     const icon = state.currentPoint.icon === 'Circle' ? Icons.Circle : Icons.NounProject[state.currentPoint.icon];
 
     return (
@@ -64,7 +65,9 @@ export const DemoLine: FC<Props> = ({
                 accessibilityLabel={currentPointMenuLabel}
                 onPress={onCurrentPointClick}
             >
-                <Icon icon={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
+                <View style={{ transform: [{ rotate: `${markerRotation}deg` }] }}>
+                    <Icon icon={icon} width={markerSize} height={markerSize} color={state.currentPoint.fillColor} />
+                </View>
             </Pressable>
         </View>
     );

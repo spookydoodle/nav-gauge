@@ -21,7 +21,7 @@
 .spread > .tab,
 .spread > .overflow {
     flex: 1 1 0;
-    min-width: 0;
+    min-width: max-content;
 }
 
 .root .tab:hover,

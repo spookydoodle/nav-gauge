@@ -108,5 +108,13 @@ export function placePopup(
         }
     }
 
-    return { popupAnchor, position: desiredPosition };
+    const desiredLeft = desiredPosition.left ?? viewportWidth - (desiredPosition.right ?? 0) - size.width;
+    const desiredTop = desiredPosition.top ?? viewportHeight - (desiredPosition.bottom ?? 0) - size.height;
+    return {
+        popupAnchor: 'top-left',
+        position: {
+            left: Math.max(0, Math.min(desiredLeft, viewportWidth - size.width)),
+            top: Math.max(0, Math.min(desiredTop, viewportHeight - size.height)),
+        },
+    };
 }

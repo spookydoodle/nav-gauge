@@ -54,9 +54,11 @@ export const LineStyleGroup: FC<Props> = ({
                         {linesLabel}
                     </Checkbox>
                 </div>
-                <Label disabled={!style.showRouteLine} className={styles['variant-label']}>{lineStyleLabel}</Label>
-                <Dropdown className={styles['variant-dropdown']} ariaLabel={lineStyleLabel} disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
                 <div className={styles['line-grid']}>
+                    <div className={styles['control-group']}>
+                        <Label disabled={!style.showRouteLine} className={styles['variant-label']}>{lineStyleLabel}</Label>
+                        <Dropdown className={styles['variant-dropdown']} ariaLabel={lineStyleLabel} disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
+                    </div>
                     <div className={styles['control-group']}>
                         <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
                         <div className={styles['grid']}>
@@ -79,9 +81,11 @@ export const LineStyleGroup: FC<Props> = ({
                         {pointsLabel}
                     </Checkbox>
                 </div>
-                <div className={styles['grid']}>
-                    <ColorSelectField label={colorLabel} disabled={!style.showRoutePoints} value={style.pointColor} gearId={gearId} translationKey={translationKey} onChange={(pointColor) => onChange({ pointColor })} />
-                    <NumberInput ariaLabel={sizeLabel} disabled={!style.showRoutePoints} size="xs" min={1} max={8} step={1} value={style.pointRadius} onChange={(pointRadius) => onChange({ pointRadius })} unit="px" />
+                <div className={styles['points-grid']}>
+                    <div className={styles['grid']}>
+                        <ColorSelectField label={colorLabel} disabled={!style.showRoutePoints} value={style.pointColor} gearId={gearId} translationKey={translationKey} onChange={(pointColor) => onChange({ pointColor })} />
+                        <NumberInput ariaLabel={sizeLabel} disabled={!style.showRoutePoints} size="xs" min={1} max={8} step={1} value={style.pointRadius} onChange={(pointRadius) => onChange({ pointRadius })} unit="px" />
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,6 +5,38 @@ import { ColorSelectField } from "./ColorSelectField";
 import { View, StyleSheet } from "react-native";
 import { useMultipleTranslations } from "@apparatus";
 
+const styles = StyleSheet.create({
+    controls: {
+        gap: 15,
+    },
+    'control-group': {
+        gap: 4,
+    },
+    grid: {
+        flexDirection: 'row',
+        gap: 8,
+        alignItems: 'center',
+    },
+    'line-grid': {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 12,
+        marginTop: 4,
+    },
+    'line-control': {
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: 100,
+        gap: 4,
+    },
+    'points-control': {
+        width: '33.333%',
+    },
+    'grid-fill': {
+        flex: 1,
+    },
+});
+
 interface Props {
     style: RouteStoryLineStyle;
     gearId: string;
@@ -51,10 +83,12 @@ export const LineStyleGroup: FC<Props> = ({
                 <Checkbox size="xs" checked={style.showRouteLine} onChange={(checked) => onChange({ showRouteLine: checked })}>
                     {linesLabel}
                 </Checkbox>
-                <Label disabled={!style.showRouteLine}>{lineStyleLabel}</Label>
-                <Dropdown disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
                 <View style={styles['line-grid']}>
-                    <View style={styles['grid-fill']}>
+                    <View style={styles['line-control']}>
+                        <Label disabled={!style.showRouteLine}>{lineStyleLabel}</Label>
+                        <Dropdown disabled={!style.showRouteLine} size="xs" value={style.variant} options={variantOptions} onChange={(variant) => onChange({ variant })} />
+                    </View>
+                    <View style={styles['line-control']}>
                         <Label disabled={!style.showRouteLine}>{lineLabel}</Label>
                         <View style={styles['grid']}>
                             <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.color} gearId={gearId} translationKey={translationKey} onChange={(color) => onChange({ color })} />
@@ -63,7 +97,7 @@ export const LineStyleGroup: FC<Props> = ({
                             </View>
                         </View>
                     </View>
-                    <View style={styles['grid-fill']}>
+                    <View style={styles['line-control']}>
                         <Label disabled={!style.showRouteLine}>{outlineLabel}</Label>
                         <View style={styles['grid']}>
                             <ColorSelectField label={colorLabel} disabled={!style.showRouteLine} value={style.outlineColor} gearId={gearId} translationKey={translationKey} onChange={(outlineColor) => onChange({ outlineColor })} />
@@ -78,35 +112,15 @@ export const LineStyleGroup: FC<Props> = ({
                 <Checkbox size="xs" checked={style.showRoutePoints} onChange={(checked) => onChange({ showRoutePoints: checked })}>
                     {pointsLabel}
                 </Checkbox>
-                <View style={styles['grid']}>
-                    <ColorSelectField label={colorLabel} disabled={!style.showRoutePoints} value={style.pointColor} gearId={gearId} translationKey={translationKey} onChange={(pointColor) => onChange({ pointColor })} />
-                    <View style={styles['grid-fill']}>
-                        <NumberInput ariaLabel={sizeLabel} disabled={!style.showRoutePoints} size="xs" min={1} max={8} step={1} value={style.pointRadius} onChange={(pointRadius) => onChange({ pointRadius })} unit="px" />
+                <View style={styles['points-control']}>
+                    <View style={styles['grid']}>
+                        <ColorSelectField label={colorLabel} disabled={!style.showRoutePoints} value={style.pointColor} gearId={gearId} translationKey={translationKey} onChange={(pointColor) => onChange({ pointColor })} />
+                        <View style={styles['grid-fill']}>
+                            <NumberInput ariaLabel={sizeLabel} disabled={!style.showRoutePoints} size="xs" min={1} max={8} step={1} value={style.pointRadius} onChange={(pointRadius) => onChange({ pointRadius })} unit="px" />
+                        </View>
                     </View>
                 </View>
             </View>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    controls: {
-        gap: 15,
-    },
-    'control-group': {
-        gap: 4,
-    },
-    grid: {
-        flexDirection: 'row',
-        gap: 8,
-        alignItems: 'center',
-    },
-    'line-grid': {
-        flexDirection: 'row',
-        gap: 12,
-        marginTop: 4,
-    },
-    'grid-fill': {
-        flex: 1,
-    },
-});
